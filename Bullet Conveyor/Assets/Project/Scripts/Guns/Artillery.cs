@@ -39,7 +39,7 @@ public class Artillery : Gun
             }
 
             float vel = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
-            shellRb.velocity = vel * targetDir.normalized;
+            shellRb.linearVelocity = vel * targetDir.normalized;
         }
     }
 }
