@@ -36,7 +36,7 @@ public class BoosterGun : Gun
             direction = target.position - bullet.transform.position;
             direction.y += yEnemyOffSet;
 
-            bulletRb.velocity = direction.normalized * bulletSpeed;
+            bulletRb.linearVelocity = direction.normalized * bulletSpeed;
         }
     }
 

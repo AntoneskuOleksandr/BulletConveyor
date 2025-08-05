@@ -34,7 +34,7 @@ public class ShotGun : Gun
                 Quaternion fireRotation = Quaternion.LookRotation(direction);
                 Quaternion randomRotation = Random.rotation;
                 fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0f, spreadAngle));
-                bulletRb.velocity = fireRotation * Vector3.forward * bulletSpeed;
+                bulletRb.linearVelocity = fireRotation * Vector3.forward * bulletSpeed;
             }
         }
     }
