@@ -5,7 +5,7 @@ public class BlockDragController
 {
     private GameObject draggingGO;
     private BlockParent blockParent;
-    private Block draggingBlock;
+    private Block draggingFirstBlock;
 
     private Vector3 dragOffset;
     private float blockYOffset = 0.925f;
@@ -20,10 +20,9 @@ public class BlockDragController
 
     public void StartDragging(GameObject blockGO)
     {
-        Debug.Log("Start Dragging: " + blockGO.name);
         draggingGO = blockGO;
         blockParent = blockGO.GetComponent<BlockParent>();
-        draggingBlock = blockGO.GetComponentInChildren<Block>();
+        draggingFirstBlock = blockGO.GetComponentInChildren<Block>();
         dragOffset.y = blockYOffset;
 
         // освободить тайлы
@@ -59,11 +58,38 @@ public class BlockDragController
         return otherParent.rank == blockParent.rank && !otherParent.isOnBoard;
     }
 
-    public bool TryPlace(RaycastHit hit)
+    public bool TryPlace(RaycastHit _)
     {
-        return hit.transform.CompareTag("Tile"); // упрощённо
-    }
+        Ray blockRay = new Ray(draggingFirstBlock.transform.position, Vector3.down);
 
+        Debug.DrawRay(blockRay.origin, blockRay.direction * 5, Color.red);
+
+        if (Physics.Raycast(blockRay, out RaycastHit hit, 5f))
+        {
+            GameObject hitGO = hit.transform.gameObject;
+
+            if (hitGO.layer == LayerMask.NameToLayer("Platform"))
+            {
+                Platform platform = hitGO.GetComponent<Platform>();
+                if (platform != null && platform.isFree)
+                {
+                    return true;
+                }
+            }
+            else if (hitGO.layer == LayerMask.NameToLayer("Tile"))
+            {
+                Tile tile = hitGO.GetComponent<Tile>();
+                if (tile != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return false;
+    }
     public void Merge()
     {
         Debug.Log("Merge!");
