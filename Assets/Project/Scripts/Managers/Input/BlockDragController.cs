@@ -31,12 +31,12 @@ public class BlockDragController
             tile.isAvailable = true;
     }
 
+    private readonly Plane horizontalPlane = new Plane(Vector3.up, Vector3.up);
+
     public void UpdateDragging()
     {
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        Plane horizontalPlane = new Plane(Vector3.up, Vector3.up);
-        float distance;
-        if (horizontalPlane.Raycast(ray, out distance))
+        if (horizontalPlane.Raycast(ray, out float distance))
             blockParent.SetPosition(ray.GetPoint(distance) + dragOffset);
     }
 
