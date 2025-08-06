@@ -10,6 +10,7 @@ TagManager:
   - Barrier
   - Block
   - Gun
+  - Tile
   layers:
   - Default
   - TransparentFX
