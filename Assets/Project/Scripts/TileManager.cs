@@ -15,6 +15,8 @@ public class TileManager : MonoBehaviour
     private Tile[,] tiles;
     private List<Tile> availableTiles = new List<Tile>();
 
+    private Tile previousTile;
+
     private void Start()
     {
         tiles = new Tile[rows, columns];
@@ -62,8 +64,33 @@ public class TileManager : MonoBehaviour
         return tiles;
     }
 
-    public List<Tile> GetAvailableTiles(BlockParent blockParent)
+    public List<Tile> GetAvailableTiles(BlockParent blockParent, Tile tile)
     {
+        if (tile == previousTile)
+            return availableTiles;
+
+        availableTiles.Clear();
+
+        for (int x = 0; x < blockParent.shape.Count; x++)
+        {
+            for (int y = 0; y < blockParent.shape[0].row.Length; y++)
+            {
+                if (x + tile.indexInMatrix.x >= tiles.GetLength(0) || y + tile.indexInMatrix.y >= tiles.GetLength(1))
+                {
+                    availableTiles.Clear();
+                    return null;
+                }
+                Tile currentTile = tiles[x + tile.indexInMatrix.x, y + tile.indexInMatrix.y];
+
+                if (currentTile.isAvailable && blockParent.shape[x].row[y] == 1)
+                {
+                    availableTiles.Add(currentTile);
+                }
+            }
+        }
+
+        previousTile = tile;
+
         return availableTiles;
     }
 }
