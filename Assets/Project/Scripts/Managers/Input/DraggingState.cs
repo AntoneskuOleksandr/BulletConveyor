@@ -11,7 +11,7 @@ public class DraggingState : IDragState
         this.dragController = dragController;
     }
 
-    public void Enter() => dragController.StartHighlight();
+    public void Enter() => dragController.TryToHighlight();
     public void Exit() => dragController.StopHighlight();
     public void Update() => dragController.UpdateDragging();
 
@@ -21,7 +21,7 @@ public class DraggingState : IDragState
     {
         if (dragController.TryMerge(hit))
             dragController.Merge();
-        else if (dragController.TryPlace(hit))
+        else if (dragController.TryPlace())
             dragController.Place();
         else
             dragController.Cancel();
