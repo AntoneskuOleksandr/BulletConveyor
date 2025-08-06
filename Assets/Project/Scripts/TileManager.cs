@@ -13,9 +13,7 @@ public class TileManager : MonoBehaviour
     public int columns = 6;
 
     private Tile[,] tiles;
-    private List<Tile> availableTiles = new List<Tile>();
-
-    private Tile previousTile;
+    public List<Tile> availableTiles = new List<Tile>();
 
     private void Start()
     {
@@ -66,30 +64,32 @@ public class TileManager : MonoBehaviour
 
     public List<Tile> GetAvailableTiles(BlockParent blockParent, Tile tile)
     {
-        if (tile == previousTile)
-            return availableTiles;
-
         availableTiles.Clear();
 
-        for (int x = 0; x < blockParent.shape.Count; x++)
+        for (int i = 0; i < blockParent.shape.Count; i++)
         {
-            for (int y = 0; y < blockParent.shape[0].row.Length; y++)
+            for (int j = 0; j < blockParent.shape[0].row.Length; j++)
             {
-                if (x + tile.indexInMatrix.x >= tiles.GetLength(0) || y + tile.indexInMatrix.y >= tiles.GetLength(1))
+                if (tile.indexInMatrix.x + j >= tiles.GetLength(0) || tile.indexInMatrix.y + i >= tiles.GetLength(1))
                 {
                     availableTiles.Clear();
                     return null;
                 }
-                Tile currentTile = tiles[x + tile.indexInMatrix.x, y + tile.indexInMatrix.y];
 
-                if (currentTile.isAvailable && blockParent.shape[x].row[y] == 1)
+                if (blockParent.shape[i].row[j] == 1)
                 {
-                    availableTiles.Add(currentTile);
+                    if (!tiles[tile.indexInMatrix.x + j, tile.indexInMatrix.y + i].isAvailable)
+                    {
+                        availableTiles.Clear();
+                        return null;
+                    }
+                    else
+                    {
+                        availableTiles.Add(tiles[tile.indexInMatrix.x + j, tile.indexInMatrix.y + i]);
+                    }
                 }
             }
         }
-
-        previousTile = tile;
 
         return availableTiles;
     }
