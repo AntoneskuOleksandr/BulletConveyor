@@ -26,7 +26,7 @@ public class BlockParent : MonoBehaviour
     public int rank;
     public int platform;
 
-    public Tile[] myTiles;
+    public List<Tile> myTiles;
 
     public Vector3 previousPosition;
 
