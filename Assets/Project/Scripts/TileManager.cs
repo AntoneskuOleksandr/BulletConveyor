@@ -13,6 +13,7 @@ public class TileManager : MonoBehaviour
     public int columns = 6;
 
     private Tile[,] tiles;
+    private List<Tile> availableTiles = new List<Tile>();
 
     private void Start()
     {
@@ -59,6 +60,11 @@ public class TileManager : MonoBehaviour
         }
 
         return tiles;
+    }
+
+    public List<Tile> GetAvailableTiles(BlockParent blockParent)
+    {
+        return availableTiles;
     }
 }
 
