@@ -24,7 +24,7 @@ public class BlockDragController
         draggingGO = blockGO;
         blockParent = blockGO.GetComponent<BlockParent>();
         draggingBlock = blockGO.GetComponentInChildren<Block>();
-        dragOffset.y += blockYOffset; // опционально можно менять
+        dragOffset.y = blockYOffset;
 
         // освободить тайлы
         foreach (var tile in blockParent.myTiles)
@@ -53,7 +53,7 @@ public class BlockDragController
     public bool TryMerge(RaycastHit hit)
     {
         var otherParent = hit.transform.parent?.GetComponent<BlockParent>();
-        if (otherParent == null)
+        if (otherParent == null || otherParent == blockParent)
             return false;
 
         return otherParent.rank == blockParent.rank && !otherParent.isOnBoard;
@@ -79,6 +79,6 @@ public class BlockDragController
     public void Cancel()
     {
         Debug.Log("Cancel!");
-        draggingGO.transform.position = blockParent.previousPosition;
+        blockParent.MoveToPreviousPosition();
     }
 }
