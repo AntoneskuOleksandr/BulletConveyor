@@ -798,6 +798,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: BlockManager, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 7262064369739507818, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7262064369790565700, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
         type: 3}
       propertyPath: m_IsActive
