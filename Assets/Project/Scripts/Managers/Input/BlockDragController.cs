@@ -20,10 +20,11 @@ public class BlockDragController
 
     public void StartDragging(GameObject blockGO)
     {
+        Debug.Log("Start Dragging: " + blockGO.name);
         draggingGO = blockGO;
         blockParent = blockGO.GetComponent<BlockParent>();
         draggingBlock = blockGO.GetComponentInChildren<Block>();
-        dragOffset = Vector3.zero; // опционально можно менять
+        dragOffset.y += blockYOffset; // опционально можно менять
 
         // освободить тайлы
         foreach (var tile in blockParent.myTiles)
@@ -33,15 +34,10 @@ public class BlockDragController
     public void UpdateDragging()
     {
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        Plane plane = new Plane(Vector3.up, Vector3.zero);
-
-        if (plane.Raycast(ray, out float distance))
-        {
-            Vector3 point = ray.GetPoint(distance) + dragOffset;
-            draggingGO.transform.position = point;
-        }
-
-        // можно добавить подсветку
+        Plane horizontalPlane = new Plane(Vector3.up, Vector3.up);
+        float distance;
+        if (horizontalPlane.Raycast(ray, out distance))
+            blockParent.SetPosition(ray.GetPoint(distance) + dragOffset);
     }
 
     public void StartHighlight()

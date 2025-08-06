@@ -2,17 +2,22 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
+    [SerializeField] private TileManager tileManager;
     private DragStateMachine stateMachine;
     private Camera cam;
+    private BlockDragController dragController;
 
-    public void Init(DragStateMachine machine)
+    private void Awake()
     {
-        stateMachine = machine;
         cam = Camera.main;
+        stateMachine = new DragStateMachine();
+        dragController = new BlockDragController(tileManager, cam);
+        stateMachine.ChangeState(new IdleState(stateMachine, dragController));
     }
 
-    void Update()
+    private void Update()
     {
+        Debug.Log("State Machine Current State: " + stateMachine.CurrentState);
         stateMachine.Update();
 
         if (Input.GetMouseButtonDown(0))

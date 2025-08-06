@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MergePlatformsManager : MonoBehaviour
@@ -14,9 +12,19 @@ public class MergePlatformsManager : MonoBehaviour
 
     public int GetFreePlatformIndex()
     {
+        if (platforms == null || platforms.Length == 0)
+        {
+            Debug.LogWarning("No platforms available.");
+            return -1;
+        }
+
         for (int i = 0; i < platforms.Length; i++)
+        {
             if (platforms[i].isFree)
+            {
                 return i;
+            }
+        }
 
         return -1;
     }
@@ -31,6 +39,12 @@ public class MergePlatformsManager : MonoBehaviour
 
     public Vector3 GetFreePlatformPosition()
     {
+        if (platforms == null || platforms.Length == 0)
+        {
+            Debug.LogWarning("No platforms available to get position.");
+            return Vector3.zero;
+        }
+
         return platforms[GetFreePlatformIndex()].transform.position;
     }
 }

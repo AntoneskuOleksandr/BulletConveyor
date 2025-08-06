@@ -17,6 +17,7 @@ public class IdleState : IDragState
 
     public void OnMouseDown(RaycastHit hit)
     {
+        Debug.Log("Mouse Down in Idle State");
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Block"))
         {
             dragController.StartDragging(hit.transform.parent.gameObject);
