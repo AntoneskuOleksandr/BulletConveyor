@@ -17,7 +17,6 @@ public class InputHandler : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("State Machine Current State: " + stateMachine.CurrentState);
         stateMachine.Update();
 
         if (Input.GetMouseButtonDown(0))
