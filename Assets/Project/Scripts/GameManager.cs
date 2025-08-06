@@ -358,7 +358,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        blockParent.myTiles = availableTileList.ToArray();
+        blockParent.myTiles = availableTileList;
 
         return true;
     }
