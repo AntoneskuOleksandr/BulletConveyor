@@ -17,7 +17,7 @@ public class TileManager : MonoBehaviour
     private void Start()
     {
         tiles = new Tile[rows, columns];
-        tiles = tileGenerator.GetTiles();
+        tiles = tileGenerator.GetAllTiles();
         onTilesGenerated.Invoke();
     }
 
@@ -48,6 +48,17 @@ public class TileManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public Tile[,] GetAllTiles()
+    {
+        if (tiles == null)
+        {
+            Debug.LogError("Tiles have not been generated yet. Please call GenerateGrid first.");
+            return null;
+        }
+
+        return tiles;
     }
 }
 

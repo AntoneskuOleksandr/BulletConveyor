@@ -1,8 +1,8 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class TileGenerator : MonoBehaviour
 {
+    [SerializeField] private Vector2Int gridSize;
     public GameObject cellPrefab;
     public Vector3 offSet;
     private Tile[,] tiles;
@@ -26,8 +26,16 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    public Tile[,] GetTiles()
+    public Tile[,] GetAllTiles()
     {
+        if (tiles == null)
+        {
+            Debug.LogWarning("Tiles have not been generated yet. Calling GenerateGrid.");
+            GenerateGrid(gridSize.x, gridSize.y);
+
+            return null;
+        }
+
         return tiles;
     }
 }

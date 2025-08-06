@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
         tileGenerator = GetComponent<TileGenerator>();
         tileManager = GetComponent<TileManager>();
         tileGenerator.GenerateGrid(gridSize.x, gridSize.y);
-        tiles = tileGenerator.GetTiles();
+        tiles = tileGenerator.GetAllTiles();
 
         currentLevel = SceneManager.GetActiveScene().buildIndex - 2;
     }
