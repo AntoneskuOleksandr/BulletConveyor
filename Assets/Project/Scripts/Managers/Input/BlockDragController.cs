@@ -30,7 +30,11 @@ public class BlockDragController
 
         // освободить тайлы
         foreach (var tile in blockParent.myTiles)
+        {
             tile.isAvailable = true;
+        }
+
+        blockParent.myTiles = new List<Tile>(); // очистить список тайлов
     }
 
     private readonly Plane horizontalPlane = new Plane(Vector3.up, Vector3.up);
@@ -121,7 +125,7 @@ public class BlockDragController
     {
         Debug.Log("Place!");
 
-        List<Tile> availableTiles = CheckAvailableTiles();
+        List<Tile> availableTiles = CheckAvailableTiles()?.ToList();
 
         blockParent.myTiles = availableTiles; // обновить тайлы
 
@@ -155,7 +159,10 @@ public class BlockDragController
 
     public void Cancel()
     {
-        Debug.Log("Cancel!");
-        blockParent.MoveToPreviousPosition();
+        blockParent.SetPosition(blockParent.previousPosition);
+
+        draggingGO = null;
+        blockParent = null;
+        draggingFirstBlock = null;
     }
 }
