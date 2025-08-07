@@ -20,10 +20,10 @@ public class BlockDragController
         this.camera = camera;
     }
 
-    public void StartDragging(BlockParent blockParent)
+    public void StartDragging(BlockParent blockToDrag)
     {
-        this.blockParent = blockParent;
-        draggingFirstBlock = blockParent.gameObject.GetComponentInChildren<Block>();
+        blockParent = blockToDrag;
+        draggingFirstBlock = blockToDrag.gameObject.GetComponentInChildren<Block>();
         dragOffset.y = blockYOffset;
 
         blockParent.StartDragging();

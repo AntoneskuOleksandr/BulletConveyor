@@ -21,7 +21,7 @@ public class IdleState : IDragState
     {
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Block"))
         {
-            BlockParent blockParent = hit.transform.GetComponent<BlockParent>();
+            BlockParent blockParent = hit.transform.GetComponentInParent<BlockParent>();
 
             if (blockParent == null)
             {
