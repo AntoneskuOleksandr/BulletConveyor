@@ -11,11 +11,13 @@ public class BlockDragController
     private Vector3 dragOffset;
     private float blockYOffset = 0.925f;
     private TileManager tileManager;
+    private MergePlatformsManager mergePlatformsManager;
     private Camera camera;
 
-    public BlockDragController(TileManager tileManager, Camera camera)
+    public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
         this.tileManager = tileManager;
+        this.mergePlatformsManager = mergePlatformsManager;
         this.camera = camera;
     }
 
@@ -25,15 +27,8 @@ public class BlockDragController
         blockParent = blockGO.GetComponent<BlockParent>();
         draggingFirstBlock = blockGO.GetComponentInChildren<Block>();
         dragOffset.y = blockYOffset;
-        blockParent.isOnBoard = false; // блок не на доске
 
-        // освободить тайлы
-        foreach (var tile in blockParent.myTiles)
-        {
-            tile.isAvailable = true;
-        }
-
-        blockParent.myTiles = new List<Tile>(); // очистить список тайлов
+        blockParent.StartDragging();
     }
 
     private readonly Plane horizontalPlane = new Plane(Vector3.up, Vector3.up);
@@ -71,12 +66,36 @@ public class BlockDragController
         return otherParent.rank == blockParent.rank && !otherParent.isOnBoard;
     }
 
-    public bool TryPlace()
+    public bool TryPlaceOnBoard()
     {
         if (tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent) != null && tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent).Count > 0)
             return true;
 
         return false;
+    }
+
+    public bool TryPlaceOnPlatform()
+    {
+        Ray blockRay = new Ray(draggingFirstBlock.transform.position, Vector3.down);
+
+        if (Physics.Raycast(blockRay, out RaycastHit hit, 5f))
+        {
+            GameObject hitGO = hit.transform.gameObject;
+
+            if (hitGO.layer == LayerMask.NameToLayer("Platform"))
+            {
+                Tile tile = hitGO.GetComponent<Tile>();
+
+                if (tile != null)
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+
+        return mergePlatformsManager.IsFreePlatform();
     }
 
     public void Merge()
@@ -85,30 +104,16 @@ public class BlockDragController
         // «десь логика merge (в идеале Ч вынести в MergeHandler)
     }
 
-    public void Place()
+    public void PlaceOnBoard()
     {
-        Debug.Log("Place!");
+        Debug.Log("PlaceOnBoard!");
 
         List<Tile> availableTiles = tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent)?.ToList();
-
-        blockParent.myTiles = availableTiles; // обновить тайлы
-
-        tileManager.OccupyTiles(blockParent.myTiles);
 
         Vector3 lastTilePosition = availableTiles.Last().transform.position;
         Vector3 finalPosition = new Vector3((availableTiles.First().transform.position.x + lastTilePosition.x) / 2, blockYOffset, (availableTiles.First().transform.position.z + lastTilePosition.z) / 2);
 
-        blockParent.SetPosition(finalPosition);
-        blockParent.previousPosition = finalPosition;
-
-        /*        bulletGenerator.blockParents.Add(blockParent);
-                blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
-
-                if (blockParent.platform != -1)
-                    platformsManager.platforms[blockParent.platform].isFree = true;
-
-                UIManager.UpdateUI();*/
-
+        blockParent.PlaceOnBoard(availableTiles, finalPosition);
 
         blockParent.platform = -1;
         blockParent.isOnBoard = true;
@@ -118,9 +123,20 @@ public class BlockDragController
         draggingFirstBlock = null;
     }
 
+    public void PlaceOnPlatform()
+    {
+        Debug.Log("PlaceOnPlatform!");
+
+        blockParent.PlaceOnPlatform(mergePlatformsManager.GetFreePlatformPosition(), mergePlatformsManager.GetFreePlatformIndex());
+
+        draggingGO = null;
+        blockParent = null;
+        draggingFirstBlock = null;
+    }
+
     public void Cancel()
     {
-        blockParent.SetPosition(blockParent.previousPosition);
+        blockParent.ReturnToPreviousState();
 
         draggingGO = null;
         blockParent = null;
