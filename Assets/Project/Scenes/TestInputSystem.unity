@@ -150,6 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileManager: {fileID: 881036426}
+  mergePlatformsManager: {fileID: 834766778}
 --- !u!4 &480416863
 Transform:
   m_ObjectHideFlags: 0
@@ -366,6 +367,7 @@ MonoBehaviour:
       m_Calls: []
   rows: 6
   columns: 6
+  availableTiles: []
 --- !u!4 &881036427
 Transform:
   m_ObjectHideFlags: 0
