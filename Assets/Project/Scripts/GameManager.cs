@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
 
                         if (currentlyDraggingBlock.positionIndex != -Vector2Int.one)
                         {
-                            foreach (var tile in blockParent.myTiles)
+                            foreach (var tile in blockParent.MyTiles)
                                 tile.isAvailable = true;
                         }
 
@@ -151,7 +151,7 @@ public class GameManager : MonoBehaviour
                                 Merge(currentlyDraggingGO, hitGO.transform.parent.gameObject);
                             else
                             {
-                                blockParent.SetPosition(blockParent.previousPosition);
+                                blockParent.MoveToPreviousPosition();
                                 blockParent.isOnBoard = wasOnBoardBeforeDragging;
                                 blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
 
@@ -176,7 +176,7 @@ public class GameManager : MonoBehaviour
                             PlaceOnPlatform(hitGO.GetComponent<Platform>());
                         else
                         {
-                            blockParent.SetPosition(blockParent.previousPosition);
+                            blockParent.MoveToPreviousPosition();
                             blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
 
                             currentlyDraggingBlock = null;
@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (Input.GetMouseButtonUp(0))
                         {
-                            blockParent.SetPosition(blockParent.previousPosition);
+                            blockParent.MoveToPreviousPosition();
                             blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
                             blockParent.isOnBoard = wasOnBoardBeforeDragging;
 
@@ -219,7 +219,7 @@ public class GameManager : MonoBehaviour
 
                     if (Input.GetMouseButtonUp(0))
                     {
-                        blockParent.SetPosition(blockParent.previousPosition);
+                        blockParent.MoveToPreviousPosition();
                         blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
                         blockParent.isOnBoard = wasOnBoardBeforeDragging;
 
@@ -257,7 +257,6 @@ public class GameManager : MonoBehaviour
             platformsManager.platforms[blockParent.platform].isFree = true;
 
         blockParent.SetPosition(platform.transform.position + new Vector3(0f, blockYOffSet, 0f));
-        blockParent.previousPosition = platform.transform.position + new Vector3(0f, blockYOffSet, 0f);
 
         blockParent.platform = platform.index;
         platform.isFree = false;
@@ -303,7 +302,6 @@ public class GameManager : MonoBehaviour
             Vector3 finalPosition = new Vector3((firstTilePosition.x + lastTilePosition.x) / 2, blockYOffSet, (firstTilePosition.z + lastTilePosition.z) / 2);
 
             blockParent.SetPosition(finalPosition);
-            blockParent.previousPosition = finalPosition;
 
             bulletGenerator.blockParents.Add(blockParent);
             blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
@@ -358,7 +356,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        blockParent.myTiles = availableTileList;
+        blockParent.MyTiles = availableTileList;
 
         return true;
     }
