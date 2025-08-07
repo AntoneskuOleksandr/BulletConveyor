@@ -13,8 +13,6 @@ public class BlockDragController
     private TileManager tileManager;
     private Camera camera;
 
-    private Tile currentFirstTile;
-
     public BlockDragController(TileManager tileManager, Camera camera)
     {
         this.tileManager = tileManager;
@@ -53,27 +51,15 @@ public class BlockDragController
     {
         StopHighlight();
 
-        if (CheckAvailableTiles() != null && CheckAvailableTiles().Count > 0)
+        if (tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent) != null && tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent).Count > 0)
         {
-            tileManager.HighLightTiles(CheckAvailableTiles(), true);
+            tileManager.HighLightTiles(tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent), true);
         }
     }
 
     public void StopHighlight()
     {
         tileManager.HighLightTiles(tileManager.GetAllTiles().Cast<Tile>().ToList(), false);
-    }
-
-    private List<Tile> CheckAvailableTiles()
-    {
-        Ray blockRay = new Ray(draggingFirstBlock.transform.position, Vector3.down);
-
-        Debug.DrawRay(blockRay.origin, blockRay.direction * 5, Color.red);
-
-        if (GetTileUnderFirstBlock() != null)
-            return tileManager.GetAvailableTiles(blockParent, GetTileUnderFirstBlock());
-
-        return null;
     }
 
     public bool TryMerge(RaycastHit hit)
@@ -87,7 +73,7 @@ public class BlockDragController
 
     public bool TryPlace()
     {
-        if (CheckAvailableTiles() != null && CheckAvailableTiles().Count > 0)
+        if (tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent) != null && tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent).Count > 0)
             return true;
 
         return false;
@@ -99,41 +85,15 @@ public class BlockDragController
         // «десь логика merge (в идеале Ч вынести в MergeHandler)
     }
 
-    private Tile GetTileUnderFirstBlock()
-    {
-        Ray blockRay = new Ray(draggingFirstBlock.transform.position, Vector3.down);
-
-        if (Physics.Raycast(blockRay, out RaycastHit hit, 5f))
-        {
-            GameObject hitGO = hit.transform.gameObject;
-
-            if (hitGO.layer == LayerMask.NameToLayer("Tile"))
-            {
-                Tile tile = hitGO.GetComponent<Tile>();
-
-                if (tile != null)
-                {
-                    currentFirstTile = tile;
-                    return tile;
-                }
-            }
-        }
-
-        return null;
-    }
-
     public void Place()
     {
         Debug.Log("Place!");
 
-        List<Tile> availableTiles = CheckAvailableTiles()?.ToList();
+        List<Tile> availableTiles = tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent)?.ToList();
 
         blockParent.myTiles = availableTiles; // обновить тайлы
 
-        foreach (var tile in blockParent.myTiles)
-        {
-            tile.isAvailable = false; // зан€ть тайлы
-        }
+        tileManager.OccupyTiles(blockParent.myTiles);
 
         Vector3 lastTilePosition = availableTiles.Last().transform.position;
         Vector3 finalPosition = new Vector3((availableTiles.First().transform.position.x + lastTilePosition.x) / 2, blockYOffset, (availableTiles.First().transform.position.z + lastTilePosition.z) / 2);

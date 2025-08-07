@@ -93,5 +93,47 @@ public class TileManager : MonoBehaviour
 
         return availableTiles;
     }
+
+    public Tile GetTileUnderBlock(Block block)
+    {
+        Ray blockRay = new Ray(block.transform.position, Vector3.down);
+
+        if (Physics.Raycast(blockRay, out RaycastHit hit, 5f))
+        {
+            GameObject hitGO = hit.transform.gameObject;
+
+            if (hitGO.layer == LayerMask.NameToLayer("Tile"))
+            {
+                Tile tile = hitGO.GetComponent<Tile>();
+
+                if (tile != null)
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<Tile> CheckAvailableTiles(Block block, BlockParent blockParent)
+    {
+        Ray blockRay = new Ray(block.transform.position, Vector3.down);
+
+        Debug.DrawRay(blockRay.origin, blockRay.direction * 5, Color.red);
+
+        if (GetTileUnderBlock(block) != null)
+            return GetAvailableTiles(blockParent, GetTileUnderBlock(block));
+
+        return null;
+    }
+
+    public void OccupyTiles(List<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
+        {
+            tile.isAvailable = false;
+        }
+    }
 }
 
