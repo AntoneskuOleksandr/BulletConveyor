@@ -32,14 +32,13 @@ public class BlockManager : MonoBehaviour
             return;
         }
 
-        BlockParent parent = Instantiate(blocks[index], platformsManager.GetFreePlatformPosition()
-            + new Vector3(0f, blockYOffSet, 0f), Quaternion.identity).GetComponent<BlockParent>();
+        BlockParent parent = Instantiate(blocks[index], 
+            platformsManager.GetPlatformPositionByIndex(platformIndex), Quaternion.identity).GetComponent<BlockParent>();
 
+        platformsManager.SetPlatformBusy(platformIndex);
 
+        parent.PlaceOnPlatform(platformsManager.GetPlatformPositionByIndex(platformIndex), platformIndex);
 
-        platformsManager.platforms[platformIndex].isFree = false;
-
-        parent.platform = platformIndex;
         parent.bulletsToGenerate += 0;
         parent.rank = index;
 
