@@ -27,6 +27,7 @@ public class BlockDragController
         blockParent = blockGO.GetComponent<BlockParent>();
         draggingFirstBlock = blockGO.GetComponentInChildren<Block>();
         dragOffset.y = blockYOffset;
+        blockParent.isOnBoard = false; // блок не на доске
 
         // освободить тайлы
         foreach (var tile in blockParent.myTiles)
