@@ -21,8 +21,10 @@ public class DraggingState : IDragState
     {
         if (dragController.TryMerge(hit))
             dragController.Merge();
-        else if (dragController.TryPlace())
-            dragController.Place();
+        else if (dragController.TryPlaceOnBoard())
+            dragController.PlaceOnBoard();
+        else if (dragController.TryPlaceOnPlatform())
+            dragController.PlaceOnPlatform();
         else
             dragController.Cancel();
 
