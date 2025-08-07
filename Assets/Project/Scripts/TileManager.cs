@@ -127,13 +127,5 @@ public class TileManager : MonoBehaviour
 
         return null;
     }
-
-    public void OccupyTiles(List<Tile> tiles)
-    {
-        foreach (Tile tile in tiles)
-        {
-            tile.isAvailable = false;
-        }
-    }
 }
 
