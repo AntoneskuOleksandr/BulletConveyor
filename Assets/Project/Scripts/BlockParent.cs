@@ -18,21 +18,33 @@ public class BlockParent : MonoBehaviour
     public int scaleZ = 1;
 
     private Vector3 desiredPosition;
-    public Vector3 previousPosition;
+    private Vector3 previousPosition;
 
     public int bulletsToGenerate;
     public bool isOnBoard;
+    private bool previousIsOnBoard;
+
     public GameObject bulletPrefab;
     public GameObject nextRangBlock;
     public int rank;
     public int platform;
 
-    public List<Tile> myTiles;
+    public List<RowData> shape = new List<RowData>();
 
+    public List<Tile> MyTiles
+    {
+        get { return myTiles; }
+        set
+        {
+            myPreviousTiles = new List<Tile>(myTiles);
+            myTiles = value;
+        }
+    }
+
+    private List<Tile> myTiles;
+    private List<Tile> myPreviousTiles;
 
     private AbilityManager abilityManager;
-
-    public List<RowData> shape = new List<RowData>();
 
     private void Start()
     {
@@ -60,10 +72,63 @@ public class BlockParent : MonoBehaviour
         desiredPosition = previousPosition;
     }
 
-
     private void AddBulletToGenerate()
     {
         bulletsToGenerate++;
         bulletsCount.text = "+" + bulletsToGenerate.ToString();
     }
+
+    public void StartDragging()
+    {
+        SafePreviousState();
+
+        isOnBoard = false; // блок не на доске
+
+        foreach (Tile tile in MyTiles)
+        {
+            tile.isAvailable = true; // освобождаем занятые тайлы
+        }
+    }
+
+    public void PlaceOnBoard(List<Tile> tiles, Vector3 position)
+    {
+        SafePreviousState(); // сохраняем предыдущие тайлы и позицию
+
+        platform = -1; // блок не на платформе
+        isOnBoard = true; // блок на доске
+        MyTiles = tiles; // обновляем занятые тайлы
+
+        foreach (Tile tile in MyTiles)
+        {
+            tile.isAvailable = false; // освобождаем занятые тайлы
+        }
+
+        SetPosition(position); // устанавливаем позицию блока
+    }
+
+    public void PlaceOnPlatform(Vector3 position, int platformIndex)
+    {
+        MyTiles = new List<Tile>(); // очищаем занятые тайлы
+        isOnBoard = false; // блок не на доске
+        platform = platformIndex; // устанавливаем платформу
+
+        SetPosition(position);
+    }
+
+    private void SafePreviousState()
+    {
+        if (myTiles == null)
+            myTiles = new List<Tile>();
+        myPreviousTiles = new List<Tile>(myTiles); // сохраняем предыдущие тайлы
+        previousPosition = desiredPosition; // сохраняем предыдущую позицию
+        previousIsOnBoard = isOnBoard; // сохраняем состояние на доске
+    }
+
+    public void ReturnToPreviousState()
+    {
+        desiredPosition = previousPosition;
+        MyTiles = myPreviousTiles;
+        isOnBoard = previousIsOnBoard;
+    }
+
 }
