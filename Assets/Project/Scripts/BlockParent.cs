@@ -17,7 +17,7 @@ public class BlockParent : MonoBehaviour
     public int scaleX = 1;
     public int scaleZ = 1;
 
-    public Vector3 desiredPosition;
+    private Vector3 desiredPosition;
 
     public int bulletsToGenerate;
     public bool isOnBoard;
