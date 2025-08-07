@@ -3,6 +3,7 @@ using UnityEngine;
 public class InputHandler : MonoBehaviour
 {
     [SerializeField] private TileManager tileManager;
+    [SerializeField] private MergePlatformsManager mergePlatformsManager;
     private DragStateMachine stateMachine;
     private Camera cam;
     private BlockDragController dragController;
@@ -11,7 +12,7 @@ public class InputHandler : MonoBehaviour
     {
         cam = Camera.main;
         stateMachine = new DragStateMachine();
-        dragController = new BlockDragController(tileManager, cam);
+        dragController = new BlockDragController(tileManager, mergePlatformsManager, cam);
         stateMachine.ChangeState(new IdleState(stateMachine, dragController));
     }
 
