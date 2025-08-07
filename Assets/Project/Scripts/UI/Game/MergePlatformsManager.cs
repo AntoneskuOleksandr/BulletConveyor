@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MergePlatformsManager : MonoBehaviour
 {
-    public Platform[] platforms;
+    [SerializeField] private Platform[] platforms;
 
     private void Start()
     {
@@ -53,7 +53,17 @@ public class MergePlatformsManager : MonoBehaviour
         return platforms[index].transform.position;
     }
 
-    public void ReleasePlatform(int index)
+    public void SetPlatformBusy(int index)
+    {
+        if (index < 0 || index >= platforms.Length)
+        {
+            Debug.LogWarning("Invalid platform index: " + index);
+            return;
+        }
+        platforms[index].isFree = false;
+    }
+
+    public void SetPlatformFree(int index)
     {
         if (index < 0 || index >= platforms.Length)
         {
