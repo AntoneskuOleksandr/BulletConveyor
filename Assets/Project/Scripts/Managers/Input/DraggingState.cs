@@ -4,11 +4,14 @@ public class DraggingState : IDragState
 {
     private readonly DragStateMachine stateMachine;
     private readonly BlockDragController dragController;
+    private readonly MergePlatformsManager mergePlatformsManager;
 
-    public DraggingState(DragStateMachine stateMachine, BlockDragController dragController)
+
+    public DraggingState(DragStateMachine stateMachine, BlockDragController dragController, MergePlatformsManager mergePlatformsManager)
     {
         this.stateMachine = stateMachine;
         this.dragController = dragController;
+        this.mergePlatformsManager = mergePlatformsManager;
     }
 
     public void Enter() => dragController.TryToHighlight();
@@ -23,11 +26,11 @@ public class DraggingState : IDragState
             dragController.Merge();
         else if (dragController.TryPlaceOnBoard())
             dragController.PlaceOnBoard();
-        else if (dragController.TryPlaceOnPlatform())
-            dragController.PlaceOnPlatform();
+        else if (dragController.TryPlaceOnPlatform(out int platformIndex))
+            dragController.PlaceOnPlatform(platformIndex);
         else
             dragController.Cancel();
 
-        stateMachine.ChangeState(new IdleState(stateMachine, dragController));
+        stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager));
     }
 }

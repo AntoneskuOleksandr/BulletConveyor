@@ -4,11 +4,13 @@ public class IdleState : IDragState
 {
     private DragStateMachine stateMachine;
     private BlockDragController dragController;
+    private MergePlatformsManager mergePlatformsManager;
 
-    public IdleState(DragStateMachine stateMachine, BlockDragController dragController)
+    public IdleState(DragStateMachine stateMachine, BlockDragController dragController, MergePlatformsManager mergePlatformsManager)
     {
         this.stateMachine = stateMachine;
         this.dragController = dragController;
+        this.mergePlatformsManager = mergePlatformsManager;
     }
 
     public void Enter() { }
@@ -17,11 +19,19 @@ public class IdleState : IDragState
 
     public void OnMouseDown(RaycastHit hit)
     {
-        Debug.Log("Mouse Down in Idle State");
         if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Block"))
         {
-            dragController.StartDragging(hit.transform.parent.gameObject);
-            stateMachine.ChangeState(new DraggingState(stateMachine, dragController));
+            BlockParent blockParent = hit.transform.GetComponent<BlockParent>();
+
+            if (blockParent == null)
+            {
+                Debug.LogError("BlockParent component not found on the hit object.");
+                return;
+            }
+
+            dragController.StartDragging(blockParent);
+            mergePlatformsManager.ReleasePlatform(blockParent.platform);
+            stateMachine.ChangeState(new DraggingState(stateMachine, dragController, mergePlatformsManager));
         }
     }
 

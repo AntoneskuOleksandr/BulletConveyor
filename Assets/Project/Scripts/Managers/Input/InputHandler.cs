@@ -13,7 +13,7 @@ public class InputHandler : MonoBehaviour
         cam = Camera.main;
         stateMachine = new DragStateMachine();
         dragController = new BlockDragController(tileManager, mergePlatformsManager, cam);
-        stateMachine.ChangeState(new IdleState(stateMachine, dragController));
+        stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager));
     }
 
     private void Update()

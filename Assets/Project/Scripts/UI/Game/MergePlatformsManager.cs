@@ -47,4 +47,19 @@ public class MergePlatformsManager : MonoBehaviour
 
         return platforms[GetFreePlatformIndex()].transform.position;
     }
+
+    public Vector3 GetPlatformPositionByIndex(int index)
+    {
+        return platforms[index].transform.position;
+    }
+
+    public void ReleasePlatform(int index)
+    {
+        if (index < 0 || index >= platforms.Length)
+        {
+            Debug.LogWarning("Invalid platform index: " + index);
+            return;
+        }
+        platforms[index].isFree = true;
+    }
 }

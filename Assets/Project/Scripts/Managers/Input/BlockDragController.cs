@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BlockDragController
 {
-    private GameObject draggingGO;
     private BlockParent blockParent;
     private Block draggingFirstBlock;
 
@@ -21,11 +20,10 @@ public class BlockDragController
         this.camera = camera;
     }
 
-    public void StartDragging(GameObject blockGO)
+    public void StartDragging(BlockParent blockParent)
     {
-        draggingGO = blockGO;
-        blockParent = blockGO.GetComponent<BlockParent>();
-        draggingFirstBlock = blockGO.GetComponentInChildren<Block>();
+        this.blockParent = blockParent;
+        draggingFirstBlock = blockParent.gameObject.GetComponentInChildren<Block>();
         dragOffset.y = blockYOffset;
 
         blockParent.StartDragging();
@@ -74,9 +72,11 @@ public class BlockDragController
         return false;
     }
 
-    public bool TryPlaceOnPlatform()
+    public bool TryPlaceOnPlatform(out int platformIndex)
     {
-        Ray blockRay = new Ray(draggingFirstBlock.transform.position, Vector3.down);
+        platformIndex = -1;
+
+        Ray blockRay = new Ray(blockParent.transform.position, Vector3.down);
 
         if (Physics.Raycast(blockRay, out RaycastHit hit, 5f))
         {
@@ -84,19 +84,19 @@ public class BlockDragController
 
             if (hitGO.layer == LayerMask.NameToLayer("Platform"))
             {
-                Tile tile = hitGO.GetComponent<Tile>();
+                Platform platform = hitGO.GetComponent<Platform>();
 
-                if (tile != null)
+                if (platform != null && platform.isFree)
                 {
-                    return tile;
+                    platformIndex = platform.index;
+                    return true;
                 }
             }
         }
 
-        return null;
-
-        return mergePlatformsManager.IsFreePlatform();
+        return false;
     }
+
 
     public void Merge()
     {
@@ -118,18 +118,16 @@ public class BlockDragController
         blockParent.platform = -1;
         blockParent.isOnBoard = true;
 
-        draggingGO = null;
         blockParent = null;
         draggingFirstBlock = null;
     }
 
-    public void PlaceOnPlatform()
+    public void PlaceOnPlatform(int platformIndex)
     {
         Debug.Log("PlaceOnPlatform!");
 
-        blockParent.PlaceOnPlatform(mergePlatformsManager.GetFreePlatformPosition(), mergePlatformsManager.GetFreePlatformIndex());
+        blockParent.PlaceOnPlatform(mergePlatformsManager.GetPlatformPositionByIndex(platformIndex), platformIndex);
 
-        draggingGO = null;
         blockParent = null;
         draggingFirstBlock = null;
     }
@@ -138,7 +136,6 @@ public class BlockDragController
     {
         blockParent.ReturnToPreviousState();
 
-        draggingGO = null;
         blockParent = null;
         draggingFirstBlock = null;
     }
