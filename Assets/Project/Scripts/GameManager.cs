@@ -254,7 +254,7 @@ public class GameManager : MonoBehaviour
         currentlyDraggingBlock.positionIndex = -Vector2Int.one;
 
         if (blockParent.platform != -1)
-            platformsManager.platforms[blockParent.platform].isFree = true;
+            platformsManager.SetPlatformFree(blockParent.platform);
 
         blockParent.SetPosition(platform.transform.position + new Vector3(0f, blockYOffSet, 0f));
 
@@ -307,7 +307,7 @@ public class GameManager : MonoBehaviour
             blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
 
             if (blockParent.platform != -1)
-                platformsManager.platforms[blockParent.platform].isFree = true;
+                platformsManager.SetPlatformFree(blockParent.platform);
 
             UIManager.UpdateUI();
 
@@ -371,7 +371,7 @@ public class GameManager : MonoBehaviour
         newBlock.rank = block2.GetComponent<BlockParent>().rank + 1;
 
         if (blockParent.platform != -1)
-            platformsManager.platforms[blockParent.platform].isFree = true;
+            platformsManager.SetPlatformFree(blockParent.platform);
 
         if (newBlock.rank > highestBlockRank)
             highestBlockRank = newBlock.rank;
@@ -426,7 +426,7 @@ public class GameManager : MonoBehaviour
 
         BlockParent parent = Instantiate(blocks[index], platformsManager.GetFreePlatformPosition() + new Vector3(0f, blockYOffSet, 0f), Quaternion.identity).GetComponent<BlockParent>();
 
-        platformsManager.platforms[platformIndex].isFree = false;
+        platformsManager.SetPlatformBusy(platformIndex);
 
         parent.platform = platformIndex;
         parent.bulletsToGenerate += additionBullets;
