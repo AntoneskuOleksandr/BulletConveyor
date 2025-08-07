@@ -28,6 +28,7 @@ public class BlockParent : MonoBehaviour
     public GameObject nextRangBlock;
     public int rank;
     public int platform;
+    private int previousPlatform;
 
     public List<RowData> shape = new List<RowData>();
 
@@ -36,13 +37,19 @@ public class BlockParent : MonoBehaviour
         get { return myTiles; }
         set
         {
+            if (value == null)
+            {
+                myTiles = new List<Tile>();
+                return;
+            }
+
             myPreviousTiles = new List<Tile>(myTiles);
             myTiles = value;
         }
     }
 
-    private List<Tile> myTiles;
-    private List<Tile> myPreviousTiles;
+    private List<Tile> myTiles = new List<Tile>();
+    private List<Tile> myPreviousTiles = new List<Tile>();
 
     private AbilityManager abilityManager;
 
@@ -112,6 +119,8 @@ public class BlockParent : MonoBehaviour
         isOnBoard = false; // блок не на доске
         platform = platformIndex; // устанавливаем платформу
 
+        Debug.Log(position);
+
         SetPosition(position);
     }
 
@@ -119,9 +128,11 @@ public class BlockParent : MonoBehaviour
     {
         if (myTiles == null)
             myTiles = new List<Tile>();
+
         myPreviousTiles = new List<Tile>(myTiles); // сохраняем предыдущие тайлы
         previousPosition = desiredPosition; // сохраняем предыдущую позицию
         previousIsOnBoard = isOnBoard; // сохраняем состояние на доске
+        previousPlatform = platform; // сохраняем предыдущую платформу
     }
 
     public void ReturnToPreviousState()
@@ -129,6 +140,6 @@ public class BlockParent : MonoBehaviour
         desiredPosition = previousPosition;
         MyTiles = myPreviousTiles;
         isOnBoard = previousIsOnBoard;
+        platform = previousPlatform;
     }
-
 }
