@@ -18,6 +18,7 @@ public class BlockParent : MonoBehaviour
     public int scaleZ = 1;
 
     private Vector3 desiredPosition;
+    public Vector3 previousPosition;
 
     public int bulletsToGenerate;
     public bool isOnBoard;
@@ -28,7 +29,6 @@ public class BlockParent : MonoBehaviour
 
     public List<Tile> myTiles;
 
-    public Vector3 previousPosition;
 
     private AbilityManager abilityManager;
 
