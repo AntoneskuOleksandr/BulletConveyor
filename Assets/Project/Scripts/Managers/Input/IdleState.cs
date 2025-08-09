@@ -30,7 +30,6 @@ public class IdleState : IDragState
             }
 
             dragController.StartDragging(blockParent);
-            mergePlatformsManager.SetPlatformFree(blockParent.platform);
             stateMachine.ChangeState(new DraggingState(stateMachine, dragController, mergePlatformsManager));
         }
     }

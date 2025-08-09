@@ -90,6 +90,7 @@ public class BlockParent : MonoBehaviour
         SafePreviousState();
 
         isOnBoard = false; // блок не на доске
+        platform = -1; // блок не на платформе
 
         foreach (Tile tile in MyTiles)
         {
@@ -135,9 +136,15 @@ public class BlockParent : MonoBehaviour
 
     public void ReturnToPreviousState()
     {
+        // Возвращаемся к предыдущему состоянию
         desiredPosition = previousPosition;
         MyTiles = myPreviousTiles;
         isOnBoard = previousIsOnBoard;
         platform = previousPlatform;
+    }
+
+    public bool IsWasOnPlatform()
+    {
+        return platform != -1;
     }
 }

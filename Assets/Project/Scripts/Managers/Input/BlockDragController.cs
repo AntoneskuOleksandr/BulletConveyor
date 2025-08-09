@@ -26,6 +26,7 @@ public class BlockDragController
         draggingFirstBlock = blockToDrag.gameObject.GetComponentInChildren<Block>();
         dragOffset.y = blockYOffset;
 
+        mergePlatformsManager.SetPlatformFree(blockParent.platform);
         blockParent.StartDragging();
     }
 
@@ -115,9 +116,6 @@ public class BlockDragController
 
         blockParent.PlaceOnBoard(availableTiles, finalPosition);
 
-        blockParent.platform = -1;
-        blockParent.isOnBoard = true;
-
         blockParent = null;
         draggingFirstBlock = null;
     }
@@ -126,6 +124,7 @@ public class BlockDragController
     {
         Debug.Log("PlaceOnPlatform!");
 
+        mergePlatformsManager.SetPlatformBusy(platformIndex);
         blockParent.PlaceOnPlatform(mergePlatformsManager.GetPlatformPositionByIndex(platformIndex), platformIndex);
 
         blockParent = null;
@@ -135,6 +134,9 @@ public class BlockDragController
     public void Cancel()
     {
         blockParent.ReturnToPreviousState();
+
+        if (blockParent.IsWasOnPlatform())
+            mergePlatformsManager.SetPlatformBusy(blockParent.platform);
 
         blockParent = null;
         draggingFirstBlock = null;
