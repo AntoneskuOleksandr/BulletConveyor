@@ -64,7 +64,8 @@ public class BlockParent : MonoBehaviour
         desiredPosition = transform.position;
         previousPosition = transform.position;
 
-        bulletsCount.text = "+" + bulletsToGenerate.ToString();
+        if (bulletsCount != null)
+            bulletsCount.text = "+" + bulletsToGenerate.ToString();
     }
 
     private void Update()
