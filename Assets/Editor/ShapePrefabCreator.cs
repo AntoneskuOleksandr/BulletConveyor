@@ -10,7 +10,7 @@ public class ShapePrefabCreator : EditorWindow
         "111",
         "010"
     };
-    public float cubeSize = 1f;
+    public float cubeSize = 1.75f;
 
     private string baseFolder = "Assets/Project/Prefabs/Blocks";
 
@@ -97,10 +97,9 @@ public class ShapePrefabCreator : EditorWindow
         int rows = shapeRows.Count;
         int cols = shapeRows[0].Length;
 
-        float offsetX = (cols - 1) * cubeSize / 2f;
-        float offsetZ = (rows - 1) * cubeSize / 2f;
+        // Находим минимальный ограничивающий прямоугольник
+        int minX = cols, maxX = -1, minY = rows, maxY = -1;
 
-        // Генерация кубов
         for (int y = 0; y < rows; y++)
         {
             string row = shapeRows[y];
@@ -108,22 +107,49 @@ public class ShapePrefabCreator : EditorWindow
             {
                 if (row[x] == '1')
                 {
-                    Vector3 localPos = new Vector3(x * cubeSize - offsetX, 0, -y * cubeSize + offsetZ);
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (maxX == -1 || maxY == -1)
+        {
+            EditorUtility.DisplayDialog("Ошибка", "Фигура не содержит ни одного куба!", "ОК");
+            DestroyImmediate(shapeRoot);
+            return;
+        }
+
+        int shapeWidth = maxX - minX + 1;
+        int shapeHeight = maxY - minY + 1;
+
+        float offsetX = (shapeWidth - 1) * cubeSize / 2f;
+        float offsetZ = (shapeHeight - 1) * cubeSize / 2f;
+
+        // Создаём кубы только в минимальном ограничивающем прямоугольнике
+        for (int y = minY; y <= maxY; y++)
+        {
+            string row = shapeRows[y];
+            for (int x = minX; x <= maxX; x++)
+            {
+                if (row[x] == '1')
+                {
+                    Vector3 localPos = new Vector3((x - minX) * cubeSize - offsetX, 0, -(y - minY) * cubeSize + offsetZ);
                     GameObject cubeInstance = (GameObject)PrefabUtility.InstantiatePrefab(cubePrefab, shapeRoot.transform);
                     cubeInstance.transform.localPosition = localPos;
                 }
             }
         }
 
-        // Проверяем прямоугольность фигуры
         bool isRectangle = IsShapeRectangular(shapeRows);
 
-        // Выбираем папку
         string targetFolder;
 
         if (isRectangle)
         {
-            targetFolder = $"{baseFolder}/Nx{rows}";
+            targetFolder = $"{baseFolder}/Nx{shapeHeight}";
             if (!AssetDatabase.IsValidFolder(targetFolder))
             {
                 targetFolder = $"{baseFolder}/Specific";
@@ -138,7 +164,7 @@ public class ShapePrefabCreator : EditorWindow
                 AssetDatabase.CreateFolder(baseFolder, "Specific");
         }
 
-        string prefabName = $"{cols}x{rows}.prefab";
+        string prefabName = $"{shapeWidth}x{shapeHeight}.prefab";
         string prefabPath = $"{targetFolder}/{prefabName}";
 
         var existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
@@ -176,7 +202,6 @@ public class ShapePrefabCreator : EditorWindow
             }
         }
 
-        // Если нет ни одного блока — считать не прямоугольником
         if (maxX == -1 || maxY == -1)
             return false;
 
@@ -187,10 +212,10 @@ public class ShapePrefabCreator : EditorWindow
             for (int x = minX; x <= maxX; x++)
             {
                 if (row[x] != '1')
-                    return false; // пустая клетка внутри - не прямоугольник
+                    return false;
             }
         }
 
-        return true; // прямоугольник
+        return true;
     }
 }
