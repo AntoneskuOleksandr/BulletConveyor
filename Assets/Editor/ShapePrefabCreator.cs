@@ -104,6 +104,8 @@ public class ShapePrefabCreator : EditorWindow
     {
         GameObject shapeRoot = new GameObject("GeneratedShape");
 
+        shapeRoot.AddComponent<BlockParent>();
+
         int rows = shapeRows.Count;
         int cols = shapeRows[0].Length;
 
@@ -190,7 +192,17 @@ public class ShapePrefabCreator : EditorWindow
 
         DestroyImmediate(shapeRoot);
 
-        EditorUtility.DisplayDialog("Успех", $"Префаб сохранён по пути:\n{prefabPath}", "ОК");
+        string folderPath = System.IO.Path.GetDirectoryName(prefabPath);
+        Object folderAsset = AssetDatabase.LoadAssetAtPath<Object>(folderPath);
+        if (folderAsset != null)
+        {
+            EditorUtility.FocusProjectWindow();
+            Selection.activeObject = folderAsset;
+        }
+
+        Debug.Log($"Префаб успешно создан в папке: <a href=\"{folderPath}\">{folderPath}</a>");
+
+
     }
 
     private bool IsShapeRectangular(List<string> shape)
