@@ -150,7 +150,7 @@ public class ShapePrefabCreator : EditorWindow
             {
                 if (row[x] == '1')
                 {
-                    Vector3 localPos = new Vector3((x - minX) * cubeSize - offsetX, 0, -invertedY * cubeSize + offsetZ);
+                    Vector3 localPos = new Vector3((x - minX) * cubeSize - offsetX, 0, invertedY * cubeSize - offsetZ);
                     GameObject cubeInstance = (GameObject)PrefabUtility.InstantiatePrefab(cubePrefab, shapeRoot.transform);
                     cubeInstance.transform.localPosition = localPos;
                 }
