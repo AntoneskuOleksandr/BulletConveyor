@@ -119,8 +119,6 @@ public class BlockParent : MonoBehaviour
         isOnBoard = false; // блок не на доске
         platform = platformIndex; // устанавливаем платформу
 
-        Debug.Log(position);
-
         SetPosition(position);
     }
 
