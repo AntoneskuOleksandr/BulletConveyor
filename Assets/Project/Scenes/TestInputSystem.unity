@@ -304,7 +304,6 @@ MonoBehaviour:
   - {fileID: 706547017620479871, guid: aff5916c7e61c464f8b6bab809044009, type: 3}
   - {fileID: 8202882920439190, guid: f881adb0dd44d834d84ff275fde377ce, type: 3}
   - {fileID: 2665789867362571559, guid: 6506b760cb8135e4fae7e213825fb6ae, type: 3}
-  blockYOffSet: 0.925
 --- !u!4 &834766780
 Transform:
   m_ObjectHideFlags: 0
@@ -820,6 +819,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7627061426139611149, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7627061426274921085, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
         type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
@@ -834,6 +838,21 @@ PrefabInstance:
         type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 7627061426653660049, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7627061426807801113, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
+        type: 3}
+      propertyPath: 'unlockTileButtons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7627061426807801113, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
+        type: 3}
+      propertyPath: 'unlockTileButtons.Array.data[1]'
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7627061426813451904, guid: eaf7b1b61a2c30842bfe6bce58c037f1,
         type: 3}

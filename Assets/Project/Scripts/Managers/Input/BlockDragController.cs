@@ -45,9 +45,11 @@ public class BlockDragController
     {
         StopHighlight();
 
-        if (tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent) != null && tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent).Count > 0)
+        List<Tile> availableTiles = tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent);
+
+        if (availableTiles != null && availableTiles.Count > 0)
         {
-            tileManager.HighLightTiles(tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent), true);
+            tileManager.HighLightTiles(availableTiles, true);
         }
     }
 
@@ -59,6 +61,11 @@ public class BlockDragController
     public bool TryMerge(RaycastHit hit)
     {
         var otherParent = hit.transform.parent?.GetComponent<BlockParent>();
+
+        Debug.Log($"Hit : {hit.transform.name}, Parent: {otherParent?.name}");
+
+        Debug.Log($"TryMerge: {otherParent?.name} with {blockParent.name}");
+
         if (otherParent == null || otherParent == blockParent)
             return false;
 

@@ -29,6 +29,7 @@ public class BlockParent : MonoBehaviour
     public int rank;
     public int platform;
     private int previousPlatform;
+    private int originalLayer;
 
     public List<RowData> shape = new List<RowData>();
 
@@ -53,8 +54,10 @@ public class BlockParent : MonoBehaviour
 
     private AbilityManager abilityManager;
 
-    private void Start()
+    private void Awake()
     {
+        originalLayer = LayerMask.NameToLayer("Block");
+
         abilityManager = AbilityManager.Instance;
         abilityManager.OnBulletToGenerateAbilitySelected.AddListener(AddBulletToGenerate);
 
@@ -89,6 +92,8 @@ public class BlockParent : MonoBehaviour
     {
         SafePreviousState();
 
+        ChangeLayerRecursively(transform, LayerMask.NameToLayer("DraggingBlock"));
+
         isOnBoard = false; // блок не на доске
         platform = -1; // блок не на платформе
 
@@ -102,13 +107,15 @@ public class BlockParent : MonoBehaviour
     {
         SafePreviousState(); // сохраняем предыдущие тайлы и позицию
 
+        RestoreLayer();
+
         platform = -1; // блок не на платформе
         isOnBoard = true; // блок на доске
         MyTiles = tiles; // обновляем занятые тайлы
 
         foreach (Tile tile in MyTiles)
         {
-            tile.isAvailable = false; // освобождаем занятые тайлы
+            tile.isAvailable = false; // блокируем занятые тайлы
         }
 
         SetPosition(position); // устанавливаем позицию блока
@@ -116,6 +123,8 @@ public class BlockParent : MonoBehaviour
 
     public void PlaceOnPlatform(Vector3 position, int platformIndex)
     {
+        RestoreLayer();
+
         MyTiles = new List<Tile>(); // очищаем занятые тайлы
         isOnBoard = false; // блок не на доске
         platform = platformIndex; // устанавливаем платформу
@@ -132,6 +141,7 @@ public class BlockParent : MonoBehaviour
         previousPosition = desiredPosition; // сохраняем предыдущую позицию
         previousIsOnBoard = isOnBoard; // сохраняем состояние на доске
         previousPlatform = platform; // сохраняем предыдущую платформу
+
     }
 
     public void ReturnToPreviousState()
@@ -141,10 +151,26 @@ public class BlockParent : MonoBehaviour
         MyTiles = myPreviousTiles;
         isOnBoard = previousIsOnBoard;
         platform = previousPlatform;
+
+        RestoreLayer();
     }
 
     public bool IsWasOnPlatform()
     {
         return platform != -1;
+    }
+
+    private void ChangeLayerRecursively(Transform target, int layer)
+    {
+        target.gameObject.layer = layer;
+        foreach (Transform child in target)
+        {
+            ChangeLayerRecursively(child, layer);
+        }
+    }
+
+    private void RestoreLayer()
+    {
+        ChangeLayerRecursively(transform, originalLayer);
     }
 }

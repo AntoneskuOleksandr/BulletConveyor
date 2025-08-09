@@ -29,8 +29,11 @@ public class InputHandler : MonoBehaviour
 
     private void Raycast(System.Action<RaycastHit> callback)
     {
+        int layerMask = ~LayerMask.GetMask("DraggingBlock"); // инвертируем, чтобы ВСЕ слои кроме этого участвовали
+
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             callback(hit);
     }
+
 }
