@@ -141,14 +141,16 @@ public class ShapePrefabCreator : EditorWindow
         float offsetZ = (shapeHeight - 1) * cubeSize / 2f;
 
         // Создаём кубы только в минимальном ограничивающем прямоугольнике
-        for (int y = minY; y <= maxY; y++)
+        // Генерируем с низа слева (y идет снизу вверх)
+        for (int y = maxY; y >= minY; y--)
         {
             string row = shapeRows[y];
+            int invertedY = maxY - y;
             for (int x = minX; x <= maxX; x++)
             {
                 if (row[x] == '1')
                 {
-                    Vector3 localPos = new Vector3((x - minX) * cubeSize - offsetX, 0, -(y - minY) * cubeSize + offsetZ);
+                    Vector3 localPos = new Vector3((x - minX) * cubeSize - offsetX, 0, -invertedY * cubeSize + offsetZ);
                     GameObject cubeInstance = (GameObject)PrefabUtility.InstantiatePrefab(cubePrefab, shapeRoot.transform);
                     cubeInstance.transform.localPosition = localPos;
                 }
@@ -176,6 +178,25 @@ public class ShapePrefabCreator : EditorWindow
                 AssetDatabase.CreateFolder(baseFolder, "Specific");
         }
 
+        // Заполняем поле shape в BlockParent
+        BlockParent blockParent = shapeRoot.GetComponent<BlockParent>();
+
+        List<RowData> shapeData = new List<RowData>();
+        foreach (var row in shapeRows)
+        {
+            RowData rowData = new RowData();
+            rowData.row = new int[row.Length];
+            for (int i = 0; i < row.Length; i++)
+            {
+                rowData.row[i] = row[i] == '1' ? 1 : 0;
+            }
+            shapeData.Add(rowData);
+        }
+
+        blockParent.shape = shapeData;
+        blockParent.scaleX = shapeWidth;
+        blockParent.scaleZ = shapeHeight;
+
         string shapeHash = GetShapeHash(shapeRows);
         string prefabName = $"{shapeWidth}x{shapeHeight}_{shapeHash}.prefab";
         string prefabPath = $"{targetFolder}/{prefabName}";
@@ -201,8 +222,6 @@ public class ShapePrefabCreator : EditorWindow
         }
 
         Debug.Log($"Префаб успешно создан в папке: <a href=\"{folderPath}\">{folderPath}</a>");
-
-
     }
 
     private bool IsShapeRectangular(List<string> shape)
