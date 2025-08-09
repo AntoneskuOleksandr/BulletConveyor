@@ -1,6 +1,8 @@
 using System.Collections.Generic;
-using UnityEngine;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEditor;
+using UnityEngine;
 
 public class ShapePrefabCreator : EditorWindow
 {
@@ -19,6 +21,14 @@ public class ShapePrefabCreator : EditorWindow
     {
         GetWindow<ShapePrefabCreator>("Shape Prefab Creator");
     }
+    private void OnEnable()
+    {
+        if (cubePrefab == null)
+        {
+            cubePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Project/Prefabs/Blocks/Template/Box.prefab");
+        }
+    }
+
 
     private void OnGUI()
     {
@@ -164,12 +174,16 @@ public class ShapePrefabCreator : EditorWindow
                 AssetDatabase.CreateFolder(baseFolder, "Specific");
         }
 
-        string prefabName = $"{shapeWidth}x{shapeHeight}.prefab";
+        string shapeHash = GetShapeHash(shapeRows);
+        string prefabName = $"{shapeWidth}x{shapeHeight}_{shapeHash}.prefab";
         string prefabPath = $"{targetFolder}/{prefabName}";
 
         var existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (existingPrefab != null)
+        {
+            Debug.LogWarning($"Префаб с именем {prefabName} уже существует и будет перезаписан: {prefabPath}");
             AssetDatabase.DeleteAsset(prefabPath);
+        }
 
         PrefabUtility.SaveAsPrefabAsset(shapeRoot, prefabPath);
         AssetDatabase.SaveAssets();
@@ -217,5 +231,24 @@ public class ShapePrefabCreator : EditorWindow
         }
 
         return true;
+    }
+
+    private string GetShapeHash(List<string> shape)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var row in shape)
+            sb.Append(row);
+
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(sb.ToString());
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder hashSb = new StringBuilder();
+            foreach (byte b in hashBytes)
+                hashSb.Append(b.ToString("x2"));
+
+            return hashSb.ToString().Substring(0, 6); // первые 6 символов хеша
+        }
     }
 }
