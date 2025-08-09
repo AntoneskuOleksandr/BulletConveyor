@@ -5,6 +5,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField] private TileManager tileManager;
     [SerializeField] private MergePlatformsManager mergePlatformsManager;
     [SerializeField] private BlockManager blockManager;
+
     private DragStateMachine stateMachine;
     private Camera cam;
     private BlockDragController dragController;
@@ -13,7 +14,10 @@ public class InputHandler : MonoBehaviour
     {
         cam = Camera.main;
         stateMachine = new DragStateMachine();
-        dragController = new BlockDragController(tileManager, mergePlatformsManager, blockManager, cam);
+
+        // Новый контроллер — без зависимости от BlockManager
+        dragController = new BlockDragController(tileManager, mergePlatformsManager, cam);
+
         stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager, blockManager));
     }
 
@@ -30,11 +34,11 @@ public class InputHandler : MonoBehaviour
 
     private void Raycast(System.Action<RaycastHit> callback)
     {
-        int layerMask = ~LayerMask.GetMask("DraggingBlock"); // инвертируем, чтобы ВСЕ слои кроме этого участвовали
+        // Игнорируем слой "DraggingBlock"
+        int layerMask = ~LayerMask.GetMask("DraggingBlock");
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             callback(hit);
     }
-
 }

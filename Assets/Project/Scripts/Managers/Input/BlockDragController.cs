@@ -2,43 +2,63 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public enum DragActionType
+{
+    Merge,
+    PlaceOnBoard,
+    PlaceOnPlatform,
+    Cancel
+}
+
+public struct DragResult
+{
+    public DragActionType Action;
+    public BlockParent Block1;
+    public BlockParent Block2;
+    public int PlatformIndex;
+
+    public DragResult(DragActionType action, BlockParent block1 = null, BlockParent block2 = null, int platformIndex = -1)
+    {
+        Action = action;
+        Block1 = block1;
+        Block2 = block2;
+        PlatformIndex = platformIndex;
+    }
+}
+
 public class BlockDragController
 {
-    private BlockParent blockParent;
-    private Block draggingFirstBlock;
+    private DragSession session;
+    private readonly TileManager tileManager;
+    private readonly MergePlatformsManager mergePlatformsManager;
+    private readonly Camera camera;
 
-    private Vector3 dragOffset;
-    private float blockYOffset = 0.925f;
-    private TileManager tileManager;
-    private MergePlatformsManager mergePlatformsManager;
-    private BlockManager blockManager;
-    private Camera camera;
+    private readonly float blockYOffset = 0.925f;
 
-    public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, BlockManager blockManager, Camera camera)
+    public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
         this.tileManager = tileManager;
         this.mergePlatformsManager = mergePlatformsManager;
-        this.blockManager = blockManager;
         this.camera = camera;
     }
 
     public void StartDragging(BlockParent blockToDrag)
     {
-        blockParent = blockToDrag;
-        draggingFirstBlock = blockToDrag.gameObject.GetComponentInChildren<Block>();
-        dragOffset.y = blockYOffset;
+        session = new DragSession(blockToDrag, blockYOffset);
 
-        mergePlatformsManager.SetPlatformFree(blockParent.platform);
-        blockParent.StartDragging();
+        mergePlatformsManager.SetPlatformFree(session.DraggedBlock.platform);
+        session.DraggedBlock.StartDragging();
     }
 
     private readonly Plane horizontalPlane = new Plane(Vector3.up, Vector3.up);
 
     public void UpdateDragging()
     {
+        if (session == null) return;
+
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         if (horizontalPlane.Raycast(ray, out float distance))
-            blockParent.SetPosition(ray.GetPoint(distance) + dragOffset);
+            session.DraggedBlock.SetPosition(ray.GetPoint(distance) + session.DragOffset);
 
         TryToHighlight();
     }
@@ -47,12 +67,9 @@ public class BlockDragController
     {
         StopHighlight();
 
-        List<Tile> availableTiles = tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent);
-
+        List<Tile> availableTiles = tileManager.CheckAvailableTiles(session.DraggingFirstBlock, session.DraggedBlock);
         if (availableTiles != null && availableTiles.Count > 0)
-        {
             tileManager.HighLightTiles(availableTiles, true);
-        }
     }
 
     public void StopHighlight()
@@ -60,45 +77,47 @@ public class BlockDragController
         tileManager.HighLightTiles(tileManager.GetAllTiles().Cast<Tile>().ToList(), false);
     }
 
-    public bool TryMerge(RaycastHit hit, out BlockParent block1, out BlockParent block2)
+    public DragResult FinishDragging(RaycastHit hit)
     {
-        block1 = blockParent;
-        block2 = null;
-        var otherParent = hit.transform.parent?.GetComponent<BlockParent>();
+        if (TryMerge(hit, out var block1, out var block2))
+            return new DragResult(DragActionType.Merge, block1, block2);
 
-        if (otherParent == null || otherParent == blockParent)
-        {
-            Debug.Log("No valid block to merge with or trying to merge with itself.");
+        if (TryPlaceOnBoard())
+            return new DragResult(DragActionType.PlaceOnBoard, session.DraggedBlock);
+
+        if (TryPlaceOnPlatform(out var platformIndex))
+            return new DragResult(DragActionType.PlaceOnPlatform, session.DraggedBlock, null, platformIndex);
+
+        return new DragResult(DragActionType.Cancel, session.DraggedBlock);
+    }
+
+    private bool TryMerge(RaycastHit hit, out BlockParent block1, out BlockParent block2)
+    {
+        block1 = session.DraggedBlock;
+        block2 = hit.transform.parent?.GetComponent<BlockParent>();
+
+        if (block2 == null || block1 == block2)
             return false;
-        }
 
-        block2 = otherParent;
-
-        return otherParent.rank == blockParent.rank && !otherParent.isOnBoard;
+        return block2.rank == block1.rank && !block2.isOnBoard;
     }
 
-    public bool TryPlaceOnBoard()
+    private bool TryPlaceOnBoard()
     {
-        if (tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent) != null && tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent).Count > 0)
-            return true;
-
-        return false;
+        var tiles = tileManager.CheckAvailableTiles(session.DraggingFirstBlock, session.DraggedBlock);
+        return tiles != null && tiles.Count > 0;
     }
 
-    public bool TryPlaceOnPlatform(out int platformIndex)
+    private bool TryPlaceOnPlatform(out int platformIndex)
     {
         platformIndex = -1;
 
-        Ray blockRay = new Ray(blockParent.transform.position, Vector3.down);
-
+        Ray blockRay = new Ray(session.DraggedBlock.transform.position, Vector3.down);
         if (Physics.Raycast(blockRay, out RaycastHit hit, 5f))
         {
-            GameObject hitGO = hit.transform.gameObject;
-
-            if (hitGO.layer == LayerMask.NameToLayer("Platform"))
+            if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Platform"))
             {
-                Platform platform = hitGO.GetComponent<Platform>();
-
+                var platform = hit.transform.GetComponent<Platform>();
                 if (platform != null && platform.isFree)
                 {
                     platformIndex = platform.index;
@@ -106,44 +125,47 @@ public class BlockDragController
                 }
             }
         }
-
         return false;
     }
 
-    public void PlaceOnBoard()
+    public void ExecuteAction(DragResult result, BlockManager blockManager)
     {
-        Debug.Log("PlaceOnBoard!");
+        switch (result.Action)
+        {
+            case DragActionType.Merge:
+                blockManager.MergeBlocks(result.Block1, result.Block2);
+                break;
+            case DragActionType.PlaceOnBoard:
+                PlaceOnBoard();
+                break;
+            case DragActionType.PlaceOnPlatform:
+                PlaceOnPlatform(result.PlatformIndex);
+                break;
+            case DragActionType.Cancel:
+                Cancel();
+                break;
+        }
+        session = null;
+    }
 
-        List<Tile> availableTiles = tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent)?.ToList();
-
+    private void PlaceOnBoard()
+    {
+        var availableTiles = tileManager.CheckAvailableTiles(session.DraggingFirstBlock, session.DraggedBlock)?.ToList();
         Vector3 lastTilePosition = availableTiles.Last().transform.position;
-        Vector3 finalPosition = new Vector3((availableTiles.First().transform.position.x + lastTilePosition.x) / 2, 0f, (availableTiles.First().transform.position.z + lastTilePosition.z) / 2);
-
-        blockParent.PlaceOnBoard(availableTiles, finalPosition);
-
-        blockParent = null;
-        draggingFirstBlock = null;
+        Vector3 finalPosition = (availableTiles.First().transform.position + lastTilePosition) / 2;
+        session.DraggedBlock.PlaceOnBoard(availableTiles, finalPosition);
     }
 
-    public void PlaceOnPlatform(int platformIndex)
+    private void PlaceOnPlatform(int platformIndex)
     {
-        Debug.Log("PlaceOnPlatform!");
-
         mergePlatformsManager.SetPlatformBusy(platformIndex);
-        blockParent.PlaceOnPlatform(mergePlatformsManager.GetPlatformPositionByIndex(platformIndex), platformIndex);
-
-        blockParent = null;
-        draggingFirstBlock = null;
+        session.DraggedBlock.PlaceOnPlatform(mergePlatformsManager.GetPlatformPositionByIndex(platformIndex), platformIndex);
     }
 
-    public void Cancel()
+    private void Cancel()
     {
-        blockParent.ReturnToPreviousState();
-
-        if (blockParent.IsWasOnPlatform())
-            mergePlatformsManager.SetPlatformBusy(blockParent.platform);
-
-        blockParent = null;
-        draggingFirstBlock = null;
+        session.DraggedBlock.ReturnToPreviousState();
+        if (session.DraggedBlock.IsWasOnPlatform())
+            mergePlatformsManager.SetPlatformBusy(session.DraggedBlock.platform);
     }
 }

@@ -21,19 +21,18 @@ public class IdleState : IDragState
 
     public void OnMouseDown(RaycastHit hit)
     {
-        if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Block"))
+        if (hit.transform.gameObject.layer != LayerMask.NameToLayer("Block"))
+            return;
+
+        var blockParent = hit.transform.GetComponentInParent<BlockParent>();
+        if (blockParent == null)
         {
-            BlockParent blockParent = hit.transform.GetComponentInParent<BlockParent>();
-
-            if (blockParent == null)
-            {
-                Debug.LogError("BlockParent component not found on the hit object.");
-                return;
-            }
-
-            dragController.StartDragging(blockParent);
-            stateMachine.ChangeState(new DraggingState(stateMachine, dragController, mergePlatformsManager, blockManager));
+            Debug.LogError("BlockParent component not found on the hit object.");
+            return;
         }
+
+        dragController.StartDragging(blockParent);
+        stateMachine.ChangeState(new DraggingState(stateMachine, dragController, mergePlatformsManager, blockManager));
     }
 
     public void OnMouseUp(RaycastHit hit) { }
