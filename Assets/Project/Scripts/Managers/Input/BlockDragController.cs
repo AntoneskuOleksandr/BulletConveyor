@@ -111,7 +111,7 @@ public class BlockDragController
         List<Tile> availableTiles = tileManager.CheckAvailableTiles(draggingFirstBlock, blockParent)?.ToList();
 
         Vector3 lastTilePosition = availableTiles.Last().transform.position;
-        Vector3 finalPosition = new Vector3((availableTiles.First().transform.position.x + lastTilePosition.x) / 2, blockYOffset, (availableTiles.First().transform.position.z + lastTilePosition.z) / 2);
+        Vector3 finalPosition = new Vector3((availableTiles.First().transform.position.x + lastTilePosition.x) / 2, 0f, (availableTiles.First().transform.position.z + lastTilePosition.z) / 2);
 
         blockParent.PlaceOnBoard(availableTiles, finalPosition);
 

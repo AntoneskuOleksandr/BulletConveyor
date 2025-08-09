@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [SerializeField] private Vector3 dragOffset;
-    [SerializeField] private float blockYOffSet = 0.925f;
     [SerializeField] private int coinsForLevel = 1000;
     [SerializeField] private BulletGenerator bulletGenerator;
     [SerializeField] private GameObject[] blocks;
@@ -256,7 +255,7 @@ public class GameManager : MonoBehaviour
         if (blockParent.platform != -1)
             platformsManager.SetPlatformFree(blockParent.platform);
 
-        blockParent.SetPosition(platform.transform.position + new Vector3(0f, blockYOffSet, 0f));
+        blockParent.SetPosition(platform.transform.position);
 
         blockParent.platform = platform.index;
         platform.isFree = false;
@@ -299,7 +298,7 @@ public class GameManager : MonoBehaviour
             }
 
             Vector3 lastTilePosition = tiles[firstTileIndex.x + blockParent.scaleX - 1, firstTileIndex.y + blockParent.scaleZ - 1].transform.position;
-            Vector3 finalPosition = new Vector3((firstTilePosition.x + lastTilePosition.x) / 2, blockYOffSet, (firstTilePosition.z + lastTilePosition.z) / 2);
+            Vector3 finalPosition = new Vector3((firstTilePosition.x + lastTilePosition.x) / 2, 0f, (firstTilePosition.z + lastTilePosition.z) / 2);
 
             blockParent.SetPosition(finalPosition);
 
@@ -424,7 +423,7 @@ public class GameManager : MonoBehaviour
     {
         int platformIndex = platformsManager.GetFreePlatformIndex();
 
-        BlockParent parent = Instantiate(blocks[index], platformsManager.GetFreePlatformPosition() + new Vector3(0f, blockYOffSet, 0f), Quaternion.identity).GetComponent<BlockParent>();
+        BlockParent parent = Instantiate(blocks[index], platformsManager.GetFreePlatformPosition(), Quaternion.identity).GetComponent<BlockParent>();
 
         platformsManager.SetPlatformBusy(platformIndex);
 

@@ -5,7 +5,6 @@ public class BlockManager : MonoBehaviour
     public static BlockManager Instance;
     [SerializeField] private MergePlatformsManager platformsManager;
     [SerializeField] private GameObject[] blocks;
-    [SerializeField] private float blockYOffSet = 0.925f;
 
     private void Awake()
     {
