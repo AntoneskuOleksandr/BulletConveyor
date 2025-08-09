@@ -11,12 +11,14 @@ public class BlockDragController
     private float blockYOffset = 0.925f;
     private TileManager tileManager;
     private MergePlatformsManager mergePlatformsManager;
+    private BlockManager blockManager;
     private Camera camera;
 
-    public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
+    public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, BlockManager blockManager, Camera camera)
     {
         this.tileManager = tileManager;
         this.mergePlatformsManager = mergePlatformsManager;
+        this.blockManager = blockManager;
         this.camera = camera;
     }
 
@@ -58,16 +60,19 @@ public class BlockDragController
         tileManager.HighLightTiles(tileManager.GetAllTiles().Cast<Tile>().ToList(), false);
     }
 
-    public bool TryMerge(RaycastHit hit)
+    public bool TryMerge(RaycastHit hit, out BlockParent block1, out BlockParent block2)
     {
+        block1 = blockParent;
+        block2 = null;
         var otherParent = hit.transform.parent?.GetComponent<BlockParent>();
 
-        Debug.Log($"Hit : {hit.transform.name}, Parent: {otherParent?.name}");
-
-        Debug.Log($"TryMerge: {otherParent?.name} with {blockParent.name}");
-
         if (otherParent == null || otherParent == blockParent)
+        {
+            Debug.Log("No valid block to merge with or trying to merge with itself.");
             return false;
+        }
+
+        block2 = otherParent;
 
         return otherParent.rank == blockParent.rank && !otherParent.isOnBoard;
     }
@@ -103,13 +108,6 @@ public class BlockDragController
         }
 
         return false;
-    }
-
-
-    public void Merge()
-    {
-        Debug.Log("Merge!");
-        // «десь логика merge (в идеале Ч вынести в MergeHandler)
     }
 
     public void PlaceOnBoard()

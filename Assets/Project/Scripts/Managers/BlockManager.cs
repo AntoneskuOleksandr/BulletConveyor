@@ -44,6 +44,29 @@ public class BlockManager : MonoBehaviour
         return;
     }
 
+    public void MergeBlocks(BlockParent block1, BlockParent block2)
+    {
+        Debug.Log($"Merging blocks: {block1.name} and {block2.name}");
+        if (block1 == null || block2 == null)
+        {
+            if (block1 == null)
+                Debug.LogError("Block 1 is null. Cannot merge.");
+            if (block2 == null)
+                Debug.LogError("Block 2 is null. Cannot merge.");
+            return;
+        }
+
+        BlockParent newBlock = Instantiate(block1.nextRangBlock, block2.transform.position, Quaternion.identity).GetComponent<BlockParent>();
+        newBlock.platform = block2.platform;
+        newBlock.rank = block2.rank + 1;
+
+        if (block1.platform != -1)
+            platformsManager.SetPlatformFree(block1.platform);
+
+        Destroy(block1.gameObject);
+        Destroy(block2.gameObject);
+    }
+
     public bool CanCreateBlock()
     {
         if (platformsManager.IsFreePlatform())

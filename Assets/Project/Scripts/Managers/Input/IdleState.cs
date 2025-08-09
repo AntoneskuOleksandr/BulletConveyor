@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class IdleState : IDragState
 {
-    private DragStateMachine stateMachine;
-    private BlockDragController dragController;
-    private MergePlatformsManager mergePlatformsManager;
+    private readonly DragStateMachine stateMachine;
+    private readonly BlockDragController dragController;
+    private readonly MergePlatformsManager mergePlatformsManager;
+    private readonly BlockManager blockManager;
 
-    public IdleState(DragStateMachine stateMachine, BlockDragController dragController, MergePlatformsManager mergePlatformsManager)
+    public IdleState(DragStateMachine stateMachine, BlockDragController dragController, MergePlatformsManager mergePlatformsManager, BlockManager blockManager)
     {
         this.stateMachine = stateMachine;
         this.dragController = dragController;
         this.mergePlatformsManager = mergePlatformsManager;
+        this.blockManager = blockManager;
     }
 
     public void Enter() { }
@@ -30,7 +32,7 @@ public class IdleState : IDragState
             }
 
             dragController.StartDragging(blockParent);
-            stateMachine.ChangeState(new DraggingState(stateMachine, dragController, mergePlatformsManager));
+            stateMachine.ChangeState(new DraggingState(stateMachine, dragController, mergePlatformsManager, blockManager));
         }
     }
 

@@ -5,13 +5,15 @@ public class DraggingState : IDragState
     private readonly DragStateMachine stateMachine;
     private readonly BlockDragController dragController;
     private readonly MergePlatformsManager mergePlatformsManager;
+    private readonly BlockManager blockManager;
 
 
-    public DraggingState(DragStateMachine stateMachine, BlockDragController dragController, MergePlatformsManager mergePlatformsManager)
+    public DraggingState(DragStateMachine stateMachine, BlockDragController dragController, MergePlatformsManager mergePlatformsManager, BlockManager blockManager)
     {
         this.stateMachine = stateMachine;
         this.dragController = dragController;
         this.mergePlatformsManager = mergePlatformsManager;
+        this.blockManager = blockManager;
     }
 
     public void Enter() => dragController.TryToHighlight();
@@ -22,8 +24,8 @@ public class DraggingState : IDragState
 
     public void OnMouseUp(RaycastHit hit)
     {
-        if (dragController.TryMerge(hit))
-            dragController.Merge();
+        if (dragController.TryMerge(hit, out BlockParent block1, out BlockParent block2))
+            blockManager.MergeBlocks(block1, block2);
         else if (dragController.TryPlaceOnBoard())
             dragController.PlaceOnBoard();
         else if (dragController.TryPlaceOnPlatform(out int platformIndex))
@@ -31,6 +33,6 @@ public class DraggingState : IDragState
         else
             dragController.Cancel();
 
-        stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager));
+        stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager, blockManager));
     }
 }

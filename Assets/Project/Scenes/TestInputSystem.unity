@@ -151,6 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileManager: {fileID: 881036426}
   mergePlatformsManager: {fileID: 834766778}
+  blockManager: {fileID: 834766779}
 --- !u!4 &480416863
 Transform:
   m_ObjectHideFlags: 0

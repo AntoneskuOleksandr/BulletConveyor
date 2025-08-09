@@ -4,6 +4,7 @@ public class InputHandler : MonoBehaviour
 {
     [SerializeField] private TileManager tileManager;
     [SerializeField] private MergePlatformsManager mergePlatformsManager;
+    [SerializeField] private BlockManager blockManager;
     private DragStateMachine stateMachine;
     private Camera cam;
     private BlockDragController dragController;
@@ -12,8 +13,8 @@ public class InputHandler : MonoBehaviour
     {
         cam = Camera.main;
         stateMachine = new DragStateMachine();
-        dragController = new BlockDragController(tileManager, mergePlatformsManager, cam);
-        stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager));
+        dragController = new BlockDragController(tileManager, mergePlatformsManager, blockManager, cam);
+        stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager, blockManager));
     }
 
     private void Update()
