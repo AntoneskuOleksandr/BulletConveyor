@@ -33,7 +33,7 @@ public class BlockDragController
     private readonly MergePlatformsManager mergePlatformsManager;
     private readonly Camera camera;
 
-    private readonly float blockYOffset = 0.925f;
+    private readonly float blockDragingYOffset = 0.925f;
 
     public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
@@ -44,7 +44,7 @@ public class BlockDragController
 
     public void StartDragging(BlockParent blockToDrag)
     {
-        session = new DragSession(blockToDrag, blockYOffset);
+        session = new DragSession(blockToDrag, blockDragingYOffset);
         mergePlatformsManager.SetPlatformFree(session.DraggedBlock.platform);
         session.DraggedBlock.StartDragging();
     }
@@ -160,7 +160,7 @@ public class BlockDragController
 
         // финальная мировая позиция: центр топ-левел тайла + смещение до pivot
         Vector3 topLeftWorld = tileManager.TileToWorld(topLeft);
-        Vector3 finalPos = topLeftWorld + new Vector3(pivot.x * tileManager.CellSize, blockYOffset, pivot.y * tileManager.CellSize);
+        Vector3 finalPos = topLeftWorld + new Vector3(pivot.x * tileManager.CellSize, 0f, pivot.y * tileManager.CellSize);
 
         session.DraggedBlock.PlaceOnBoard(availableTiles, finalPos);
     }
