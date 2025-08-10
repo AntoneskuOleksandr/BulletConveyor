@@ -158,11 +158,58 @@ public class ShapePrefabCreator : EditorWindow
         blockParent.scaleX = shapeWidth;
         blockParent.scaleZ = shapeHeight;
 
+        // === Создание World Space Canvas ===
+        GameObject canvasGO = new GameObject("ShapeCanvas");
+        canvasGO.transform.SetParent(shapeRoot.transform, false);
+
+        var canvas = canvasGO.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        canvas.worldCamera = Camera.main; // Можно заменить на нужную камеру
+
+        var scaler = canvasGO.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 10;
+
+        canvasGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+        // Размер канваса — под bounding box фигуры
+        RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+        canvasRect.sizeDelta = new Vector2(shapeWidth * cubeSize, shapeHeight * cubeSize);
+        canvasRect.localPosition = new Vector3(0, cubeSize / 2f, 0); // высота блока / 2
+        canvasRect.localRotation = Quaternion.Euler(90, 0, 0); // Поворот, чтобы лежал на кубах
+
+        // === Текст ===
+        GameObject textGO = new GameObject("CountText");
+        textGO.transform.SetParent(canvasGO.transform, false);
+
+        var tmp = textGO.AddComponent<TMPro.TextMeshProUGUI>();
+        tmp.alignment = TMPro.TextAlignmentOptions.Center;
+        tmp.enableAutoSizing = true;    // включаем авторазмер
+        tmp.fontSizeMin = 0;           // минимум 0
+        tmp.color = Color.white;
+
+        int blockCount = CountBlocks(shapeData);
+        tmp.text = blockCount.ToString();
+
+        RectTransform textRect = tmp.GetComponent<RectTransform>();
+        textRect.sizeDelta = canvasRect.sizeDelta;
+        textRect.localPosition = Vector3.zero;
+
+
         string targetFolder = GetTargetFolder(IsShapeRectangular(bounds));
         SavePrefab(shapeRoot, shapeWidth, shapeHeight, targetFolder);
 
         DestroyImmediate(shapeRoot);
     }
+
+    private int CountBlocks(List<RowData> shape)
+    {
+        int count = 0;
+        foreach (var row in shape)
+            foreach (int cell in row.row)
+                if (cell == 1) count++;
+        return count;
+    }
+
 
     private bool IsShapeRectangular((int minX, int maxX, int minY, int maxY) bounds)
     {
