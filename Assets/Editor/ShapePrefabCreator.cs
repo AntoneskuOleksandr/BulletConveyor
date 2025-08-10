@@ -171,35 +171,60 @@ public class ShapePrefabCreator : EditorWindow
 
         canvasGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
-        // Размер канваса — под bounding box фигуры
         RectTransform canvasRect = canvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(shapeWidth * cubeSize, shapeHeight * cubeSize);
-        canvasRect.localPosition = new Vector3(0, cubeSize / 2f, 0); // высота блока / 2
-        canvasRect.localRotation = Quaternion.Euler(90, 0, 0); // Поворот, чтобы лежал на кубах
+        canvasRect.localPosition = new Vector3(0, cubeSize / 2f, 0); // на высоте блока / 2
+        canvasRect.localRotation = Quaternion.Euler(90, 0, 0); // чтобы лежал на кубах
 
-        // === Текст ===
+        // === Контейнер для иконки и текста с HorizontalLayoutGroup ===
+        GameObject containerGO = new GameObject("CountContainer");
+        containerGO.transform.SetParent(canvasGO.transform, false);
+
+        var layout = containerGO.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.spacing = 5;
+        layout.childForceExpandWidth = false;
+        layout.childForceExpandHeight = false;
+
+        RectTransform containerRect = containerGO.GetComponent<RectTransform>();
+        containerRect.sizeDelta = canvasRect.sizeDelta;
+        containerRect.localPosition = Vector3.zero;
+
+        // === Иконка пули ===
+        GameObject iconGO = new GameObject("BulletIcon");
+        iconGO.transform.SetParent(containerGO.transform, false);
+
+        var iconImage = iconGO.AddComponent<UnityEngine.UI.Image>();
+        iconImage.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Project/UI/Bullet_Icon.png"); // путь к иконке пули
+
+        Debug.Log($"Иконка пули: {iconImage.sprite.name}");
+        iconImage.preserveAspect = true;
+
+        RectTransform iconRect = iconGO.GetComponent<RectTransform>();
+        iconRect.sizeDelta = new Vector2(50, 50);
+
+        // === Текст количества ===
         GameObject textGO = new GameObject("CountText");
-        textGO.transform.SetParent(canvasGO.transform, false);
+        textGO.transform.SetParent(containerGO.transform, false);
 
         var tmp = textGO.AddComponent<TMPro.TextMeshProUGUI>();
         tmp.alignment = TMPro.TextAlignmentOptions.Center;
-        tmp.enableAutoSizing = true;    // включаем авторазмер
-        tmp.fontSizeMin = 0;           // минимум 0
+        tmp.enableAutoSizing = true;
+        tmp.fontSizeMin = 0;
         tmp.color = Color.white;
 
         int blockCount = CountBlocks(shapeData);
         tmp.text = blockCount.ToString();
 
         RectTransform textRect = tmp.GetComponent<RectTransform>();
-        textRect.sizeDelta = canvasRect.sizeDelta;
-        textRect.localPosition = Vector3.zero;
-
+        textRect.sizeDelta = new Vector2(100, 50);
 
         string targetFolder = GetTargetFolder(IsShapeRectangular(bounds));
         SavePrefab(shapeRoot, shapeWidth, shapeHeight, targetFolder);
 
         DestroyImmediate(shapeRoot);
     }
+
 
     private int CountBlocks(List<RowData> shape)
     {
