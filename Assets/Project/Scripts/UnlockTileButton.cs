@@ -35,7 +35,7 @@ public class UnlockTileButton : MonoBehaviour
     {
         foreach (Vector2Int index in myTiles)
         {
-            Tile tile = tileManager.GetTile(index);
+            Tile tile = tileManager.GetTileAt(index);
 
             if (tile != null)
                 tile.isAvailable = false;
@@ -46,7 +46,7 @@ public class UnlockTileButton : MonoBehaviour
     {
         foreach (Vector2Int index in myTiles)
         {
-            Tile tile = tileManager.GetTile(index);
+            Tile tile = tileManager.GetTileAt(index);
             if (tile != null)
             {
                 tile.isAvailable = true;
