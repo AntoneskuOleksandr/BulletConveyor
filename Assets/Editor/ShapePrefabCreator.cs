@@ -178,17 +178,18 @@ public class ShapePrefabCreator : EditorWindow
                 AssetDatabase.CreateFolder(baseFolder, "Specific");
         }
 
-        // Заполняем поле shape в BlockParent
+        // Заполняем поле shape в BlockParent так, чтобы низ в сцене был внизу в данных
         BlockParent blockParent = shapeRoot.GetComponent<BlockParent>();
 
         List<RowData> shapeData = new List<RowData>();
-        foreach (var row in shapeRows)
+        for (int y = maxY; y >= minY; y--) // снизу вверх
         {
+            string row = shapeRows[y];
             RowData rowData = new RowData();
             rowData.row = new int[row.Length];
-            for (int i = 0; i < row.Length; i++)
+            for (int x = 0; x < row.Length; x++)
             {
-                rowData.row[i] = row[i] == '1' ? 1 : 0;
+                rowData.row[x] = row[x] == '1' ? 1 : 0;
             }
             shapeData.Add(rowData);
         }
