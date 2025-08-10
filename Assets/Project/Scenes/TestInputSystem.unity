@@ -294,7 +294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   platformsManager: {fileID: 834766778}
   blocks:
-  - {fileID: 3830242078299163967, guid: d0252cbc03f48274d912d0acd2fa1093, type: 3}
+  - {fileID: 706547017620479871, guid: 596346a7cc5d77246ad1a6327623136b, type: 3}
   - {fileID: 9141595967664223367, guid: 320afcdc38bb4a841ae04f5a3572330a, type: 3}
   - {fileID: 5309917645243801725, guid: fd93d04f3b6f03644adf427952d5dc25, type: 3}
   - {fileID: 6316407427149055027, guid: 7c5e2ba429213184b8e1c0b235078aae, type: 3}
@@ -372,7 +372,6 @@ MonoBehaviour:
       m_Calls: []
   rows: 6
   columns: 6
-  availableTiles: []
 --- !u!4 &881036427
 Transform:
   m_ObjectHideFlags: 0
