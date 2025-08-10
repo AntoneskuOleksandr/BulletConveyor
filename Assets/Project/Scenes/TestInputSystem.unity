@@ -372,7 +372,6 @@ MonoBehaviour:
       m_Calls: []
   rows: 6
   columns: 6
-  availableTiles: []
 --- !u!4 &881036427
 Transform:
   m_ObjectHideFlags: 0

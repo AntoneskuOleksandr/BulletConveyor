@@ -64,7 +64,8 @@ public class BlockParent : MonoBehaviour
         desiredPosition = transform.position;
         previousPosition = transform.position;
 
-        bulletsCount.text = "+" + bulletsToGenerate.ToString();
+        if (bulletsCount != null)
+            bulletsCount.text = "+" + bulletsToGenerate.ToString();
     }
 
     private void Update()
@@ -101,6 +102,8 @@ public class BlockParent : MonoBehaviour
         {
             tile.isAvailable = true; // освобождаем занятые тайлы
         }
+
+        MyTiles = new List<Tile>(); // очищаем занятые тайлы
     }
 
     public void PlaceOnBoard(List<Tile> tiles, Vector3 position)
@@ -152,6 +155,10 @@ public class BlockParent : MonoBehaviour
         isOnBoard = previousIsOnBoard;
         platform = previousPlatform;
 
+        foreach (Tile tile in MyTiles)
+            tile.isAvailable = false; // блокируем занятые тайлы
+
+        // Восстанавливаем слой
         RestoreLayer();
     }
 

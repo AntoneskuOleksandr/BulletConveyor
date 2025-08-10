@@ -33,7 +33,7 @@ public class BlockDragController
     private readonly MergePlatformsManager mergePlatformsManager;
     private readonly Camera camera;
 
-    private readonly float blockYOffset = 0.925f;
+    private readonly float blockDragingYOffset = 0.925f;
 
     public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
@@ -44,8 +44,7 @@ public class BlockDragController
 
     public void StartDragging(BlockParent blockToDrag)
     {
-        session = new DragSession(blockToDrag, blockYOffset);
-
+        session = new DragSession(blockToDrag, blockDragingYOffset);
         mergePlatformsManager.SetPlatformFree(session.DraggedBlock.platform);
         session.DraggedBlock.StartDragging();
     }
@@ -67,14 +66,15 @@ public class BlockDragController
     {
         StopHighlight();
 
-        List<Tile> availableTiles = tileManager.CheckAvailableTiles(session.DraggingFirstBlock, session.DraggedBlock);
+        // получаем доступные тайлы, автоматически вычисляя top-left матрицы по текущей позиции блока
+        List<Tile> availableTiles = CheckAvailableTilesForShape(session.DraggedBlock);
         if (availableTiles != null && availableTiles.Count > 0)
             tileManager.HighLightTiles(availableTiles, true);
     }
 
     public void StopHighlight()
     {
-        tileManager.HighLightTiles(tileManager.GetAllTiles().Cast<Tile>().ToList(), false);
+        tileManager.HighLightTiles(tileManager.GetAllTilesList(), false);
     }
 
     public DragResult FinishDragging(RaycastHit hit)
@@ -104,7 +104,7 @@ public class BlockDragController
 
     private bool TryPlaceOnBoard()
     {
-        var tiles = tileManager.CheckAvailableTiles(session.DraggingFirstBlock, session.DraggedBlock);
+        var tiles = CheckAvailableTilesForShape(session.DraggedBlock);
         return tiles != null && tiles.Count > 0;
     }
 
@@ -150,10 +150,19 @@ public class BlockDragController
 
     private void PlaceOnBoard()
     {
-        var availableTiles = tileManager.CheckAvailableTiles(session.DraggingFirstBlock, session.DraggedBlock)?.ToList();
-        Vector3 lastTilePosition = availableTiles.Last().transform.position;
-        Vector3 finalPosition = (availableTiles.First().transform.position + lastTilePosition) / 2;
-        session.DraggedBlock.PlaceOnBoard(availableTiles, finalPosition);
+        // получим top-left индекс матрицы и список тайлов
+        Vector2Int topLeft = GetTopLeftIndexByBlockPosition(session.DraggedBlock);
+        var availableTiles = CheckAvailableTilesForShape(session.DraggedBlock, topLeft);
+        if (availableTiles == null) return;
+
+        // pivot матрицы (центр bounding box формы, учитываем нули)
+        Vector2 pivot = GetMatrixPivot(session.DraggedBlock);
+
+        // финальная мировая позиция: центр топ-левел тайла + смещение до pivot
+        Vector3 topLeftWorld = tileManager.TileToWorld(topLeft);
+        Vector3 finalPos = topLeftWorld + new Vector3(pivot.x * tileManager.CellSize, 0f, pivot.y * tileManager.CellSize);
+
+        session.DraggedBlock.PlaceOnBoard(availableTiles, finalPos);
     }
 
     private void PlaceOnPlatform(int platformIndex)
@@ -167,5 +176,76 @@ public class BlockDragController
         session.DraggedBlock.ReturnToPreviousState();
         if (session.DraggedBlock.IsWasOnPlatform())
             mergePlatformsManager.SetPlatformBusy(session.DraggedBlock.platform);
+    }
+
+    // === Вспомогательные методы ===
+
+    /// <summary>
+    /// Возвращает центр матрицы (bounding box) в локальных "ячейках".
+    /// Например для width=3,height=2 -> (1, 0.5)
+    /// </summary>
+    private Vector2 GetMatrixPivot(BlockParent block)
+    {
+        int width = block.shape[0].row.Length;
+        int height = block.shape.Count;
+        float px = (width - 1) / 2f;
+        float py = (height - 1) / 2f;
+        return new Vector2(px, py);
+    }
+
+    /// <summary>
+    /// Находит top-left индекс матрицы на основании текущей мировой позиции блока.
+    /// </summary>
+    private Vector2Int GetTopLeftIndexByBlockPosition(BlockParent block)
+    {
+        Vector2 tileFloat = tileManager.WorldToTileFloat(block.transform.position); // фракционный индекс
+        Vector2 pivot = GetMatrixPivot(block); // центр bounding box в ячейках
+        Vector2 topLeftFloat = tileFloat - pivot;
+        // округляем к ближайшей клетке — так блок «прилипает» к сетке естественно
+        return new Vector2Int(Mathf.RoundToInt(topLeftFloat.x), Mathf.RoundToInt(topLeftFloat.y));
+    }
+
+    /// <summary>
+    /// Логическая проверка: можно ли разместить матрицу блока, если её top-left будет в topLeftIndex.
+    /// Возвращает список тайлов (в порядке обхода), или null если нельзя.
+    /// </summary>
+    private List<Tile> CheckAvailableTilesForShape(BlockParent block, Vector2Int topLeftIndex)
+    {
+        List<Tile> result = new List<Tile>();
+        int height = block.shape.Count;
+        int width = block.shape[0].row.Length;
+
+        for (int r = 0; r < height; r++) // r — номер строки в матрице (0 .. height-1)
+        {
+            for (int c = 0; c < width; c++) // c — колонка
+            {
+                if (block.shape[r].row[c] == 1)
+                {
+                    Vector2Int tileIndex = new Vector2Int(topLeftIndex.x + c, topLeftIndex.y + r);
+
+                    // если у тебя индексация ряда идёт в обратную сторону (y вверх в массиве),
+                    // вместо (topLeftIndex.y + r) надо использовать (topLeftIndex.y - r)
+                    if (!tileManager.IsInsideBoard(tileIndex))
+                        return null;
+
+                    Tile t = tileManager.GetTileAt(tileIndex);
+                    if (t == null || !t.isAvailable)
+                        return null;
+
+                    result.Add(t);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Удобный overload: вычисляем top-left из текущей позиции блока и делегируем
+    /// </summary>
+    private List<Tile> CheckAvailableTilesForShape(BlockParent block)
+    {
+        Vector2Int topLeft = GetTopLeftIndexByBlockPosition(block);
+        return CheckAvailableTilesForShape(block, topLeft);
     }
 }
