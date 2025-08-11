@@ -129,7 +129,6 @@ public class ShapePrefabCreator : EditorWindow
         var blockParent = shapeRoot.AddComponent<BlockParent>();
         var shapeData = new List<RowData>();
 
-        // ����� ����� � ���������� ������� � ����� � � ������
         for (int y = bounds.maxY; y >= bounds.minY; y--)
         {
             string row = shapeRows[y];
