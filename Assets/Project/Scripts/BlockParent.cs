@@ -12,7 +12,7 @@ public class RowData
 public class BlockParent : MonoBehaviour
 {
     [SerializeField] private float DraggSpeed = 7f;
-    [SerializeField] private TMP_Text bulletsCount;
+    public TMP_Text bulletsCountText;
 
     public int scaleX = 1;
     public int scaleZ = 1;
@@ -24,7 +24,6 @@ public class BlockParent : MonoBehaviour
     public bool isOnBoard;
     private bool previousIsOnBoard;
 
-    public GameObject bulletPrefab;
     public GameObject nextRangBlock;
     public int rank;
     public int platform;
@@ -64,8 +63,8 @@ public class BlockParent : MonoBehaviour
         desiredPosition = transform.position;
         previousPosition = transform.position;
 
-        if (bulletsCount != null)
-            bulletsCount.text = "+" + bulletsToGenerate.ToString();
+        if (bulletsCountText != null)
+            bulletsCountText.text = "+" + bulletsToGenerate.ToString();
     }
 
     private void Update()
@@ -86,7 +85,7 @@ public class BlockParent : MonoBehaviour
     private void AddBulletToGenerate()
     {
         bulletsToGenerate++;
-        bulletsCount.text = "+" + bulletsToGenerate.ToString();
+        bulletsCountText.text = "+" + bulletsToGenerate.ToString();
     }
 
     public void StartDragging()

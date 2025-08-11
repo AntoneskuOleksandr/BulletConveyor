@@ -129,7 +129,6 @@ public class ShapePrefabCreator : EditorWindow
         var blockParent = shapeRoot.AddComponent<BlockParent>();
         var shapeData = new List<RowData>();
 
-        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         for (int y = bounds.maxY; y >= bounds.minY; y--)
         {
             string row = shapeRows[y];
@@ -210,6 +209,9 @@ public class ShapePrefabCreator : EditorWindow
         textRect.anchorMin = new Vector2(0, 0);
         textRect.anchorMax = new Vector2(1, 1);
         textRect.pivot = new Vector2(1, 0.5f); // Правый центр
+
+        // Присваиваем в поле BlockParent
+        blockParent.bulletsCountText = tmp;
 
         // Иконка пули - занимает ~30% ширины
         GameObject iconGO = new GameObject("BulletIcon");
