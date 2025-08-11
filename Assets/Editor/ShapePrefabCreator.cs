@@ -7,7 +7,7 @@ using UnityEngine;
 public class ShapePrefabCreator : EditorWindow
 {
     public GameObject cubePrefab;
-    public List<string> shapeRows = new() { "111", "010" };
+    public List<string> shapeRows = new() { "11" };
     public float cubeSize = 1.75f;
 
     private const string BaseFolder = "Assets/Project/Prefabs/Blocks";
@@ -129,7 +129,7 @@ public class ShapePrefabCreator : EditorWindow
         var blockParent = shapeRoot.AddComponent<BlockParent>();
         var shapeData = new List<RowData>();
 
-        // Снизу вверх — совпадение порядка в сцене и в данных
+        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         for (int y = bounds.maxY; y >= bounds.minY; y--)
         {
             string row = shapeRows[y];
@@ -158,13 +158,13 @@ public class ShapePrefabCreator : EditorWindow
         blockParent.scaleX = shapeWidth;
         blockParent.scaleZ = shapeHeight;
 
-        // === Создание World Space Canvas ===
+        // Canvas
         GameObject canvasGO = new GameObject("ShapeCanvas");
         canvasGO.transform.SetParent(shapeRoot.transform, false);
 
         var canvas = canvasGO.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.WorldSpace;
-        canvas.worldCamera = Camera.main; // Можно заменить на нужную камеру
+        canvas.worldCamera = Camera.main;
 
         var scaler = canvasGO.AddComponent<UnityEngine.UI.CanvasScaler>();
         scaler.dynamicPixelsPerUnit = 10;
@@ -173,58 +173,64 @@ public class ShapePrefabCreator : EditorWindow
 
         RectTransform canvasRect = canvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(shapeWidth * cubeSize, shapeHeight * cubeSize);
-        canvasRect.localPosition = new Vector3(0, cubeSize / 2f, 0); // на высоте блока / 2
-        canvasRect.localRotation = Quaternion.Euler(90, 0, 0); // чтобы лежал на кубах
+        canvasRect.localPosition = new Vector3(0, cubeSize / 2f, 0);
+        canvasRect.localRotation = Quaternion.Euler(90, 0, 0);
 
-        // === Контейнер для иконки и текста с HorizontalLayoutGroup ===
+        // Контейнер с HorizontalLayoutGroup
         GameObject containerGO = new GameObject("CountContainer");
         containerGO.transform.SetParent(canvasGO.transform, false);
 
         var layout = containerGO.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
         layout.childAlignment = TextAnchor.MiddleCenter;
-        layout.spacing = 5;
-        layout.childForceExpandWidth = false;
-        layout.childForceExpandHeight = false;
+        layout.childForceExpandWidth = true;   // Растягиваем детей по ширине
+        layout.childForceExpandHeight = true;  // Растягиваем по высоте
 
         RectTransform containerRect = containerGO.GetComponent<RectTransform>();
         containerRect.sizeDelta = canvasRect.sizeDelta;
         containerRect.localPosition = Vector3.zero;
+        containerRect.anchorMin = new Vector2(0.5f, 0.5f);
+        containerRect.anchorMax = new Vector2(0.5f, 0.5f);
+        containerRect.pivot = new Vector2(0.5f, 0.5f);
 
-        // === Иконка пули ===
-        GameObject iconGO = new GameObject("BulletIcon");
-        iconGO.transform.SetParent(containerGO.transform, false);
-
-        var iconImage = iconGO.AddComponent<UnityEngine.UI.Image>();
-        iconImage.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Project/UI/Bullet_Icon.png"); // путь к иконке пули
-
-        Debug.Log($"Иконка пули: {iconImage.sprite.name}");
-        iconImage.preserveAspect = true;
-
-        RectTransform iconRect = iconGO.GetComponent<RectTransform>();
-        iconRect.sizeDelta = new Vector2(50, 50);
-
-        // === Текст количества ===
+        // Текст - занимает ~70% ширины
         GameObject textGO = new GameObject("CountText");
         textGO.transform.SetParent(containerGO.transform, false);
 
         var tmp = textGO.AddComponent<TMPro.TextMeshProUGUI>();
-        tmp.alignment = TMPro.TextAlignmentOptions.Center;
+        tmp.alignment = TMPro.TextAlignmentOptions.Right; // Текст по правому краю контейнера (чтобы иконка была рядом справа)
         tmp.enableAutoSizing = true;
         tmp.fontSizeMin = 0;
         tmp.color = Color.white;
 
         int blockCount = CountBlocks(shapeData);
-        tmp.text = blockCount.ToString();
+        tmp.text = "+" + blockCount.ToString();
 
         RectTransform textRect = tmp.GetComponent<RectTransform>();
-        textRect.sizeDelta = new Vector2(100, 50);
+        textRect.sizeDelta = new Vector2(canvasRect.sizeDelta.x * 0.5f, canvasRect.sizeDelta.y);
+        textRect.anchorMin = new Vector2(0, 0);
+        textRect.anchorMax = new Vector2(1, 1);
+        textRect.pivot = new Vector2(1, 0.5f); // Правый центр
 
+        // Иконка пули - занимает ~30% ширины
+        GameObject iconGO = new GameObject("BulletIcon");
+        iconGO.transform.SetParent(containerGO.transform, false);
+
+        var iconImage = iconGO.AddComponent<UnityEngine.UI.Image>();
+        iconImage.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Project/UI/Bullet_Icon.png");
+        iconImage.preserveAspect = true;
+
+        RectTransform iconRect = iconGO.GetComponent<RectTransform>();
+        iconRect.sizeDelta = new Vector2(canvasRect.sizeDelta.x * 0.5f, canvasRect.sizeDelta.y);
+        iconRect.anchorMin = new Vector2(0, 0);
+        iconRect.anchorMax = new Vector2(1, 1);
+        iconRect.pivot = new Vector2(0, 0.5f); // Левый центр
+
+        // Сохраняем и очищаем
         string targetFolder = GetTargetFolder(IsShapeRectangular(bounds));
         SavePrefab(shapeRoot, shapeWidth, shapeHeight, targetFolder);
 
         DestroyImmediate(shapeRoot);
     }
-
 
     private int CountBlocks(List<RowData> shape)
     {
@@ -234,7 +240,6 @@ public class ShapePrefabCreator : EditorWindow
                 if (cell == 1) count++;
         return count;
     }
-
 
     private bool IsShapeRectangular((int minX, int maxX, int minY, int maxY) bounds)
     {
