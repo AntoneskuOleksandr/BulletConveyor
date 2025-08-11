@@ -24,7 +24,6 @@ public class BlockParent : MonoBehaviour
     public bool isOnBoard;
     private bool previousIsOnBoard;
 
-    public GameObject bulletPrefab;
     public GameObject nextRangBlock;
     public int rank;
     public int platform;
