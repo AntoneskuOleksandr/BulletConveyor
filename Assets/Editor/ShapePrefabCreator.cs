@@ -210,6 +210,9 @@ public class ShapePrefabCreator : EditorWindow
         textRect.anchorMax = new Vector2(1, 1);
         textRect.pivot = new Vector2(1, 0.5f); // Правый центр
 
+        // Присваиваем в поле BlockParent
+        blockParent.bulletsCountText = tmp;
+
         // Иконка пули - занимает ~30% ширины
         GameObject iconGO = new GameObject("BulletIcon");
         iconGO.transform.SetParent(containerGO.transform, false);
