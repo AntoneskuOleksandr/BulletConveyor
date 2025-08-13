@@ -10,7 +10,7 @@ public class ShapePrefabCreator : EditorWindow
     public List<string> shapeRows = new() { "11" };
     public float cubeSize = 1.75f;
 
-    private const string BaseFolder = "Assets/Project/Prefabs/Blocks";
+    private const string BASEFOLDER = "Assets/Project/Prefabs/Blocks";
 
     [MenuItem("Tools/Create Shape Prefab")]
     public static void ShowWindow() => GetWindow<ShapePrefabCreator>("Shape Prefab Creator");
@@ -20,7 +20,7 @@ public class ShapePrefabCreator : EditorWindow
         if (cubePrefab == null)
         {
             cubePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                $"{BaseFolder}/Template/Box.prefab"
+                $"{BASEFOLDER}/Template/Box.prefab"
             );
         }
     }
@@ -253,9 +253,9 @@ public class ShapePrefabCreator : EditorWindow
 
     private string GetTargetFolder(bool isRectangle)
     {
-        string target = isRectangle ? $"{BaseFolder}/Nx{shapeRows.Count}" : $"{BaseFolder}/Specific";
+        string target = isRectangle ? $"{BASEFOLDER}/Nx{shapeRows.Count}" : $"{BASEFOLDER}/Specific";
         if (!AssetDatabase.IsValidFolder(target))
-            AssetDatabase.CreateFolder(BaseFolder, isRectangle ? $"Nx{shapeRows.Count}" : "Specific");
+            AssetDatabase.CreateFolder(BASEFOLDER, isRectangle ? $"Nx{shapeRows.Count}" : "Specific");
         return target;
     }
 
