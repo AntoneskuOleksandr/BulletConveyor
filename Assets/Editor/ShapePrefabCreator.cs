@@ -88,6 +88,23 @@ public class ShapePrefabCreator : EditorWindow
         // Отображение списка всех префабов с галочками
         if (prefabItems != null && prefabItems.Count > 0)
         {
+            // Кнопки Select/Deselect All
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Select All"))
+            {
+                foreach (var item in prefabItems)
+                    item.selected = true;
+            }
+            if (GUILayout.Button("Deselect All"))
+            {
+                foreach (var item in prefabItems)
+                    item.selected = false;
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
+
+            // Список префабов с галочками
             foreach (var item in prefabItems)
             {
                 item.selected = EditorGUILayout.ToggleLeft(System.IO.Path.GetFileName(item.path), item.selected);
@@ -113,7 +130,7 @@ public class ShapePrefabCreator : EditorWindow
                     BlockParent bp = prefab.GetComponent<BlockParent>();
                     if (bp != null && bp.shape != null)
                     {
-                        // Конвертируем обратно в shapeRows (с учётом правильного порядка)
+                        // Конвертируем обратно в shapeRows (с правильным порядком)
                         List<string> shapeRowsFromPrefab = new();
                         for (int i = bp.shape.Count - 1; i >= 0; i--)
                         {
