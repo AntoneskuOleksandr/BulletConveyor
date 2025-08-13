@@ -51,14 +51,9 @@ public class BlockParent : MonoBehaviour
     private List<Tile> myTiles = new List<Tile>();
     private List<Tile> myPreviousTiles = new List<Tile>();
 
-    private AbilityManager abilityManager;
-
     private void Awake()
     {
         originalLayer = LayerMask.NameToLayer("Block");
-
-        abilityManager = AbilityManager.Instance;
-        abilityManager.OnBulletToGenerateAbilitySelected.AddListener(AddBulletToGenerate);
 
         desiredPosition = transform.position;
         previousPosition = transform.position;

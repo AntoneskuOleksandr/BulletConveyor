@@ -38,8 +38,8 @@ public class GunCarousel : MonoBehaviour
     {
         gunsToShow = new GameObject[gunsPrefabs.Length];
 
-        for (int i = 0; i < gunsPrefabs.Length; i++)
-            gunsPrefabs[i].GetComponent<Gun>().gunID = i;
+        /*for (int i = 0; i < gunsPrefabs.Length; i++)
+            gunsPrefabs[i].GetComponent<Gun>().gunID = i;*/
 
         for (int i = 0; i < gunsToShow.Length; i++)
         {
@@ -110,10 +110,10 @@ public class GunCarousel : MonoBehaviour
         ShowGun(currentGunIndex);
     }
 
-    public int GetCurrentGunID()
+/*    public int GetCurrentGunID()
     {
         return gunsPrefabs[currentGunIndex].GetComponent<Gun>().gunID;
-    }
+    }*/
 
     private void SelectGun()
     {

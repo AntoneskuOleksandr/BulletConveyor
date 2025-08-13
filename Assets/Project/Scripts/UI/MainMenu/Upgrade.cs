@@ -30,7 +30,7 @@ public class Upgrade : MonoBehaviour
         if (!PlayerPrefs.HasKey("UpgradeCostStartValue"))
             PlayerPrefs.SetFloat("UpgradeCostStartValue", upgradeCost);
 
-        productGunName = product + gunCarousel.GetCurrentGunID();
+        //productGunName = product + gunCarousel.GetCurrentGunID();
 
         upgradeCost = PlayerPrefs.GetFloat(productGunName + "Cost", PlayerPrefs.GetFloat("UpgradeCostStartValue"));
         priceText.text = upgradeCost.ToString();
