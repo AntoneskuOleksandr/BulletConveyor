@@ -143,7 +143,7 @@ public class ShapePrefabCreator : EditorWindow
                 {
                     Vector3 localPos = new(
                         (x - bounds.minX) * cubeSize - offsetX,
-                        0,
+                        cubeSize / 2f,
                         (bounds.maxY - y) * cubeSize - offsetZ
                     );
                     var cubeInstance = (GameObject)PrefabUtility.InstantiatePrefab(cubePrefab, shapeRoot.transform);
@@ -172,7 +172,7 @@ public class ShapePrefabCreator : EditorWindow
 
         RectTransform canvasRect = canvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(shapeWidth * cubeSize, shapeHeight * cubeSize);
-        canvasRect.localPosition = new Vector3(0, cubeSize / 2f, 0);
+        canvasRect.localPosition = new Vector3(0, cubeSize, 0);
         canvasRect.localRotation = Quaternion.Euler(90, 0, 0);
 
         // Контейнер с HorizontalLayoutGroup
@@ -265,24 +265,43 @@ public class ShapePrefabCreator : EditorWindow
         string prefabName = $"{width}x{height}_{shapeHash}.prefab";
         string prefabPath = $"{folder}/{prefabName}";
 
+        // --- Копируем ссылки из старого префаба ---
         var existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (existingPrefab != null)
         {
-            Debug.LogWarning($"Префаб {prefabName} уже существует, перезаписываю.");
-            AssetDatabase.DeleteAsset(prefabPath);
+            var oldBlockParent = existingPrefab.GetComponent<BlockParent>();
+            var newBlockParent = shapeRoot.GetComponent<BlockParent>();
+            if (oldBlockParent != null && newBlockParent != null)
+            {
+                newBlockParent.nextRangBlock = oldBlockParent.nextRangBlock;
+            }
         }
 
-        PrefabUtility.SaveAsPrefabAsset(shapeRoot, prefabPath);
+        GameObject savedPrefab;
+
+        if (existingPrefab != null)
+        {
+            // Обновляем существующий префаб, не удаляя его
+            savedPrefab = PrefabUtility.SaveAsPrefabAssetAndConnect(shapeRoot, prefabPath, InteractionMode.UserAction);
+            Debug.Log($"Префаб <color=yellow>обновлён</color>: <a href=\"{prefabPath}\">{prefabName}</a>");
+        }
+        else
+        {
+            // Создаём новый префаб
+            savedPrefab = PrefabUtility.SaveAsPrefabAsset(shapeRoot, prefabPath);
+            Debug.Log($"Префаб <color=green>создан</color>: <a href=\"{prefabPath}\">{prefabName}</a>");
+        }
+
         AssetDatabase.SaveAssets();
 
-        if (AssetDatabase.LoadAssetAtPath<Object>(folder) is Object folderAsset)
+        // Выделяем именно файл префаба
+        if (savedPrefab != null)
         {
             EditorUtility.FocusProjectWindow();
-            Selection.activeObject = folderAsset;
+            Selection.activeObject = savedPrefab;
         }
-
-        Debug.Log($"Префаб создан: <a href=\"{folder}\">{folder}</a>");
     }
+
 
     private string GetShapeHash(List<string> shape)
     {
