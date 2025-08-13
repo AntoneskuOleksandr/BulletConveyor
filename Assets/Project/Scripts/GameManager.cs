@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [SerializeField] private Vector3 dragOffset;
-    [SerializeField] private float blockYOffSet = 0.925f;
     [SerializeField] private int coinsForLevel = 1000;
     [SerializeField] private BulletGenerator bulletGenerator;
     [SerializeField] private GameObject[] blocks;
@@ -61,7 +60,7 @@ public class GameManager : MonoBehaviour
         tileGenerator = GetComponent<TileGenerator>();
         tileManager = GetComponent<TileManager>();
         tileGenerator.GenerateGrid(gridSize.x, gridSize.y);
-        tiles = tileGenerator.GetTiles();
+        tiles = tileGenerator.GetAllTiles();
 
         currentLevel = SceneManager.GetActiveScene().buildIndex - 2;
     }
@@ -115,7 +114,7 @@ public class GameManager : MonoBehaviour
 
                         if (currentlyDraggingBlock.positionIndex != -Vector2Int.one)
                         {
-                            foreach (var tile in blockParent.myTiles)
+                            foreach (var tile in blockParent.MyTiles)
                                 tile.isAvailable = true;
                         }
 
@@ -151,7 +150,7 @@ public class GameManager : MonoBehaviour
                                 Merge(currentlyDraggingGO, hitGO.transform.parent.gameObject);
                             else
                             {
-                                blockParent.SetPosition(blockParent.previousPosition);
+                                blockParent.MoveToPreviousPosition();
                                 blockParent.isOnBoard = wasOnBoardBeforeDragging;
                                 blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
 
@@ -176,7 +175,7 @@ public class GameManager : MonoBehaviour
                             PlaceOnPlatform(hitGO.GetComponent<Platform>());
                         else
                         {
-                            blockParent.SetPosition(blockParent.previousPosition);
+                            blockParent.MoveToPreviousPosition();
                             blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
 
                             currentlyDraggingBlock = null;
@@ -196,7 +195,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (Input.GetMouseButtonUp(0))
                         {
-                            blockParent.SetPosition(blockParent.previousPosition);
+                            blockParent.MoveToPreviousPosition();
                             blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
                             blockParent.isOnBoard = wasOnBoardBeforeDragging;
 
@@ -219,7 +218,7 @@ public class GameManager : MonoBehaviour
 
                     if (Input.GetMouseButtonUp(0))
                     {
-                        blockParent.SetPosition(blockParent.previousPosition);
+                        blockParent.MoveToPreviousPosition();
                         blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
                         blockParent.isOnBoard = wasOnBoardBeforeDragging;
 
@@ -254,10 +253,9 @@ public class GameManager : MonoBehaviour
         currentlyDraggingBlock.positionIndex = -Vector2Int.one;
 
         if (blockParent.platform != -1)
-            platformsManager.platforms[blockParent.platform].isFree = true;
+            platformsManager.SetPlatformFree(blockParent.platform);
 
-        blockParent.SetPosition(platform.transform.position + new Vector3(0f, blockYOffSet, 0f));
-        blockParent.previousPosition = platform.transform.position + new Vector3(0f, blockYOffSet, 0f);
+        blockParent.SetPosition(platform.transform.position);
 
         blockParent.platform = platform.index;
         platform.isFree = false;
@@ -300,16 +298,15 @@ public class GameManager : MonoBehaviour
             }
 
             Vector3 lastTilePosition = tiles[firstTileIndex.x + blockParent.scaleX - 1, firstTileIndex.y + blockParent.scaleZ - 1].transform.position;
-            Vector3 finalPosition = new Vector3((firstTilePosition.x + lastTilePosition.x) / 2, blockYOffSet, (firstTilePosition.z + lastTilePosition.z) / 2);
+            Vector3 finalPosition = new Vector3((firstTilePosition.x + lastTilePosition.x) / 2, 0f, (firstTilePosition.z + lastTilePosition.z) / 2);
 
             blockParent.SetPosition(finalPosition);
-            blockParent.previousPosition = finalPosition;
 
             bulletGenerator.blockParents.Add(blockParent);
             blockParent.transform.SetParent(bulletGenerator.blocksPool.transform);
 
             if (blockParent.platform != -1)
-                platformsManager.platforms[blockParent.platform].isFree = true;
+                platformsManager.SetPlatformFree(blockParent.platform);
 
             UIManager.UpdateUI();
 
@@ -358,7 +355,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        blockParent.myTiles = availableTileList.ToArray();
+        blockParent.MyTiles = availableTileList;
 
         return true;
     }
@@ -373,7 +370,7 @@ public class GameManager : MonoBehaviour
         newBlock.rank = block2.GetComponent<BlockParent>().rank + 1;
 
         if (blockParent.platform != -1)
-            platformsManager.platforms[blockParent.platform].isFree = true;
+            platformsManager.SetPlatformFree(blockParent.platform);
 
         if (newBlock.rank > highestBlockRank)
             highestBlockRank = newBlock.rank;
@@ -426,9 +423,9 @@ public class GameManager : MonoBehaviour
     {
         int platformIndex = platformsManager.GetFreePlatformIndex();
 
-        BlockParent parent = Instantiate(blocks[index], platformsManager.GetFreePlatformPosition() + new Vector3(0f, blockYOffSet, 0f), Quaternion.identity).GetComponent<BlockParent>();
+        BlockParent parent = Instantiate(blocks[index], platformsManager.GetFreePlatformPosition(), Quaternion.identity).GetComponent<BlockParent>();
 
-        platformsManager.platforms[platformIndex].isFree = false;
+        platformsManager.SetPlatformBusy(platformIndex);
 
         parent.platform = platformIndex;
         parent.bulletsToGenerate += additionBullets;

@@ -81,21 +81,18 @@ public class UIManager : MonoBehaviour
         buyButtonText = buyButton.GetComponentInChildren<TMP_Text>();
 
         coinManager.onCoinsChanged.AddListener(UpdateUI);
-
-        if (GameManager.Instance.isTutorial)
-            GameManager.Instance.onMerge.AddListener(ShowTutorialEndScreen);
     }
 
     private void Start()
     {
         abilityManager = AbilityManager.Instance;
-        Spawner.Instance.OnEnemyDeath.AddListener(AddCoinsForEnemyDeath);
+        //Spawner.Instance.OnEnemyDeath.AddListener(AddCoinsForEnemyDeath);
     }
 
     public void UpdateUI()
     {
         coinsText.text = coinManager.Coins.ToString();
-        buyButton.interactable = coinManager.Coins >= blockPrice && GameManager.Instance.CanCreateBlock();
+        buyButton.interactable = coinManager.Coins >= blockPrice && BlockManager.Instance.CanCreateBlock();
         buyButtonText.text = blockPrice.ToString();
         if (GameManager.Instance.isTutorial)
         {
@@ -103,7 +100,7 @@ public class UIManager : MonoBehaviour
                 GameManager.Instance.onEnoughMoneyToBuyBlock.Invoke();
         }
         else
-            blockForAdButton.interactable = GameManager.Instance.CanCreateBlock();
+            blockForAdButton.interactable = BlockManager.Instance.CanCreateBlock();
 
 
         if (GameManager.Instance.isTutorial)
@@ -316,7 +313,7 @@ public class UIManager : MonoBehaviour
         if (coinManager.Coins >= blockPrice)
         {
             coinManager.SpendCoins(blockPrice);
-            GameManager.Instance.CreateBlock();
+            BlockManager.Instance.CreateBlock();
 
             if (GameManager.Instance.isTutorial)
                 GameManager.Instance.onBlockBuy.Invoke();
@@ -395,7 +392,7 @@ public class UIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Spawner.Instance.OnEnemyDeath.RemoveListener(AddCoinsForEnemyDeath);
+        //Spawner.Instance.OnEnemyDeath.RemoveListener(AddCoinsForEnemyDeath);
         coinManager.onCoinsChanged.RemoveListener(UpdateUI);
     }
 }

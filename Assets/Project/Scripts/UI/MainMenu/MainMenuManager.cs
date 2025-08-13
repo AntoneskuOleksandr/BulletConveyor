@@ -98,6 +98,7 @@ public class MainMenuManager : MonoBehaviour
         levelDisplay.UpdateCurrentLevelState();
     }
 
+    [System.Obsolete]
     private void BindSounds()
     {
         AudioManager audioManager = AudioManager.Instance;
