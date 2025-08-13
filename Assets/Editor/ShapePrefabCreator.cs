@@ -14,34 +14,59 @@ public class ShapePrefabCreator : EditorWindow
 
     private const string BASEFOLDER = "Assets/Project/Prefabs/Blocks";
 
+    class PrefabItem
+    {
+        public string path;
+        public bool selected;
+    }
+    private List<PrefabItem> prefabItems;
+
+
     [MenuItem("Tools/Create Shape Prefab")]
     public static void ShowWindow() => GetWindow<ShapePrefabCreator>("Shape Prefab Creator");
 
     private void OnEnable()
     {
         if (cubePrefab == null)
+            cubePrefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{BASEFOLDER}/Template/Box.prefab");
+
+        LoadPrefabItems();
+    }
+
+    private void LoadPrefabItems()
+    {
+        prefabItems = new List<PrefabItem>();
+        string[] prefabGUIDs = AssetDatabase.FindAssets("t:Prefab", new[] { BASEFOLDER });
+        foreach (string guid in prefabGUIDs)
         {
-            cubePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                $"{BASEFOLDER}/Template/Box.prefab"
-            );
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab.GetComponent<BlockParent>() != null)
+                prefabItems.Add(new PrefabItem { path = path, selected = true });
         }
     }
+
 
     private void OnGUI()
     {
         GUILayout.Label("Настройки генерации фигуры", EditorStyles.boldLabel);
 
+        // Настройка префаба и размера куба
         cubePrefab = (GameObject)EditorGUILayout.ObjectField("Cube Prefab", cubePrefab, typeof(GameObject), false);
         cubeSize = EditorGUILayout.FloatField("Cube Size", cubeSize);
 
         EditorGUILayout.LabelField("Shape Rows (use '1' for cube, '0' for empty):");
 
+        // Редактирование строк фигуры
         for (int i = 0; i < shapeRows.Count; i++)
         {
             EditorGUILayout.BeginHorizontal();
             shapeRows[i] = EditorGUILayout.TextField(shapeRows[i]);
             if (GUILayout.Button("-", GUILayout.Width(20)))
+            {
                 shapeRows.RemoveAt(i);
+                i--;
+            }
             EditorGUILayout.EndHorizontal();
         }
 
@@ -50,6 +75,7 @@ public class ShapePrefabCreator : EditorWindow
 
         EditorGUILayout.Space();
 
+        // Кнопка генерации текущего префаба
         if (GUILayout.Button("Generate and Save Prefab"))
         {
             if (!ValidateInput()) return;
@@ -57,19 +83,61 @@ public class ShapePrefabCreator : EditorWindow
         }
 
         EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Prefabs to Regenerate:", EditorStyles.boldLabel);
 
-        if (GUILayout.Button("Regenerate All Prefabs"))
+        // Отображение списка всех префабов с галочками
+        if (prefabItems != null && prefabItems.Count > 0)
         {
-            if (cubePrefab == null)
+            foreach (var item in prefabItems)
             {
-                EditorUtility.DisplayDialog("Ошибка", "Укажите Cube Prefab!", "ОК");
+                item.selected = EditorGUILayout.ToggleLeft(System.IO.Path.GetFileName(item.path), item.selected);
             }
-            else
+
+            EditorGUILayout.Space();
+
+            // Кнопка перегенерации выбранных префабов
+            if (GUILayout.Button("Regenerate Selected Prefabs"))
             {
-                RegenerateAllPrefabs();
+                if (cubePrefab == null)
+                {
+                    EditorUtility.DisplayDialog("Ошибка", "Укажите Cube Prefab!", "ОК");
+                    return;
+                }
+
+                int count = 0;
+                foreach (var item in prefabItems)
+                {
+                    if (!item.selected) continue;
+
+                    GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(item.path);
+                    BlockParent bp = prefab.GetComponent<BlockParent>();
+                    if (bp != null && bp.shape != null)
+                    {
+                        // Конвертируем обратно в shapeRows (с учётом правильного порядка)
+                        List<string> shapeRowsFromPrefab = new();
+                        for (int i = bp.shape.Count - 1; i >= 0; i--)
+                        {
+                            var rowData = bp.shape[i];
+                            StringBuilder sb = new();
+                            foreach (int val in rowData.row)
+                                sb.Append(val == 1 ? '1' : '0');
+                            shapeRowsFromPrefab.Add(sb.ToString());
+                        }
+
+                        GeneratePrefab(shapeRowsFromPrefab, cubePrefab);
+                        count++;
+                    }
+                }
+
+                EditorUtility.DisplayDialog("Готово", $"Перегенерировано {count} префабов", "OK");
             }
         }
+        else
+        {
+            EditorGUILayout.LabelField("Префабы не найдены. Обновите окно или добавьте новые префабы.");
+        }
     }
+
 
     #region Validation
     private bool ValidateInput()
