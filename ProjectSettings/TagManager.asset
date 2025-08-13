@@ -10,6 +10,7 @@ TagManager:
   - Barrier
   - Block
   - Gun
+  - Tile
   layers:
   - Default
   - TransparentFX
@@ -26,7 +27,7 @@ TagManager:
   - Environment
   - Bullet
   - IgnoreNavMesh
-  - 
+  - DraggingBlock
   - 
   - 
   - 

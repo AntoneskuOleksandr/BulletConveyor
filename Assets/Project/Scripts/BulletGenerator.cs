@@ -9,6 +9,7 @@ public class BulletGenerator : MonoBehaviour
     [SerializeField] private float spawnInterval = 1f;
     [SerializeField] private float spawnOffset = 1f;
     [SerializeField] private Transform conveyor;
+    [SerializeField] private GameObject bulletPrefab;
 
     [Header("Animations")]
     [SerializeField] private float bulletAnimationDuration = 0.2f;
@@ -30,7 +31,7 @@ public class BulletGenerator : MonoBehaviour
         bulletsFolder = new GameObject("Bullets");
 
         bulletPool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(blockParents[0].bulletPrefab),
+            createFunc: () => Instantiate(bulletPrefab),
             actionOnGet: bullet =>
             {
                 bullet.GetComponent<Bullet>().enabled = false;
@@ -80,8 +81,8 @@ public class BulletGenerator : MonoBehaviour
         Vector3 spawnPosition = block.transform.position;
         GameObject bullet = bulletPool.Get();
         bullet.transform.position = spawnPosition;
-        bullet.transform.rotation = block.bulletPrefab.transform.rotation;
-        bullet.transform.localScale = block.bulletPrefab.transform.localScale * 1.5f;
+        bullet.transform.rotation = bulletPrefab.transform.rotation;
+        bullet.transform.localScale = bulletPrefab.transform.localScale * 1.5f;
         bullet.transform.parent = bulletsFolder.transform;
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
