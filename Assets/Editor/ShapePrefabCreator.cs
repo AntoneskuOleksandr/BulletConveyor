@@ -3,6 +3,8 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class ShapePrefabCreator : EditorWindow
 {
@@ -51,10 +53,25 @@ public class ShapePrefabCreator : EditorWindow
         if (GUILayout.Button("Generate and Save Prefab"))
         {
             if (!ValidateInput()) return;
-            CreateShapePrefab();
+            GeneratePrefab(shapeRows, cubePrefab);
+        }
+
+        EditorGUILayout.Space();
+
+        if (GUILayout.Button("Regenerate All Prefabs"))
+        {
+            if (cubePrefab == null)
+            {
+                EditorUtility.DisplayDialog("Ошибка", "Укажите Cube Prefab!", "ОК");
+            }
+            else
+            {
+                RegenerateAllPrefabs();
+            }
         }
     }
 
+    #region Validation
     private bool ValidateInput()
     {
         if (cubePrefab == null)
@@ -88,32 +105,14 @@ public class ShapePrefabCreator : EditorWindow
         }
         return true;
     }
+    #endregion
 
-    private (int minX, int maxX, int minY, int maxY) GetBounds()
+    #region Prefab Generation
+    public static void GeneratePrefab(List<string> shapeRows, GameObject cubePrefab)
     {
-        int rows = shapeRows.Count;
-        int cols = shapeRows[0].Length;
-        int minX = cols, maxX = -1, minY = rows, maxY = -1;
+        if (shapeRows.Count == 0) return;
+        var bounds = GetBoundsFromShapeRows(shapeRows);
 
-        for (int y = 0; y < rows; y++)
-        {
-            for (int x = 0; x < cols; x++)
-            {
-                if (shapeRows[y][x] == '1')
-                {
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
-                }
-            }
-        }
-        return (minX, maxX, minY, maxY);
-    }
-
-    private void CreateShapePrefab()
-    {
-        var bounds = GetBounds();
         if (bounds.maxX == -1 || bounds.maxY == -1)
         {
             EditorUtility.DisplayDialog("Ошибка", "Фигура не содержит ни одного куба!", "ОК");
@@ -122,6 +121,7 @@ public class ShapePrefabCreator : EditorWindow
 
         int shapeWidth = bounds.maxX - bounds.minX + 1;
         int shapeHeight = bounds.maxY - bounds.minY + 1;
+        float cubeSize = 1.75f;
         float offsetX = (shapeWidth - 1) * cubeSize / 2f;
         float offsetZ = (shapeHeight - 1) * cubeSize / 2f;
 
@@ -157,7 +157,18 @@ public class ShapePrefabCreator : EditorWindow
         blockParent.scaleX = shapeWidth;
         blockParent.scaleZ = shapeHeight;
 
-        // Canvas
+        // Canvas, Text и Icon
+        SetupCanvas(shapeRoot, blockParent, shapeWidth, shapeHeight);
+
+        // Сохраняем префаб
+        string targetFolder = GetTargetFolder(shapeRows);
+        SavePrefabAsset(shapeRoot, shapeRows, shapeWidth, shapeHeight, targetFolder);
+
+        Object.DestroyImmediate(shapeRoot);
+    }
+
+    private static void SetupCanvas(GameObject shapeRoot, BlockParent blockParent, int shapeWidth, int shapeHeight)
+    {
         GameObject canvasGO = new GameObject("ShapeCanvas");
         canvasGO.transform.SetParent(shapeRoot.transform, false);
 
@@ -165,59 +176,52 @@ public class ShapePrefabCreator : EditorWindow
         canvas.renderMode = RenderMode.WorldSpace;
         canvas.worldCamera = Camera.main;
 
-        var scaler = canvasGO.AddComponent<UnityEngine.UI.CanvasScaler>();
+        var scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.dynamicPixelsPerUnit = 10;
-
-        canvasGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+        canvasGO.AddComponent<GraphicRaycaster>();
 
         RectTransform canvasRect = canvas.GetComponent<RectTransform>();
-        canvasRect.sizeDelta = new Vector2(shapeWidth * cubeSize, shapeHeight * cubeSize);
-        canvasRect.localPosition = new Vector3(0, cubeSize, 0);
+        canvasRect.sizeDelta = new Vector2(shapeWidth * 1.75f, shapeHeight * 1.75f);
+        canvasRect.localPosition = new Vector3(0, 1.75f, 0);
         canvasRect.localRotation = Quaternion.Euler(90, 0, 0);
 
-        // Контейнер с HorizontalLayoutGroup
         GameObject containerGO = new GameObject("CountContainer");
         containerGO.transform.SetParent(canvasGO.transform, false);
 
-        var layout = containerGO.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+        var layout = containerGO.AddComponent<HorizontalLayoutGroup>();
         layout.childAlignment = TextAnchor.MiddleCenter;
-        layout.childForceExpandWidth = true;   // Растягиваем детей по ширине
-        layout.childForceExpandHeight = true;  // Растягиваем по высоте
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = true;
 
         RectTransform containerRect = containerGO.GetComponent<RectTransform>();
         containerRect.sizeDelta = canvasRect.sizeDelta;
         containerRect.localPosition = Vector3.zero;
-        containerRect.anchorMin = new Vector2(0.5f, 0.5f);
-        containerRect.anchorMax = new Vector2(0.5f, 0.5f);
-        containerRect.pivot = new Vector2(0.5f, 0.5f);
+        containerRect.anchorMin = containerRect.anchorMax = containerRect.pivot = new Vector2(0.5f, 0.5f);
 
-        // Текст - занимает ~70% ширины
+        // Текст
         GameObject textGO = new GameObject("CountText");
         textGO.transform.SetParent(containerGO.transform, false);
-
-        var tmp = textGO.AddComponent<TMPro.TextMeshProUGUI>();
-        tmp.alignment = TMPro.TextAlignmentOptions.Right; // Текст по правому краю контейнера (чтобы иконка была рядом справа)
+        var tmp = textGO.AddComponent<TextMeshProUGUI>();
+        tmp.alignment = TextAlignmentOptions.Right;
         tmp.enableAutoSizing = true;
         tmp.fontSizeMin = 0;
         tmp.color = Color.white;
 
-        int blockCount = CountBlocks(shapeData);
+        int blockCount = CountBlocks(blockParent.shape);
         tmp.text = "+" + blockCount.ToString();
 
         RectTransform textRect = tmp.GetComponent<RectTransform>();
         textRect.sizeDelta = new Vector2(canvasRect.sizeDelta.x * 0.5f, canvasRect.sizeDelta.y);
         textRect.anchorMin = new Vector2(0, 0);
         textRect.anchorMax = new Vector2(1, 1);
-        textRect.pivot = new Vector2(1, 0.5f); // Правый центр
+        textRect.pivot = new Vector2(1, 0.5f);
 
-        // Присваиваем в поле BlockParent
         blockParent.bulletsCountText = tmp;
 
-        // Иконка пули - занимает ~30% ширины
+        // Иконка
         GameObject iconGO = new GameObject("BulletIcon");
         iconGO.transform.SetParent(containerGO.transform, false);
-
-        var iconImage = iconGO.AddComponent<UnityEngine.UI.Image>();
+        var iconImage = iconGO.AddComponent<Image>();
         iconImage.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Project/UI/Bullet_Icon.png");
         iconImage.preserveAspect = true;
 
@@ -225,16 +229,10 @@ public class ShapePrefabCreator : EditorWindow
         iconRect.sizeDelta = new Vector2(canvasRect.sizeDelta.x * 0.5f, canvasRect.sizeDelta.y);
         iconRect.anchorMin = new Vector2(0, 0);
         iconRect.anchorMax = new Vector2(1, 1);
-        iconRect.pivot = new Vector2(0, 0.5f); // Левый центр
-
-        // Сохраняем и очищаем
-        string targetFolder = GetTargetFolder(IsShapeRectangular(bounds));
-        SavePrefab(shapeRoot, shapeWidth, shapeHeight, targetFolder);
-
-        DestroyImmediate(shapeRoot);
+        iconRect.pivot = new Vector2(0, 0.5f);
     }
 
-    private int CountBlocks(List<RowData> shape)
+    private static int CountBlocks(List<RowData> shape)
     {
         int count = 0;
         foreach (var row in shape)
@@ -243,75 +241,110 @@ public class ShapePrefabCreator : EditorWindow
         return count;
     }
 
-    private bool IsShapeRectangular((int minX, int maxX, int minY, int maxY) bounds)
+    private static (int minX, int maxX, int minY, int maxY) GetBoundsFromShapeRows(List<string> shapeRows)
     {
-        for (int y = bounds.minY; y <= bounds.maxY; y++)
-            for (int x = bounds.minX; x <= bounds.maxX; x++)
-                if (shapeRows[y][x] != '1') return false;
-        return true;
+        int rows = shapeRows.Count;
+        int cols = shapeRows[0].Length;
+        int minX = cols, maxX = -1, minY = rows, maxY = -1;
+
+        for (int y = 0; y < rows; y++)
+        {
+            for (int x = 0; x < cols; x++)
+            {
+                if (shapeRows[y][x] == '1')
+                {
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+        return (minX, maxX, minY, maxY);
     }
 
-    private string GetTargetFolder(bool isRectangle)
+    private static string GetTargetFolder(List<string> shapeRows)
     {
+        bool isRectangle = true;
+        var bounds = GetBoundsFromShapeRows(shapeRows);
+        for (int y = bounds.minY; y <= bounds.maxY; y++)
+            for (int x = bounds.minX; x <= bounds.maxX; x++)
+                if (shapeRows[y][x] != '1') isRectangle = false;
+
         string target = isRectangle ? $"{BASEFOLDER}/Nx{shapeRows.Count}" : $"{BASEFOLDER}/Specific";
         if (!AssetDatabase.IsValidFolder(target))
             AssetDatabase.CreateFolder(BASEFOLDER, isRectangle ? $"Nx{shapeRows.Count}" : "Specific");
         return target;
     }
 
-    private void SavePrefab(GameObject shapeRoot, int width, int height, string folder)
+    private static void SavePrefabAsset(GameObject shapeRoot, List<string> shapeRows, int width, int height, string folder)
     {
         string shapeHash = GetShapeHash(shapeRows);
         string prefabName = $"{width}x{height}_{shapeHash}.prefab";
         string prefabPath = $"{folder}/{prefabName}";
 
-        // --- Копируем ссылки из старого префаба ---
         var existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (existingPrefab != null)
         {
             var oldBlockParent = existingPrefab.GetComponent<BlockParent>();
             var newBlockParent = shapeRoot.GetComponent<BlockParent>();
             if (oldBlockParent != null && newBlockParent != null)
-            {
                 newBlockParent.nextRangBlock = oldBlockParent.nextRangBlock;
-            }
-        }
 
-        GameObject savedPrefab;
-
-        if (existingPrefab != null)
-        {
-            // Обновляем существующий префаб, не удаляя его
-            savedPrefab = PrefabUtility.SaveAsPrefabAssetAndConnect(shapeRoot, prefabPath, InteractionMode.UserAction);
-            Debug.Log($"Префаб <color=yellow>обновлён</color>: <a href=\"{prefabPath}\">{prefabName}</a>");
+            PrefabUtility.SaveAsPrefabAssetAndConnect(shapeRoot, prefabPath, InteractionMode.UserAction);
+            Debug.Log($"Префаб <color=yellow>обновлён</color>: {prefabName}");
         }
         else
         {
-            // Создаём новый префаб
-            savedPrefab = PrefabUtility.SaveAsPrefabAsset(shapeRoot, prefabPath);
-            Debug.Log($"Префаб <color=green>создан</color>: <a href=\"{prefabPath}\">{prefabName}</a>");
+            PrefabUtility.SaveAsPrefabAsset(shapeRoot, prefabPath);
+            Debug.Log($"Префаб <color=green>создан</color>: {prefabName}");
         }
 
         AssetDatabase.SaveAssets();
-
-        // Выделяем именно файл префаба
-        if (savedPrefab != null)
-        {
-            EditorUtility.FocusProjectWindow();
-            Selection.activeObject = savedPrefab;
-        }
     }
 
-
-    private string GetShapeHash(List<string> shape)
+    private static string GetShapeHash(List<string> shape)
     {
         string shapeString = string.Concat(shape);
         using MD5 md5 = MD5.Create();
         byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(shapeString));
-
         StringBuilder sb = new();
-        foreach (byte b in hashBytes)
-            sb.Append(b.ToString("x2"));
+        foreach (byte b in hashBytes) sb.Append(b.ToString("x2"));
         return sb.ToString()[..6];
     }
+    #endregion
+
+    #region Mass Regeneration
+    private void RegenerateAllPrefabs()
+    {
+        string[] prefabGUIDs = AssetDatabase.FindAssets("t:Prefab", new[] { BASEFOLDER });
+        int count = 0;
+
+        foreach (string guid in prefabGUIDs)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            BlockParent bp = prefab.GetComponent<BlockParent>();
+            if (bp != null && bp.shape != null)
+            {
+                // Преобразуем shapeData обратно в shapeRows
+                List<string> shapeRowsFromPrefab = new();
+                for (int i = bp.shape.Count - 1; i >= 0; i--)
+                {
+                    var rowData = bp.shape[i];
+                    StringBuilder sb = new();
+                    foreach (int val in rowData.row)
+                        sb.Append(val == 1 ? '1' : '0');
+                    shapeRowsFromPrefab.Add(sb.ToString());
+                }
+
+
+                GeneratePrefab(shapeRowsFromPrefab, cubePrefab);
+                count++;
+            }
+        }
+
+        EditorUtility.DisplayDialog("Готово", $"Перегенерировано {count} префабов", "OK");
+    }
+    #endregion
 }
