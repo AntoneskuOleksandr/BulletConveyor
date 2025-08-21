@@ -2,14 +2,8 @@ using UnityEngine;
 
 public class BlockManager : MonoBehaviour
 {
-    public static BlockManager Instance;
     [SerializeField] private MergePlatformsManager platformsManager;
     [SerializeField] private GameObject[] blocks;
-
-    private void Awake()
-    {
-        Instance = this;
-    }
 
     public void CreateBlock(int index = 0)
     {
