@@ -1,23 +1,21 @@
 using UnityEngine;
+using Zenject;
 
 public class InputHandler : MonoBehaviour
 {
-    [SerializeField] private TileManager tileManager;
-    [SerializeField] private MergePlatformsManager mergePlatformsManager;
-    [SerializeField] private BlockManager blockManager;
-
     private DragStateMachine stateMachine;
-    private Camera cam;
     private BlockDragController dragController;
 
-    private void Awake()
+    private Camera mainCamera;
+
+    [Inject]
+    public void Construct(BlockManager blockManager, TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
-        cam = Camera.main;
+        this.mainCamera = camera;
+
+        dragController = new BlockDragController(tileManager, mergePlatformsManager, mainCamera);
+
         stateMachine = new DragStateMachine();
-
-        // Новый контроллер — без зависимости от BlockManager
-        dragController = new BlockDragController(tileManager, mergePlatformsManager, cam);
-
         stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager, blockManager));
     }
 
@@ -37,7 +35,7 @@ public class InputHandler : MonoBehaviour
         // Игнорируем слой "DraggingBlock"
         int layerMask = ~LayerMask.GetMask("DraggingBlock");
 
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             callback(hit);
     }
