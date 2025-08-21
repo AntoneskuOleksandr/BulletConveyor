@@ -5,7 +5,6 @@ public class InputHandler : MonoBehaviour
 {
     private DragStateMachine stateMachine;
     private BlockDragController dragController;
-
     private Camera mainCamera;
 
     [Inject]
