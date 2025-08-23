@@ -7,19 +7,15 @@ public class GameplayInstaller : MonoInstaller
     [SerializeField] private TileManager tileManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private MergePlatformsManager mergePlatformsManager;
+    [SerializeField] private BulletGenerator bulletGenerator;
 
     public override void InstallBindings()
     {
-        if (blockManager == null)
-        {
-            Debug.LogError("BlockManager is not assigned in the GameplayInstaller.");
-            return;
-        }
         Container.Bind<BlockManager>().FromInstance(blockManager).AsSingle();
         Container.Bind<TileManager>().FromInstance(tileManager).AsSingle();
         Container.Bind<BoardManager>().FromInstance(boardManager).AsSingle();
         Container.Bind<MergePlatformsManager>().FromInstance(mergePlatformsManager).AsSingle();
+        Container.Bind<BulletGenerator>().FromInstance(bulletGenerator).AsSingle();
         Container.Bind<Camera>().FromInstance(Camera.main).AsSingle();
-
     }
 }
