@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -20,6 +19,7 @@ public class BlockData
 {
     public bool isOnBoard;
     public int platform;
+    public Vector2Int topLeftIndex = Vector2Int.zero;
 }
 
 public class BlockParent : MonoBehaviour
@@ -59,13 +59,11 @@ public class BlockParent : MonoBehaviour
                 return;
             }
 
-            myPreviousTiles = new List<Tile>(myTiles);
             myTiles = value;
         }
     }
 
     private List<Tile> myTiles = new List<Tile>();
-    private List<Tile> myPreviousTiles = new List<Tile>();
 
     private void Awake()
     {
