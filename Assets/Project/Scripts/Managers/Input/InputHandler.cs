@@ -8,11 +8,11 @@ public class InputHandler : MonoBehaviour
     private Camera mainCamera;
 
     [Inject]
-    public void Construct(BlockManager blockManager, TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
+    public void Construct(BlockManager blockManager, TileManager tileManager, BoardManager boardManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
         this.mainCamera = camera;
 
-        dragController = new BlockDragController(tileManager, mergePlatformsManager, mainCamera);
+        dragController = new BlockDragController(tileManager, boardManager, mergePlatformsManager, mainCamera);
 
         stateMachine = new DragStateMachine();
         stateMachine.ChangeState(new IdleState(stateMachine, dragController, mergePlatformsManager, blockManager));
