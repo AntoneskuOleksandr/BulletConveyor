@@ -46,7 +46,7 @@ public class BlockParent : MonoBehaviour
 
     public List<RowData> shape = new List<RowData>();
 
-    public UnityEvent onDragStart;
+    public UnityEvent onDragFromBoard;
 
     public List<Tile> MyTiles
     {
@@ -93,9 +93,10 @@ public class BlockParent : MonoBehaviour
 
     public void StartDragging()
     {
-        onDragStart?.Invoke();
-
         SavePreviousData();
+
+        if (blockState.Equals(BlockState.OnBoard))
+            onDragFromBoard?.Invoke();
 
         ChangeLayerRecursively(transform, LayerMask.NameToLayer("DraggingBlock"));
 
