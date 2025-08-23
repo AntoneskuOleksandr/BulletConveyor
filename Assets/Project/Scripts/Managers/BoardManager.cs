@@ -1,11 +1,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
 public class BoardManager : MonoBehaviour
 {
     [SerializeField] private List<BlockParent> blocks = new List<BlockParent>();
+    [SerializeField] private Transform blocksPool;
+
     private Dictionary<BlockParent, UnityAction> listeners = new();
+    private BlockManager _blockManager;
+
+    public List<BlockParent> Blocks
+    {
+        get { return blocks; }
+    }
+
+    [Inject]
+    public void Construct(BlockManager blockManager)
+    {
+        _blockManager = blockManager;
+    }
 
     public void RegisterBlock(BlockParent block)
     {
@@ -16,6 +31,7 @@ public class BoardManager : MonoBehaviour
         }
 
         blocks.Add(block);
+        block.transform.SetParent(blocksPool);
 
         UnityAction action = () => { UnregisterBlock(block); };
         listeners[block] = action;
@@ -33,22 +49,11 @@ public class BoardManager : MonoBehaviour
                 listeners.Remove(block);
             }
             blocks.Remove(block);
+            block.transform.SetParent(_blockManager.transform);
         }
         else
         {
             Debug.LogWarning("Block not found in BoardManager: " + block.name);
         }
     }
-
-    public int GetBulletsToGenerateCount()
-    {
-        int count = 0;
-        foreach (var block in blocks)
-        {
-            if (block != null)
-                count += block.bulletsToGenerate;
-        }
-        return count;
-    }
-
 }
