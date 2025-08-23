@@ -40,4 +40,15 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    public int GetBulletsToGenerateCount()
+    {
+        int count = 0;
+        foreach (var block in blocks)
+        {
+            if (block != null)
+                count += block.bulletsToGenerate;
+        }
+        return count;
+    }
+
 }
