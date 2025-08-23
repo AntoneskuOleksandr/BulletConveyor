@@ -442,7 +442,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf64f5a43b5f87c44a0d440ffd70c0f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
+    type: 3}
+  generationInterval: 1
 --- !u!1 &295416633
 GameObject:
   m_ObjectHideFlags: 0
@@ -1769,6 +1771,7 @@ MonoBehaviour:
   tileManager: {fileID: 881036426}
   boardManager: {fileID: 1401412351}
   mergePlatformsManager: {fileID: 834766778}
+  bulletGenerator: {fileID: 174477905}
 --- !u!4 &1824812357
 Transform:
   m_ObjectHideFlags: 0
