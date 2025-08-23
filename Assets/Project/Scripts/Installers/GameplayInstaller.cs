@@ -5,6 +5,7 @@ public class GameplayInstaller : MonoInstaller
 {
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private TileManager tileManager;
+    [SerializeField] private BoardManager boardManager;
     [SerializeField] private MergePlatformsManager mergePlatformsManager;
 
     public override void InstallBindings()
@@ -16,8 +17,9 @@ public class GameplayInstaller : MonoInstaller
         }
         Container.Bind<BlockManager>().FromInstance(blockManager).AsSingle();
         Container.Bind<TileManager>().FromInstance(tileManager).AsSingle();
+        Container.Bind<BoardManager>().FromInstance(boardManager).AsSingle();
         Container.Bind<MergePlatformsManager>().FromInstance(mergePlatformsManager).AsSingle();
         Container.Bind<Camera>().FromInstance(Camera.main).AsSingle();
-        
+
     }
 }
