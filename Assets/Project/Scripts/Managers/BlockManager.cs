@@ -51,11 +51,11 @@ public class BlockManager : MonoBehaviour
         }
 
         BlockParent newBlock = Instantiate(block1.nextRangBlock, block2.transform.position, Quaternion.identity).GetComponent<BlockParent>();
-        newBlock.platform = block2.platform;
+        newBlock.blockData.platform = block2.blockData.platform;
         newBlock.rank = block2.rank + 1;
 
-        if (block1.platform != -1)
-            platformsManager.SetPlatformFree(block1.platform);
+        if (block1.blockData.platform != -1)
+            platformsManager.SetPlatformFree(block1.blockData.platform);
 
         Destroy(block1.gameObject);
         Destroy(block2.gameObject);
