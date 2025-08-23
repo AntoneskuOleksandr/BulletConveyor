@@ -442,9 +442,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf64f5a43b5f87c44a0d440ffd70c0f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnInterval: 1
+  spawnOffset: 0.33333334
+  conveyor: {fileID: 672262507}
   bulletPrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
     type: 3}
-  generationInterval: 1
+  bulletAnimationDuration: 1
+  pulseAnimationDuration: 0.2
+  animationStrength: 0.2
+  blocksPool: {fileID: 1859149344}
 --- !u!1 &295416633
 GameObject:
   m_ObjectHideFlags: 0
@@ -1610,6 +1616,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blocks: []
+  blocksPool: {fileID: 1859149345}
 --- !u!4 &1401412352
 Transform:
   m_ObjectHideFlags: 0
@@ -1622,7 +1629,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1859149345}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1644933719
@@ -1786,6 +1794,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1859149344
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1859149345}
+  m_Layer: 0
+  m_Name: BlocksPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1859149345
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859149344}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1401412352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1971456171
 GameObject:
