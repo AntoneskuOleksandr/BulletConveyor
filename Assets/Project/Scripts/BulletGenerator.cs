@@ -1,31 +1,45 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
+using Zenject;
 
 public class BulletGenerator : MonoBehaviour
 {
     [SerializeField] private GameObject bulletPrefab;
-    private List<BlockParent> blocks;
+    [SerializeField] private float generationInterval = 1f; // Интервал генерации пуль
 
-    public void GenerateBullet(Vector3 position)
+    private BoardManager _boardManager;
+
+    [Inject]
+    public void Construct(BoardManager boardManager)
     {
-        for (int i = 0; i < GetBulletsToGenerateCount(); i++)
-            Instantiate(bulletPrefab, position, Quaternion.identity);
+        _boardManager = boardManager;
     }
 
-    public void SetBlock(BlockParent block)
+    public IEnumerator StartBulletGeneration()
     {
-        blocks.Add(block);
-    }
-
-    private int GetBulletsToGenerateCount()
-    {
-        int count = 0;
-        foreach (var block in blocks)
+        while (true)
         {
-            if (block != null)
-                count += block.bulletsToGenerate;
-        }
+            yield return new WaitForSeconds(generationInterval); // Интервал генерации
+            Vector3 generationPosition = transform.position; // Позиция генерации
 
-        return count;
+            GenerateBullets(generationPosition);
+        }
+    }
+
+    private void GenerateBullets(Vector3 position)
+    {
+        int bulletsToGenerate = _boardManager.GetBulletsToGenerateCount();
+
+        Debug.Log("Generating bullets; Count: " + bulletsToGenerate);
+
+        for (int i = 0; i < bulletsToGenerate; i++)
+        {
+            GenerateBullet(transform.position);
+        }
+    }
+
+    private void GenerateBullet(Vector3 position)
+    {
+        Instantiate(bulletPrefab, transform.position, Quaternion.identity);
     }
 }
