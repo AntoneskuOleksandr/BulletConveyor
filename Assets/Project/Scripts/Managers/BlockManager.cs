@@ -26,7 +26,7 @@ public class BlockManager : MonoBehaviour
         }
 
         BlockParent parent = Instantiate(blocks[index], 
-            platformsManager.GetPlatformPositionByIndex(platformIndex), Quaternion.identity).GetComponent<BlockParent>();
+            platformsManager.GetPlatformPositionByIndex(platformIndex), Quaternion.identity, this.transform).GetComponent<BlockParent>();
 
         platformsManager.SetPlatformBusy(platformIndex);
 
