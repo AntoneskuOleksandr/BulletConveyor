@@ -2,11 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 [System.Serializable]
 public class RowData
 {
     public int[] row;
+}
+
+public enum BlockState
+{
+    OnPlatform,
+    OnBoard
+}
+
+public class BlockData
+{
+    public bool isOnBoard;
+    public int platform;
 }
 
 public class BlockParent : MonoBehaviour
@@ -17,20 +30,23 @@ public class BlockParent : MonoBehaviour
     public int scaleX = 1;
     public int scaleZ = 1;
 
+    public BlockState blockState = BlockState.OnPlatform;
+    public BlockState blockPreviousState = BlockState.OnPlatform;
+
+    public BlockData blockData = new BlockData();
+    public BlockData blockPreviousData = new BlockData();
+
     private Vector3 desiredPosition;
-    private Vector3 previousPosition;
 
     public int bulletsToGenerate;
-    public bool isOnBoard;
-    private bool previousIsOnBoard;
 
     public GameObject nextRangBlock;
     public int rank;
-    public int platform;
-    private int previousPlatform;
     private int originalLayer;
 
     public List<RowData> shape = new List<RowData>();
+
+    public UnityEvent onDragStart;
 
     public List<Tile> MyTiles
     {
@@ -56,7 +72,6 @@ public class BlockParent : MonoBehaviour
         originalLayer = LayerMask.NameToLayer("Block");
 
         desiredPosition = transform.position;
-        previousPosition = transform.position;
 
         if (bulletsCountText != null)
             bulletsCountText.text = "+" + bulletsToGenerate.ToString();
@@ -72,11 +87,6 @@ public class BlockParent : MonoBehaviour
         desiredPosition = position;
     }
 
-    public void MoveToPreviousPosition()
-    {
-        desiredPosition = previousPosition;
-    }
-
     private void AddBulletToGenerate()
     {
         bulletsToGenerate++;
@@ -85,12 +95,14 @@ public class BlockParent : MonoBehaviour
 
     public void StartDragging()
     {
-        SafePreviousState();
+        onDragStart?.Invoke();
+
+        SavePreviousData();
 
         ChangeLayerRecursively(transform, LayerMask.NameToLayer("DraggingBlock"));
 
-        isOnBoard = false; // блок не на доске
-        platform = -1; // блок не на платформе
+        blockData.isOnBoard = false; // блок не на доске
+        blockData.platform = -1; // блок не на платформе
 
         foreach (Tile tile in MyTiles)
         {
@@ -102,12 +114,13 @@ public class BlockParent : MonoBehaviour
 
     public void PlaceOnBoard(List<Tile> tiles, Vector3 position)
     {
-        SafePreviousState(); // сохраняем предыдущие тайлы и позицию
+        SavePreviousData();
+        blockState = BlockState.OnBoard;
 
         RestoreLayer();
 
-        platform = -1; // блок не на платформе
-        isOnBoard = true; // блок на доске
+        blockData.platform = -1; // блок не на платформе
+        blockData.isOnBoard = true; // блок на доске
         MyTiles = tiles; // обновляем занятые тайлы
 
         foreach (Tile tile in MyTiles)
@@ -120,45 +133,16 @@ public class BlockParent : MonoBehaviour
 
     public void PlaceOnPlatform(Vector3 position, int platformIndex)
     {
+        SavePreviousData();
+        blockState = BlockState.OnPlatform;
+
         RestoreLayer();
 
         MyTiles = new List<Tile>(); // очищаем занятые тайлы
-        isOnBoard = false; // блок не на доске
-        platform = platformIndex; // устанавливаем платформу
+        blockData.isOnBoard = false; // блок не на доске
+        blockData.platform = platformIndex; // устанавливаем платформу
 
         SetPosition(position);
-    }
-
-    private void SafePreviousState()
-    {
-        if (myTiles == null)
-            myTiles = new List<Tile>();
-
-        myPreviousTiles = new List<Tile>(myTiles); // сохраняем предыдущие тайлы
-        previousPosition = desiredPosition; // сохраняем предыдущую позицию
-        previousIsOnBoard = isOnBoard; // сохраняем состояние на доске
-        previousPlatform = platform; // сохраняем предыдущую платформу
-
-    }
-
-    public void ReturnToPreviousState()
-    {
-        // Возвращаемся к предыдущему состоянию
-        desiredPosition = previousPosition;
-        MyTiles = myPreviousTiles;
-        isOnBoard = previousIsOnBoard;
-        platform = previousPlatform;
-
-        foreach (Tile tile in MyTiles)
-            tile.isAvailable = false; // блокируем занятые тайлы
-
-        // Восстанавливаем слой
-        RestoreLayer();
-    }
-
-    public bool IsWasOnPlatform()
-    {
-        return platform != -1;
     }
 
     private void ChangeLayerRecursively(Transform target, int layer)
@@ -173,5 +157,13 @@ public class BlockParent : MonoBehaviour
     private void RestoreLayer()
     {
         ChangeLayerRecursively(transform, originalLayer);
+    }
+
+    private void SavePreviousData()
+    {
+        blockPreviousData.isOnBoard = blockData.isOnBoard;
+        blockPreviousData.platform = blockData.platform;
+
+        blockPreviousState = blockState;
     }
 }
