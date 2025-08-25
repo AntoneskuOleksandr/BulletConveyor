@@ -17,7 +17,7 @@ public class TileManager : MonoBehaviour
 
     public float CellSize => tileSize; // <Ч добавлено
 
-    private void Start()
+    public void Initialize()
     {
         tiles = tileGenerator.GetAllTiles();
 
