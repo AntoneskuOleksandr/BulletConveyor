@@ -22,7 +22,10 @@ public class GameManager : MonoBehaviour
         _mergePlatformsManager = mergePlatformsManager;
         _bulletGenerator = bulletGenerator;
         _weaponManager = weaponManager;
+    }
 
+    private void Start()
+    {
         StartGame();
     }
 
