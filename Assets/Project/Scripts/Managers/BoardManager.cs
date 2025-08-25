@@ -40,7 +40,6 @@ public class BoardManager : MonoBehaviour
 
     public void UnregisterBlock(BlockParent block)
     {
-        Debug.Log("UnregisterBlock " + block.name);
         if (blocks.Contains(block))
         {
             if (listeners.TryGetValue(block, out var action))
