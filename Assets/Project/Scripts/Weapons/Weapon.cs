@@ -1,8 +1,16 @@
 using UnityEngine;
 using Zenject;
 
+public enum BulletType
+{
+    Standard,
+    Missile
+}
+
 public abstract class Weapon : MonoBehaviour, IWeapon
 {
+    [SerializeField] private BulletType bulletType;
+    public BulletType BulletType => bulletType;
     public float damage;
     public Transform firePoint;
     public Transform target;

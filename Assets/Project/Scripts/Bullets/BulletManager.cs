@@ -19,13 +19,21 @@ public class BulletManager
         if (bulletGO == null)
             return null; // No available bullets in the stack
 
-        return CreateBullet(bulletGO);
+        return CreateBullet(bulletGO, weapon);
     }
 
-    private Bullet CreateBullet(GameObject bulletGO)
+    private Bullet CreateBullet(GameObject bulletGO, Weapon weapon)
     {
-        Bullet bullet = bulletGO.AddComponent<StandardBullet>();
+        switch (weapon.BulletType)
+        {
+            case BulletType.Standard:
+                bulletGO.AddComponent<StandardBullet>();
+                break;
+            case BulletType.Missile:
+                bulletGO.AddComponent<Missile>();
+                break;
+        }
 
-        return bullet;
+        return bulletGO.GetComponent<Bullet>();
     }
 }
