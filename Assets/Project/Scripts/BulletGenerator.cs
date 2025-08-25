@@ -30,7 +30,7 @@ public class BulletGenerator : MonoBehaviour
         _boardManager = boardManager;
     }
 
-    private void Start()
+    public void Initialize()
     {
         bulletsFolder = new GameObject("Bullets");
 
