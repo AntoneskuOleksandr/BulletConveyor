@@ -9,6 +9,7 @@ public class GameplayInstaller : MonoInstaller
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private MergePlatformsManager mergePlatformsManager;
     [SerializeField] private BulletGenerator bulletGenerator;
+    [SerializeField] private WeaponManager weaponManager;
 
     public override void InstallBindings()
     {
@@ -18,6 +19,7 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<BoardManager>().FromInstance(boardManager).AsSingle();
         Container.Bind<MergePlatformsManager>().FromInstance(mergePlatformsManager).AsSingle();
         Container.Bind<BulletGenerator>().FromInstance(bulletGenerator).AsSingle();
+        Container.Bind<WeaponManager>().FromInstance(weaponManager).AsSingle();
         Container.Bind<Camera>().FromInstance(Camera.main).AsSingle();
     }
 }
