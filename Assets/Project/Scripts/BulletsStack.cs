@@ -66,8 +66,6 @@ public class BulletsStack : MonoBehaviour
             return bulletGO;
         }
 
-        Debug.LogError("No bullets available in the stack! HasBullet is brocken!");
-
         return null;
     }
 }
