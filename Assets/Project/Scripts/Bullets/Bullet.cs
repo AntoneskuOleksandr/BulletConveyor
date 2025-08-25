@@ -39,21 +39,10 @@ public abstract class Bullet : MonoBehaviour
     {
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
+        _collider.enabled = true;
         _collider.isTrigger = true;
 
         _direction = _target.position - this.transform.position;
         _rigidbody.linearVelocity = _direction.normalized * speed;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("Bullet hit: " + other.gameObject.name);
-
-        if (other.GetComponent<Weapon>() != null)
-        {
-            return; // Ignore collisions with weapons
-        }
-
-        Destroy(this.gameObject);
     }
 }

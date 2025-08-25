@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +9,16 @@ public class WeaponManager : MonoBehaviour
 
     public void Initialize()
     {
-        foreach (var weapon in weapons)
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
         {
-            weapon.Shoot();
+            foreach (var weapon in weapons)
+            {
+                weapon.Shoot();
+            }
         }
     }
 }
