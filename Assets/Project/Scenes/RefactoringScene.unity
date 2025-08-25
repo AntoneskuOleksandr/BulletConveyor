@@ -1777,6 +1777,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockManager: {fileID: 834766779}
   tileManager: {fileID: 881036426}
+  tileGenerator: {fileID: 881036425}
   boardManager: {fileID: 1401412351}
   mergePlatformsManager: {fileID: 834766778}
   bulletGenerator: {fileID: 174477905}
