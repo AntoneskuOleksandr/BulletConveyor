@@ -31,7 +31,7 @@ public abstract class Bullet : MonoBehaviour
 
         this.transform.position = spawnPoint.position;
         this.transform.rotation = spawnPoint.rotation;
-
+            
         Launch();
     }
 

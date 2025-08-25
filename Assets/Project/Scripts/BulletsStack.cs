@@ -18,10 +18,6 @@ public class BulletsStack : MonoBehaviour
         {
             return bullets.Count > 0;
         }
-        private set
-        {
-
-        }
     }
 
     private int currentRow = 0;
@@ -51,11 +47,11 @@ public class BulletsStack : MonoBehaviour
         }
     }
 
-    public Bullet GetBulletFromStack()
+    public GameObject GetBulletGOFromStack()
     {
         if (bullets.Count > 0)
         {
-            Bullet bullet = bullets[bullets.Count - 1].GetComponent<Bullet>();
+            GameObject bulletGO = bullets[bullets.Count - 1];
 
             bullets.RemoveAt(bullets.Count - 1);
             bulletsCounter.text = bullets.Count.ToString();
@@ -67,7 +63,7 @@ public class BulletsStack : MonoBehaviour
                 currentRow--;
             }
 
-            return bullet;
+            return bulletGO;
         }
 
         Debug.LogError("No bullets available in the stack! HasBullet is brocken!");

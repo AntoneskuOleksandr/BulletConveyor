@@ -8,37 +8,21 @@ public abstract class Weapon : MonoBehaviour, IWeapon
     public Transform target;
 
     protected Bullet _bullet;
-    protected BulletsStack _bulletsStack;
+    protected BulletManager _bulletManager;
 
     [Inject]
-    public void Construct(BulletsStack bulletsStack)
+    public void Construct(BulletManager bulletManager)
     {
-        Debug.Log("Weapon Constructed with BulletsStack");
-        _bulletsStack = bulletsStack;
+        _bulletManager = bulletManager;
     }
 
     public virtual void Shoot()
     {
-        TryToGetBullet();
+        _bullet = _bulletManager.GetBullet(this);
 
         if (_bullet == null)
-        {
-            Debug.LogError("Bullet is not assigned!");
-            return;
-        }
+            return; // No available bullets
 
         _bullet.Init(damage, firePoint, target);
-    }
-
-    protected virtual void TryToGetBullet()
-    {
-        if (_bulletsStack.HaveBullet)
-        {
-            _bullet = _bulletsStack.GetBulletFromStack();
-        }
-        else
-        {
-            Debug.LogWarning("No bullets available in the stack!");
-        }
     }
 }
