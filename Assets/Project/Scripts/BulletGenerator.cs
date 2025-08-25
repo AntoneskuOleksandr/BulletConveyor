@@ -72,7 +72,6 @@ public class BulletGenerator : MonoBehaviour
         }
     }
 
-
     private void GenerateBullet(BlockParent block)
     {
         Vector3 spawnPosition = block.transform.position;
@@ -91,10 +90,5 @@ public class BulletGenerator : MonoBehaviour
         });
 
         index++;
-    }
-
-    private void ReleaseBullet(GameObject bullet)
-    {
-        bulletPool.Release(bullet);
     }
 }
