@@ -1535,92 +1535,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cactus
       objectReference: {fileID: 0}
-    - target: {fileID: 5704631245199301040, guid: 70e9bb827850dcc478d6bf4b3051eca9,
+    - target: {fileID: 4837979481064112199, guid: 70e9bb827850dcc478d6bf4b3051eca9,
         type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 3525257403349462515, guid: 70e9bb827850dcc478d6bf4b3051eca9, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 1540644355}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9,
-        type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 1044398168}
-    - targetCorrespondingSourceObject: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9,
-        type: 3}
-      insertIndex: 2
-      addedObject: {fileID: 1044398162}
-    - targetCorrespondingSourceObject: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1044398169}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 70e9bb827850dcc478d6bf4b3051eca9, type: 3}
---- !u!1 &1044398161 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9,
-    type: 3}
-  m_PrefabInstance: {fileID: 1044398160}
-  m_PrefabAsset: {fileID: 0}
---- !u!195 &1044398162
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1044398161}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 1
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 3.5
-  m_BaseOffset: 0.25
-  m_WalkableMask: 1
-  m_ObstacleAvoidanceType: 4
---- !u!114 &1044398168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1044398161}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e65161fa2363d244dbb145248c257d1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 1540644355}
---- !u!95 &1044398169
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1044398161}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 30057eec306a4c544b9e875e8ab6b0c7, type: 3}
-  m_Controller: {fileID: 9100000, guid: a5d0cc7a8410b274f838e7fbfcceb650, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1091264116
 GameObject:
   m_ObjectHideFlags: 0
@@ -1805,12 +1729,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57206b27762af24439f516c680942839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
-    type: 3}
-  weapons:
-  - {fileID: 1540644353}
-  - {fileID: 1191372215}
-  fireRate: 0.33333334
 --- !u!4 &1182419446
 Transform:
   m_ObjectHideFlags: 0
