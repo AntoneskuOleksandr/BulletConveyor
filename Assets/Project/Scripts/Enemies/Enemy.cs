@@ -16,7 +16,7 @@ public abstract class Enemy : MonoBehaviour
 
     private void Start()
     {
-        agent.SetDestination(target.position);
+        //agent.SetDestination(target.position);
         animator.SetFloat("MoveSpeed", agent.speed / 2f);
     }
 }

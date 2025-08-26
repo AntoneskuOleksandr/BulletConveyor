@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Artillery : Weapon
 {
-    public override void Shoot()
+    protected override void TryToShoot()
     {
-        base.Shoot();
+        base.TryToShoot();
     }
 }

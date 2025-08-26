@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
         _tileGenerator.GenerateGrid(6, 6);
         _tileManager.Initialize();
         _bulletGenerator.Initialize();
-        _weaponManager.Initialize();
 
         StartCoroutine(_bulletGenerator.StartBulletGeneration());
     }

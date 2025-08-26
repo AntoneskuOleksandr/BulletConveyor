@@ -331,10 +331,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2809677704980898286}
+  - component: {fileID: 4837979481064112199}
+  - component: {fileID: 685606984818902955}
   - component: {fileID: 5704631245199301040}
   - component: {fileID: 6523912185282996905}
   - component: {fileID: 2724417405379293538}
-  - component: {fileID: 3525257403349462515}
+  - component: {fileID: 5616700662242820159}
   m_Layer: 7
   m_Name: Cactus
   m_TagString: Enemy
@@ -359,6 +361,41 @@ Transform:
   - {fileID: 5636765221417673934}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &4837979481064112199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3293866700957088596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65161fa2363d244dbb145248c257d1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+--- !u!195 &685606984818902955
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3293866700957088596}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 1
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 3.5
+  m_BaseOffset: 0.25
+  m_WalkableMask: 1
+  m_ObstacleAvoidanceType: 4
 --- !u!137 &5704631245199301040
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -495,18 +532,28 @@ CapsuleCollider:
   m_Height: 3.5
   m_Direction: 1
   m_Center: {x: 0, y: 1.5, z: 0}
---- !u!114 &3525257403349462515
-MonoBehaviour:
+--- !u!95 &5616700662242820159
+Animator:
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3293866700957088596}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac77f18a1cb38ca4e918cef21a0c6a65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Avatar: {fileID: 9000000, guid: 30057eec306a4c544b9e875e8ab6b0c7, type: 3}
+  m_Controller: {fileID: 9100000, guid: a5d0cc7a8410b274f838e7fbfcceb650, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3609852600684059955
 GameObject:
   m_ObjectHideFlags: 0
