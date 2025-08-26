@@ -48,6 +48,9 @@ public class EnemySpawner : MonoBehaviour
 
             GameObject enemyPrefab = (Random.value > 0.5f) ? enemyPrefab1 : enemyPrefab2;
             GameObject enemyObj = _container.InstantiatePrefab(enemyPrefab, spawnPosition, Quaternion.identity, null);
+
+            enemyObj.transform.Rotate(0f, 180f, 0f); // Повернуть врага на 180 градусов по оси Y
+
             Enemy enemy = enemyObj.GetComponent<Enemy>();
             enemies.Add(enemy);
         }
