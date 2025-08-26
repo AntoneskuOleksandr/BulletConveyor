@@ -10,15 +10,22 @@ public class EnemyManager : MonoBehaviour
         _enemies.AddRange(enemies);
     }
 
-    public Transform GetNearestEnemy(Weapon weapon)
+    public Transform GetNearestEnemy(Weapon weapon, float radius)
     {
-        //Debug.Log($"Finding nearest enemy for weapon {weapon}");
         float shortestDistance = Mathf.Infinity;
         Enemy nearestEnemy = null;
 
         foreach (Enemy enemy in _enemies)
         {
+            if (enemy == null)
+                continue;
+
             float distanceToEnemy = Vector3.Distance(weapon.transform.position, enemy.transform.position);
+
+            // игнорируем врагов вне радиуса действия
+            if (distanceToEnemy > radius)
+                continue;
+
             if (distanceToEnemy < shortestDistance)
             {
                 shortestDistance = distanceToEnemy;
@@ -26,8 +33,6 @@ public class EnemyManager : MonoBehaviour
             }
         }
 
-        //Debug.Log($"Nearest enemy found: {nearestEnemy} at distance {shortestDistance}");
-
-        return nearestEnemy.transform;
+        return nearestEnemy != null ? nearestEnemy.transform : null;
     }
 }

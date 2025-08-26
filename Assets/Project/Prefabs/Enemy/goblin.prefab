@@ -879,7 +879,6 @@ GameObject:
   - component: {fileID: 1166500754294775520}
   - component: {fileID: 5824809554975313983}
   - component: {fileID: 5280821698151594124}
-  - component: {fileID: 5313445471788010710}
   m_Layer: 7
   m_Name: goblin
   m_TagString: Enemy
@@ -1059,18 +1058,6 @@ CapsuleCollider:
   m_Height: 10.927693
   m_Direction: 1
   m_Center: {x: -0, y: 5.4638467, z: -0}
---- !u!114 &5313445471788010710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4850011443788842758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac77f18a1cb38ca4e918cef21a0c6a65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4866673932059956246
 GameObject:
   m_ObjectHideFlags: 0
