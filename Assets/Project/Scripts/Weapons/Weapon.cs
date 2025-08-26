@@ -110,7 +110,13 @@ public abstract class Weapon : MonoBehaviour
         if (target == null)
             return;
 
-        Vector3 dir = (target.position - partToRotate.position).normalized;
+        Vector3 dir = target.position - partToRotate.position;
+
+        dir.y = 0f;
+
+        if (dir == Vector3.zero)
+            return;
+
         Quaternion lookRotation = Quaternion.LookRotation(dir);
 
         partToRotate.rotation = Quaternion.Lerp(
@@ -119,6 +125,7 @@ public abstract class Weapon : MonoBehaviour
             Time.deltaTime * turnSpeed
         );
     }
+
 
     private void HandleIdleRotation()
     {
