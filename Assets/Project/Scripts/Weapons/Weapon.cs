@@ -146,8 +146,15 @@ public abstract class Weapon : MonoBehaviour
         if (target == null)
             return false;
 
-        Vector3 dirToTarget = (target.position - partToRotate.position).normalized;
-        float angle = Vector3.Angle(partToRotate.forward, dirToTarget);
+        Vector3 dirToTarget = target.position - partToRotate.position;
+        dirToTarget.y = 0f;
+        dirToTarget.Normalize();
+
+        Vector3 forward = partToRotate.forward;
+        forward.y = 0f;
+        forward.Normalize();
+
+        float angle = Vector3.Angle(forward, dirToTarget);
         return angle < aimThreshold;
     }
 

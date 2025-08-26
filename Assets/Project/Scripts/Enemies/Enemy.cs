@@ -7,6 +7,10 @@ public abstract class Enemy : MonoBehaviour
     protected Transform target;
     protected NavMeshAgent agent;
     protected Animator animator;
+    [SerializeField] protected Transform hitTransform;
+
+    public Transform HitTransform => hitTransform;
+
 
     [Inject]
     public void Construct(WeaponManager weaponManager)
