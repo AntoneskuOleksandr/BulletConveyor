@@ -16,6 +16,10 @@ public class GameplayInstaller : MonoInstaller
     [SerializeField] private BulletsStack bulletsStack;
     [SerializeField] private BulletManager bulletManager;
 
+    [Header("Enemy-Related Scripts")]
+    [SerializeField] private EnemyManager enemyManager;
+    [SerializeField] private EnemySpawner enemySpawner;
+
     public override void InstallBindings()
     {
         //Board-Related Managers
@@ -30,6 +34,10 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<BulletGenerator>().FromInstance(bulletGenerator).AsSingle();
         Container.Bind<BulletsStack>().FromInstance(bulletsStack).AsSingle();
         Container.Bind<BulletManager>().AsSingle();
+
+        //Enemy-Related Scripts
+        Container.Bind<EnemyManager>().FromInstance(enemyManager).AsSingle();
+        Container.Bind<EnemySpawner>().FromInstance(enemySpawner).AsSingle();
 
         //Main Camera
         Container.Bind<Camera>().FromInstance(Camera.main).AsSingle();
