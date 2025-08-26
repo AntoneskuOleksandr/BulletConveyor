@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class MachineGun : Weapon
 {
-    protected override void Shoot()
+    protected override void TryToShoot()
     {
-        base.Shoot();
+        base.TryToShoot();
     }
 }
