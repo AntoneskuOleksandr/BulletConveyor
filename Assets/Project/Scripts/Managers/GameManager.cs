@@ -9,10 +9,11 @@ public class GameManager : MonoBehaviour
     private BoardManager _boardManager;
     private MergePlatformsManager _mergePlatformsManager;
     private BulletGenerator _bulletGenerator;
+    private WeaponManager _weaponManager;
 
     [Inject]
-    public void Construct(BlockManager blockManager, TileManager tileManager, TileGenerator tileGenerator, 
-        BoardManager boardManager, MergePlatformsManager mergePlatformsManager, BulletGenerator bulletGenerator)
+    public void Construct(BlockManager blockManager, TileManager tileManager, TileGenerator tileGenerator,
+        BoardManager boardManager, MergePlatformsManager mergePlatformsManager, BulletGenerator bulletGenerator, WeaponManager weaponManager)
     {
         _blockManager = blockManager;
         _tileManager = tileManager;
@@ -20,7 +21,11 @@ public class GameManager : MonoBehaviour
         _boardManager = boardManager;
         _mergePlatformsManager = mergePlatformsManager;
         _bulletGenerator = bulletGenerator;
+        _weaponManager = weaponManager;
+    }
 
+    private void Start()
+    {
         StartGame();
     }
 
@@ -29,6 +34,7 @@ public class GameManager : MonoBehaviour
         _tileGenerator.GenerateGrid(6, 6);
         _tileManager.Initialize();
         _bulletGenerator.Initialize();
+        _weaponManager.Initialize();
 
         StartCoroutine(_bulletGenerator.StartBulletGeneration());
     }

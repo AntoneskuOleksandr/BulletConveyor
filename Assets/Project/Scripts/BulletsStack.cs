@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class StackBullets : MonoBehaviour
+public class BulletsStack : MonoBehaviour
 {
-    public static StackBullets Instance;
-
     [SerializeField] private Transform stackPosition;
     [SerializeField] private float stackOffset = 0.2f;
     [SerializeField] private int rowsCount = 4;
@@ -20,10 +18,6 @@ public class StackBullets : MonoBehaviour
         {
             return bullets.Count > 0;
         }
-        private set
-        {
-
-        }
     }
 
     private int currentRow = 0;
@@ -31,7 +25,6 @@ public class StackBullets : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
         bulletsCounter.text = bullets.Count.ToString();
     }
 
@@ -54,10 +47,12 @@ public class StackBullets : MonoBehaviour
         }
     }
 
-    public void RemoveBulletFromStack()
+    public GameObject GetBulletGOFromStack()
     {
         if (bullets.Count > 0)
         {
+            GameObject bulletGO = bullets[bullets.Count - 1];
+
             bullets.RemoveAt(bullets.Count - 1);
             bulletsCounter.text = bullets.Count.ToString();
 
@@ -67,6 +62,10 @@ public class StackBullets : MonoBehaviour
                 currentColumn = rowsCount - 1;
                 currentRow--;
             }
+
+            return bulletGO;
         }
+
+        return null;
     }
 }
