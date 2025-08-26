@@ -17,11 +17,13 @@ public abstract class Weapon : MonoBehaviour, IWeapon
 
     protected Bullet _bullet;
     protected BulletManager _bulletManager;
+    protected EnemyManager _enemyManager;
 
     [Inject]
-    public void Construct(BulletManager bulletManager)
+    public void Construct(BulletManager bulletManager, EnemyManager enemyManager)
     {
         _bulletManager = bulletManager;
+        _enemyManager = enemyManager;
     }
 
     public virtual void Shoot()
@@ -31,6 +33,16 @@ public abstract class Weapon : MonoBehaviour, IWeapon
         if (_bullet == null)
             return; // No available bullets
 
+        FindTarget();
+
+        if (target == null)
+            return; // No target found
+
         _bullet.Init(damage, firePoint, target);
+    }
+
+    public virtual void FindTarget()
+    {
+        target = _enemyManager.GetNearestEnemy(this);
     }
 }
