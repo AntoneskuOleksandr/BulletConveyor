@@ -7,7 +7,7 @@ public enum BulletType
     Missile
 }
 
-public abstract class Weapon : MonoBehaviour, IWeapon
+public abstract class Weapon : MonoBehaviour
 {
     [SerializeField] private BulletType bulletType;
     public BulletType BulletType => bulletType;
@@ -26,7 +26,7 @@ public abstract class Weapon : MonoBehaviour, IWeapon
         _enemyManager = enemyManager;
     }
 
-    public virtual void Shoot()
+    protected virtual void Shoot()
     {
         _bullet = _bulletManager.GetBullet(this);
 
@@ -41,7 +41,7 @@ public abstract class Weapon : MonoBehaviour, IWeapon
         _bullet.Init(damage, firePoint, target);
     }
 
-    public virtual void FindTarget()
+    protected virtual void FindTarget()
     {
         target = _enemyManager.GetNearestEnemy(this);
     }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MachineGun : Weapon
 {
-    public override void Shoot()
+    protected override void Shoot()
     {
         base.Shoot();
     }
