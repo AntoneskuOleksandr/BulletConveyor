@@ -50,8 +50,6 @@ public class EnemySpawner : MonoBehaviour
                 Random.Range(pointA.position.z, pointB.position.z)
             );
 
-            Debug.Log($"Spawning enemy at {spawnPosition}");
-
             GameObject enemyPrefab = (Random.value > 0.5f) ? enemyPrefab1 : enemyPrefab2;
             GameObject enemyObj = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
             Enemy enemy = enemyObj.GetComponent<Enemy>();
