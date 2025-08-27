@@ -26,7 +26,7 @@ public abstract class Weapon : MonoBehaviour
     protected BulletManager _bulletManager;
     protected EnemyManager _enemyManager;
 
-    protected Transform target;
+    protected Enemy target;
     protected float _fireCountdown = 0f;
 
     protected float _targetRefreshRate = 0.25f;
@@ -88,9 +88,9 @@ public abstract class Weapon : MonoBehaviour
 
     protected void UpdateTarget()
     {
-        if (target != null)
+        if (target != null && target.IsAlive)
         {
-            float dist = Vector3.Distance(transform.position, target.position);
+            float dist = Vector3.Distance(transform.position, target.HitTransform.position);
             if (dist < attackRadius)
                 return;
         }
@@ -102,7 +102,7 @@ public abstract class Weapon : MonoBehaviour
         if (_bulletInAmmo == null || target == null)
             return;
 
-        _bulletInAmmo.Init(damage, firePoint, target);
+        _bulletInAmmo.Init(damage, firePoint, target.HitTransform);
     }
 
     protected void LockOnTarget()
@@ -110,7 +110,7 @@ public abstract class Weapon : MonoBehaviour
         if (target == null)
             return;
 
-        Vector3 dir = target.position - partToRotate.position;
+        Vector3 dir = target.HitTransform.position - partToRotate.position;
 
         dir.y = 0f;
 
@@ -146,7 +146,7 @@ public abstract class Weapon : MonoBehaviour
         if (target == null)
             return false;
 
-        Vector3 dirToTarget = target.position - partToRotate.position;
+        Vector3 dirToTarget = target.HitTransform.position - partToRotate.position;
         dirToTarget.y = 0f;
         dirToTarget.Normalize();
 

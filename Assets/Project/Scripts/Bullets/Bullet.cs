@@ -31,11 +31,11 @@ public abstract class Bullet : MonoBehaviour
 
         this.transform.position = spawnPoint.position;
         this.transform.rotation = spawnPoint.rotation;
-            
+
         Launch();
     }
 
-    private void Launch()
+    protected void Launch()
     {
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
@@ -44,5 +44,25 @@ public abstract class Bullet : MonoBehaviour
 
         _direction = _target.position - this.transform.position;
         _rigidbody.linearVelocity = _direction.normalized * speed;
+    }
+
+    protected void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.CompareTag("Enemy"))
+        {
+            HitTarget(other.transform);
+        }
+
+        Destroy(this.gameObject);
+    }
+
+    protected void HitTarget(Transform target)
+    {
+        Enemy enemy = target.GetComponent<Enemy>();
+
+        if (enemy != null)
+        {
+            enemy.TakeDamage(damage);
+        }
     }
 }
