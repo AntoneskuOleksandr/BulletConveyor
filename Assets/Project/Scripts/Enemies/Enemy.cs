@@ -63,6 +63,7 @@ public abstract class Enemy : MonoBehaviour
 
         _animator.SetTrigger("DeathTrigger");
         _agent.isStopped = true;
+        _agent.enabled = false;
 
         _collider.enabled = false;
 

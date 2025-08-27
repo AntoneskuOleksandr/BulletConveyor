@@ -1232,13 +1232,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefab1: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9,
     type: 3}
-  enemyPrefab2: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9,
+  enemyPrefab2: {fileID: 4850011443788842758, guid: 9537295d0d72cfd4e88a458b6cc448cd,
     type: 3}
+  totalWaves: 2
+  waveDuration: 3
+  timeBetweenWaves: 0
   minEnemyCount: 1
-  maxEnemyCount: 1
-  spawnInterval: 3
-  waveDuration: 30
-  totalWaves: 5
+  maxEnemyCount: 2
+  enemyIncrementPerWave: 1
   pointA: {fileID: 1091264117}
   pointB: {fileID: 1261121446}
 --- !u!4 &919379982
