@@ -24,13 +24,9 @@ public class EnemySpawner : MonoBehaviour
     private List<Enemy> enemies = new List<Enemy>();
 
     private float spawnTimer;
-    private EnemyManager _enemyManager;
 
-    [Inject]
-    public void Construct(EnemyManager enemyManager)
-    {
-        _enemyManager = enemyManager;
-    }
+    [Inject] private DiContainer _container;
+    [Inject] private EnemyManager _enemyManager;
 
     private void Start()
     {
@@ -51,7 +47,10 @@ public class EnemySpawner : MonoBehaviour
             );
 
             GameObject enemyPrefab = (Random.value > 0.5f) ? enemyPrefab1 : enemyPrefab2;
-            GameObject enemyObj = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            GameObject enemyObj = _container.InstantiatePrefab(enemyPrefab, spawnPosition, Quaternion.identity, null);
+
+            enemyObj.transform.Rotate(0f, 180f, 0f); // Повернуть врага на 180 градусов по оси Y
+
             Enemy enemy = enemyObj.GetComponent<Enemy>();
             enemies.Add(enemy);
         }
