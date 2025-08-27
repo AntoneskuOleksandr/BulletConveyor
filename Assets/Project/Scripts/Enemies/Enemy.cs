@@ -13,6 +13,7 @@ public abstract class Enemy : MonoBehaviour
     protected NavMeshAgent _agent;
     protected Animator _animator;
     protected Collider _collider;
+    protected Rigidbody _rigidbody;
 
     protected float _currentHealth;
 
@@ -29,8 +30,10 @@ public abstract class Enemy : MonoBehaviour
 
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
-        _currentHealth = maxHealth;
         _collider = GetComponent<Collider>();
+        _rigidbody = GetComponent<Rigidbody>();
+
+        _currentHealth = maxHealth;
     }
 
     protected void OnEnable()
@@ -61,10 +64,13 @@ public abstract class Enemy : MonoBehaviour
     {
         OnDeath?.Invoke();
 
-        _animator.SetTrigger("DeathTrigger");
-        _agent.isStopped = true;
-
         _collider.enabled = false;
+        _rigidbody.isKinematic = true;
+
+        _agent.isStopped = true;
+        _agent.enabled = false;
+
+        _animator.SetTrigger("DeathTrigger");
 
         Destroy(this.gameObject, 5f);
     }

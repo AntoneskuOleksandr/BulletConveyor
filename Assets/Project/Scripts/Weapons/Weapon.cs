@@ -29,7 +29,7 @@ public abstract class Weapon : MonoBehaviour
     protected Enemy target;
     protected float _fireCountdown = 0f;
 
-    protected float _targetRefreshRate = 0.25f;
+    protected float _targetRefreshRate = 1f;
     protected float _targetRefreshTimer = 0f;
 
     private Quaternion _initialRotation;
@@ -46,6 +46,12 @@ public abstract class Weapon : MonoBehaviour
     {
         if (partToRotate != null)
             _initialRotation = partToRotate.rotation;
+    }
+
+    protected virtual void OnDisable()
+    {
+        if (target != null)
+            target.OnDeath.RemoveListener(OnTargetDeath);
     }
 
     protected void Update()
@@ -88,13 +94,13 @@ public abstract class Weapon : MonoBehaviour
 
     protected void UpdateTarget()
     {
-        if (target != null && target.IsAlive)
-        {
-            float dist = Vector3.Distance(transform.position, target.HitTransform.position);
-            if (dist < attackRadius)
-                return;
-        }
+        if (target != null)
+            target.OnDeath.RemoveListener(OnTargetDeath);
+
         target = _enemyManager.GetNearestEnemy(this, attackRadius);
+
+        if (target != null)
+            target.OnDeath.AddListener(OnTargetDeath);
     }
 
     protected virtual void TryToShoot()
@@ -157,6 +163,12 @@ public abstract class Weapon : MonoBehaviour
         float angle = Vector3.Angle(forward, dirToTarget);
         return angle < aimThreshold;
     }
+
+    protected void OnTargetDeath()
+    {
+        UpdateTarget();
+    }
+
 
     protected virtual void OnDrawGizmosSelected()
     {

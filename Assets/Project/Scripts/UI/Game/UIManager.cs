@@ -4,20 +4,23 @@ using Zenject;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private Button buyBlockByAdButton;
+    [SerializeField] private Button speedUpGameButton;
 
-    private BlockManager _blockManager;
+    [Header("Progress Bar")]
+    [SerializeField] private ProgressBar progressBar;
 
-    [Inject]
-    public void Construct(BlockManager blockManager)
-    {
-        _blockManager = blockManager;
-    }
+    [Inject] private BlockManager _blockManager;
+    [Inject] private WaveManager _waveManager;
 
     private void Awake()
     {
         if (buyBlockByAdButton != null)
         {
             buyBlockByAdButton.onClick.AddListener(OnBuyBlockByAdButtonClicked);
+        }
+        if (speedUpGameButton != null)
+        {
+            speedUpGameButton.onClick.AddListener(OnSpeedUpButtonClicked);
         }
     }
 
@@ -32,5 +35,10 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("BlockManager is not initialized. Cannot create block.");
         }
+    }
+
+    private void OnSpeedUpButtonClicked()
+    {
+        Time.timeScale = 2f;
     }
 }

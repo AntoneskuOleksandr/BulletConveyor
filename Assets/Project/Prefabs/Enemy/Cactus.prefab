@@ -408,6 +408,9 @@ MonoBehaviour:
   maxHealth: 100
   hitTransform: {fileID: 6859917437934386780}
   enemyStatusCanvas: {fileID: 1307107464858118680}
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!195 &685606984818902955
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -579,7 +582,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: a5d0cc7a8410b274f838e7fbfcceb650, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
