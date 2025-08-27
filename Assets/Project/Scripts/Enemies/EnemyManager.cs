@@ -8,9 +8,14 @@ public class EnemyManager : MonoBehaviour
     public void RegisterEnemies(List<Enemy> enemies)
     {
         _enemies.AddRange(enemies);
+        
+        foreach (Enemy enemy in enemies)
+        {
+            enemy.OnDeath.AddListener(() => _enemies.Remove(enemy));
+        }
     }
 
-    public Transform GetNearestEnemy(Weapon weapon, float radius)
+    public Enemy GetNearestEnemy(Weapon weapon, float radius)
     {
         float shortestDistance = Mathf.Infinity;
         Enemy nearestEnemy = null;
@@ -33,6 +38,6 @@ public class EnemyManager : MonoBehaviour
             }
         }
 
-        return nearestEnemy != null ? nearestEnemy.HitTransform : null;
+        return nearestEnemy;
     }
 }

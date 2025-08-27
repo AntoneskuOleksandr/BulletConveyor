@@ -1929,11 +1929,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletType: 0
-  damage: 0
+  damage: 10
   firePoint: {fileID: 774441091}
   partToRotate: {fileID: 1540644355}
   turnSpeed: 3
-  fireRate: 1
+  fireRate: 3
   aimThreshold: 2
   attackRadius: 25
   idleReturnDelay: 1
