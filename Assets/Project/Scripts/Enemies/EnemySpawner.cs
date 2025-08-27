@@ -4,39 +4,29 @@ using Zenject;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Enemy Settings")]
+    [Header("Enemy Prefabs")]
     [SerializeField] private GameObject enemyPrefab1;
     [SerializeField] private GameObject enemyPrefab2;
-
-    [SerializeField] private int minEnemyCount;
-    [SerializeField] private int maxEnemyCount;
-
-    [SerializeField] private float spawnInterval = 3f;
-
-    [Header("Wave Settings")]
-    public float waveDuration = 30f;
-    public int totalWaves = 5;
 
     [Header("Spawn Area")]
     [SerializeField] private Transform pointA;
     [SerializeField] private Transform pointB;
 
-    private List<Enemy> enemies = new List<Enemy>();
-
-    private float spawnTimer;
-
     [Inject] private DiContainer _container;
     [Inject] private EnemyManager _enemyManager;
 
-    private void Start()
+    /// <summary>
+    /// Спавнит указанное количество врагов.
+    /// WaveIndex и totalWaves нужны для расчета типа врага.
+    /// </summary>
+    public int SpawnWave(int enemyCount, int waveIndex, int totalWaves)
     {
-        spawnTimer = spawnInterval;
-        SpawnEnemies();
-    }
+        List<Enemy> spawnedEnemies = new List<Enemy>();
 
-    private void SpawnEnemies()
-    {
-        int enemyCount = Random.Range(minEnemyCount, maxEnemyCount + 1);
+        // Рассчитываем процент врагов второго типа
+        float progress = Mathf.Clamp01((float)(waveIndex - (totalWaves / 2f)) / (totalWaves / 2f));
+        float type2Percent = Mathf.Lerp(0f, 1f, progress);
+        float type1Percent = 1f - type2Percent;
 
         for (int i = 0; i < enemyCount; i++)
         {
@@ -46,18 +36,19 @@ public class EnemySpawner : MonoBehaviour
                 Random.Range(pointA.position.z, pointB.position.z)
             );
 
-            GameObject enemyPrefab = (Random.value > 0.5f) ? enemyPrefab1 : enemyPrefab2;
-            GameObject enemyObj = _container.InstantiatePrefab(enemyPrefab, spawnPosition, Quaternion.identity, null);
+            // Определяем тип врага
+            GameObject prefabToSpawn = (Random.value < type1Percent) ? enemyPrefab1 : enemyPrefab2;
 
-            enemyObj.transform.Rotate(0f, 180f, 0f); // Повернуть врага на 180 градусов по оси Y
+            GameObject enemyObj = _container.InstantiatePrefab(prefabToSpawn, spawnPosition, Quaternion.identity, null);
+            enemyObj.transform.Rotate(0f, 180f, 0f);
 
             Enemy enemy = enemyObj.GetComponent<Enemy>();
-            enemies.Add(enemy);
+            spawnedEnemies.Add(enemy);
         }
 
-        if (enemies.Count > 0)
-            _enemyManager.RegisterEnemies(enemies);
+        if (spawnedEnemies.Count > 0)
+            _enemyManager.RegisterEnemies(spawnedEnemies);
 
-        enemies.Clear();
+        return spawnedEnemies.Count;
     }
 }

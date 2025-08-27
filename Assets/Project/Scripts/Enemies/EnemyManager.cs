@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,13 +6,24 @@ public class EnemyManager : MonoBehaviour
 {
     private List<Enemy> _enemies = new List<Enemy>();
 
+    public event Action<Enemy> OnEnemyDied;
+
     public void RegisterEnemies(List<Enemy> enemies)
     {
         _enemies.AddRange(enemies);
-        
+
         foreach (Enemy enemy in enemies)
         {
-            enemy.OnDeath.AddListener(() => _enemies.Remove(enemy));
+            enemy.OnDeath.AddListener(() => UnregisterEnemy(enemy));
+        }
+    }
+
+    private void UnregisterEnemy(Enemy enemy)
+    {
+        if (_enemies.Contains(enemy))
+        {
+            OnEnemyDied?.Invoke(enemy);
+            _enemies.Remove(enemy);
         }
     }
 
