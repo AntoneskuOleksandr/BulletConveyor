@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [Inject] private BulletGenerator _bulletGenerator;
     [Inject] private WeaponManager _weaponManager;
     [Inject] private EnemySpawner _enemySpawner;
+    [Inject] private WaveManager _waveManager;
 
     private void Start()
     {
@@ -22,7 +23,7 @@ public class GameManager : MonoBehaviour
         _tileGenerator.GenerateGrid(6, 6);
         _tileManager.Initialize();
         _bulletGenerator.Initialize();
-        _enemySpawner.Initialize();
+        _waveManager.Initialize();
 
         StartCoroutine(_bulletGenerator.StartBulletGeneration());
     }
