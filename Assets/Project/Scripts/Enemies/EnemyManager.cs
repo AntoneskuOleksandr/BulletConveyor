@@ -20,7 +20,7 @@ public class EnemyManager : MonoBehaviour
             if (enemy == null)
                 continue;
 
-            float distanceToEnemy = Vector3.Distance(weapon.transform.position, enemy.transform.position);
+            float distanceToEnemy = Vector3.Distance(weapon.transform.position, enemy.HitTransform.position);
 
             // игнорируем врагов вне радиуса действия
             if (distanceToEnemy > radius)
@@ -33,6 +33,6 @@ public class EnemyManager : MonoBehaviour
             }
         }
 
-        return nearestEnemy != null ? nearestEnemy.transform : null;
+        return nearestEnemy != null ? nearestEnemy.HitTransform : null;
     }
 }
