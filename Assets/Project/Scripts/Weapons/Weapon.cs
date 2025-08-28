@@ -71,15 +71,11 @@ public abstract class Weapon : MonoBehaviour
             // ¬сегда смотрим на цель, даже если пуль нет
             LockOnTarget();
 
-            // —трел€ем только если есть пул€ и наведены
-            if (_bulletInAmmo == null)
+            if (_bulletInAmmo == null && IsAimedAtTarget() && _fireCountdown <= 0f) // Trying to get bullet and shoot 
+            {
                 _bulletInAmmo = _bulletManager.GetBullet(this);
 
-            if (_bulletInAmmo != null && IsAimedAtTarget() && _fireCountdown <= 0f)
-            {
                 TryToShoot();
-                _fireCountdown = 1f / fireRate;
-                _bulletInAmmo = null;
             }
         }
         else
@@ -109,6 +105,9 @@ public abstract class Weapon : MonoBehaviour
             return;
 
         _bulletInAmmo.Init(damage, firePoint, target.HitTransform);
+
+        _fireCountdown = 1f / fireRate;
+        _bulletInAmmo = null;
     }
 
     protected void LockOnTarget()

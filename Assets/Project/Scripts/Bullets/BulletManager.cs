@@ -13,13 +13,17 @@ public class BulletManager
 
     public Bullet GetBullet(Weapon weapon)
     {
-        GameObject bulletGO;
-        bulletGO = _bulletsStack.GetBulletGOFromStack();
+        if (_bulletsStack.HaveBullet)
+        {
+            GameObject bulletGO = _bulletsStack.GetBulletGOFromStack();
 
-        if (bulletGO == null)
-            return null; // No available bullets in the stack
+            if (bulletGO == null)
+                return null; // No available bullets in the stack
 
-        return CreateBullet(bulletGO, weapon);
+            return CreateBullet(bulletGO, weapon);
+        }
+
+        return null;
     }
 
     private Bullet CreateBullet(GameObject bulletGO, Weapon weapon)
