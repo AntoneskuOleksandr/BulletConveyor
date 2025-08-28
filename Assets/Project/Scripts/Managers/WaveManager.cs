@@ -40,9 +40,7 @@ public class WaveManager : MonoBehaviour
 
         for (currentWave = 1; currentWave <= totalWaves; currentWave++)
         {
-            // ∆дЄм перед началом волны
-            if (currentWave < totalWaves)
-                yield return new WaitForSeconds(timeBetweenWaves);
+            yield return new WaitForSeconds(timeBetweenWaves);
 
             StartWave(currentWave);
 
