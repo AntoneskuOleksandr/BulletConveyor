@@ -5018,6 +5018,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buyBlockByAdButton: {fileID: 83881379}
   speedUpGameButton: {fileID: 941475404154226264}
+  timeSpeedUpValue: 3
   progressBar: {fileID: 7262064369043060611}
 --- !u!1 &941475403851990981
 GameObject:
@@ -30192,7 +30193,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3
+  m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1bdbc4fc685b05e4da5caf03ed15ca49, type: 2}
   m_sharedMaterial: {fileID: 3828498413277200818, guid: 1bdbc4fc685b05e4da5caf03ed15ca49,

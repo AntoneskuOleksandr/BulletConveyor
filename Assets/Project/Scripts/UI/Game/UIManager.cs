@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -6,11 +7,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button buyBlockByAdButton;
     [SerializeField] private Button speedUpGameButton;
 
+    [SerializeField] private float timeSpeedUpValue = 3f;
+
     [Header("Progress Bar")]
     [SerializeField] private ProgressBar progressBar;
 
     [Inject] private BlockManager _blockManager;
-    [Inject] private WaveManager _waveManager;
 
     private void Awake()
     {
@@ -39,6 +41,9 @@ public class UIManager : MonoBehaviour
 
     private void OnSpeedUpButtonClicked()
     {
-        Time.timeScale = 2f;
+        float newTimeSpeedValue = (Time.timeScale == timeSpeedUpValue) ? 1f : timeSpeedUpValue;
+
+        speedUpGameButton.GetComponentInChildren<TMP_Text>().text = newTimeSpeedValue.ToString();
+        Time.timeScale = newTimeSpeedValue;
     }
 }
