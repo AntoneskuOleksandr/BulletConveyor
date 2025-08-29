@@ -70,9 +70,9 @@ public abstract class Bullet : MonoBehaviour
 
         if (enemy != null)
         {
+            enemy.TakeDamage(Damage); //Base damage
             foreach (var effect in _effects)
             {
-                enemy.TakeDamage(Damage); //Base damage
                 effect.Apply(this, enemy);
             }
         }

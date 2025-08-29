@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class FireEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Fire;

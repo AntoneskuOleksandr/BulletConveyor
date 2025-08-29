@@ -20,7 +20,6 @@ public class BurnDebuff : IStatusEffect
 
     public void Start(Enemy enemy)
     {
-        // Запускаем корутину горения
         _burnRoutine = enemy.StartCoroutine(BurnRoutine(enemy));
     }
 
@@ -28,16 +27,18 @@ public class BurnDebuff : IStatusEffect
     {
         if (newEffect is BurnDebuff burn)
         {
-            // Продлеваем время, можно усиливать урон, если нужно
             _timeLeft = Mathf.Max(_timeLeft, burn._duration);
             _dps = Mathf.Max(_dps, burn._dps);
         }
     }
 
-    public void Stop()
+    public void Stop(Enemy enemy)
     {
-        // Если нужно прерывать — останавливаем корутину
-        // (Враг сам вызывает Stop() при удалении эффекта)
+        if (_burnRoutine != null)
+        {
+            enemy.StopCoroutine(_burnRoutine);
+            _burnRoutine = null;
+        }
     }
 
     private IEnumerator BurnRoutine(Enemy enemy)
@@ -49,6 +50,7 @@ public class BurnDebuff : IStatusEffect
             yield return null;
         }
 
-        enemy.RemoveStatusEffect(EffectType);
+        Stop(enemy);
+        enemy.RemoveStatusEffect(EffectType); // Stop уже вызовется внутри RemoveStatusEffect
     }
 }

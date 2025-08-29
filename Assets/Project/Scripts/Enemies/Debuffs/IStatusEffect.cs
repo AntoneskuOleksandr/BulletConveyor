@@ -9,5 +9,5 @@ public interface IStatusEffect
     void Refresh(IStatusEffect newEffect);
 
     // Принудительное снятие (если враг умер или истёк таймер)
-    void Stop();
+    void Stop(Enemy enemy);
 }
