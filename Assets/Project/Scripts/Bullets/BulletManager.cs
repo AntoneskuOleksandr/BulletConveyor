@@ -54,7 +54,7 @@ public class BulletManager
             case OnHitEffectType.Fire:
                 return new FireEffect(3f, 5f); // 3 сек, 5 урона/сек
             case OnHitEffectType.Freeze:
-                return new FreezeEffect(0.5f, 2f); // 2 сек, -50% скорости
+                return new FreezeEffect(2f, 0.5f); // 2 сек, -50% скорости
             // Добавляй другие эффекты по необходимости
             default:
                 return null;
