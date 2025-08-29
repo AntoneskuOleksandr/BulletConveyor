@@ -1,14 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Bullet : MonoBehaviour
 {
-    public float speed = 20f;
-    public float damage = 10f;
-
     protected Transform _target;
     protected Vector3 _direction;
     protected Rigidbody _rigidbody;
     protected Collider _collider;
+
+    protected float _speed = 20f;
+    protected float _damage = 10f;
+
+    protected List<IProjectileEffect> _effects = new List<IProjectileEffect>();
+
+    public float Damage => _damage;
+    public float Speed => _speed;
+
+    public void AddEffect(IProjectileEffect effect) => _effects.Add(effect);
 
     public virtual void Init(float damage, Transform spawnPoint, Transform target)
     {
@@ -26,7 +34,7 @@ public abstract class Bullet : MonoBehaviour
             return;
         }
 
-        this.damage = damage;
+        this._damage = damage;
         this._target = target;
 
         this.transform.position = spawnPoint.position;
@@ -43,7 +51,7 @@ public abstract class Bullet : MonoBehaviour
         _collider.isTrigger = true;
 
         _direction = _target.position - this.transform.position;
-        _rigidbody.linearVelocity = _direction.normalized * speed;
+        _rigidbody.linearVelocity = _direction.normalized * Speed;
     }
 
     protected void OnTriggerEnter(Collider other)
@@ -62,7 +70,11 @@ public abstract class Bullet : MonoBehaviour
 
         if (enemy != null)
         {
-            enemy.TakeDamage(damage);
+            foreach (var effect in _effects)
+            {
+                enemy.TakeDamage(Damage); //Base damage
+                effect.Apply(this, enemy);
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [Inject] private WeaponManager _weaponManager;
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private WaveManager _waveManager;
+    [Inject] private EffectChanceManager _effectChanceManager;
 
     private void Start()
     {
@@ -24,6 +25,12 @@ public class GameManager : MonoBehaviour
         _tileManager.Initialize();
         _bulletGenerator.Initialize();
         _waveManager.Initialize();
+        _effectChanceManager.RegisterEffectChance(
+        new EffectChanceManager.ProjectileEffectChance
+        {
+            EffectType = EffectChanceManager.ProjectileEffectType.Fire,
+            BaseChance = 1f
+        });
 
         StartCoroutine(_bulletGenerator.StartBulletGeneration());
     }

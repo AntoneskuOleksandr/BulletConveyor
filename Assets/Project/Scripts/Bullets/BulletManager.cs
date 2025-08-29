@@ -1,43 +1,45 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using static EffectChanceManager;
 
 public class BulletManager
 {
-    private BulletsStack _bulletsStack;
-
-    [Inject]
-    public void Construct(BulletsStack bulletsStack)
-    {
-        _bulletsStack = bulletsStack;
-    }
+    [Inject] private BulletsStack _bulletsStack;
+    [Inject] private EffectChanceManager _effectChanceManager;
 
     public Bullet GetBullet(Weapon weapon)
     {
-        if (_bulletsStack.HaveBullet)
-        {
-            GameObject bulletGO = _bulletsStack.GetBulletGOFromStack();
+        if (!_bulletsStack.HaveBullet) return null;
 
-            if (bulletGO == null)
-                return null; // No available bullets in the stack
+        GameObject bulletGO = _bulletsStack.GetBulletGOFromStack();
+        if (bulletGO == null) return null;
 
-            return CreateBullet(bulletGO, weapon);
-        }
+        Bullet bullet = CreateBullet(bulletGO, weapon);
+        ModifyBullet(bullet);
 
-        return null;
+        return bullet;
     }
 
     private Bullet CreateBullet(GameObject bulletGO, Weapon weapon)
     {
         switch (weapon.BulletType)
         {
-            case BulletType.Standard:
-                bulletGO.AddComponent<StandardBullet>();
-                break;
-            case BulletType.Missile:
-                bulletGO.AddComponent<Missile>();
-                break;
+            case BulletType.Standard: bulletGO.AddComponent<StandardBullet>(); break;
+            case BulletType.Missile: bulletGO.AddComponent<Missile>(); break;
         }
-
         return bulletGO.GetComponent<Bullet>();
+    }
+
+    private void ModifyBullet(Bullet bullet)
+    {
+        List<ProjectileEffectType> effects = _effectChanceManager.RollEffects();
+
+        foreach (var effectType in effects)
+        {
+            IProjectileEffect effectComponent = bullet.gameObject.AddComponentByEffectType(effectType);
+            if (effectComponent != null)
+                bullet.AddEffect(effectComponent);
+        }
     }
 }

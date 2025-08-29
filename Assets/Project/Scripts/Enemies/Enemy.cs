@@ -51,6 +51,8 @@ public abstract class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        Debug.Log(damage);
+
         _currentHealth -= damage;
         enemyStatusCanvas.SetHealthBarFillAmount(_currentHealth / maxHealth);
 
