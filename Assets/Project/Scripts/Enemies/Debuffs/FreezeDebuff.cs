@@ -4,7 +4,7 @@ using static ModifierManager;
 
 public class FreezeDebuff : IStatusEffect
 {
-    public OnHitEffectType EffectType => OnHitEffectType.Ice;
+    public OnHitEffectType EffectType => OnHitEffectType.Freeze;
 
     private float _duration;
     private float _slowAmount;      // максимальное замедление (например 0.1f = 10% скорости)
