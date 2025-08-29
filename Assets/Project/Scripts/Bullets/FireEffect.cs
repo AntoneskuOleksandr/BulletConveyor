@@ -1,26 +1,22 @@
-using System.Collections;
 using UnityEngine;
-using static EffectChanceManager;
 
-public class FireEffect : MonoBehaviour, IProjectileEffect
+public class FireEffect : IOnHitEffect
 {
-    private float _duration = 3f;
-    private float _DPS = 5f;
-    public ProjectileEffectType EffectType => ProjectileEffectType.Fire;
+    public OnHitEffectType EffectType => OnHitEffectType.Fire;
 
-    public void Apply(Bullet bullet, Enemy enemy)
+    private float _duration;
+    private float _dps;
+
+    public FireEffect(float duration, float dps)
     {
-        enemy.StartCoroutine(BurnRoutine(enemy, _duration, _DPS)); // 3 секунды, 5 урона/сек
+        _duration = duration;
+        _dps = dps;
     }
 
-    private IEnumerator BurnRoutine(Enemy enemy, float duration, float dps)
+    public void Apply(Bullet bullet, Enemy target)
     {
-        float elapsed = 0f;
-        while (elapsed < duration && enemy.IsAlive)
-        {
-            enemy.TakeDamage(dps * Time.deltaTime);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
+        // Создаём дебафф и передаём его врагу
+        var debuff = new BurnDebuff(_duration, _dps);
+        target.AddStatusEffect(debuff);
     }
 }

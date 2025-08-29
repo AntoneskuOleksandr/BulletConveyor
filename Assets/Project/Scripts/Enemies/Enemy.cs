@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -22,6 +23,7 @@ public abstract class Enemy : MonoBehaviour
     public Transform HitTransform => hitTransform;
     public UnityEvent OnDeath;
 
+    protected Dictionary<OnHitEffectType, IStatusEffect> _effects = new();
 
     [Inject]
     public void Construct(WeaponManager weaponManager)
@@ -59,6 +61,28 @@ public abstract class Enemy : MonoBehaviour
         if (_currentHealth <= 0f)
         {
             Die();
+        }
+    }
+
+    public void AddStatusEffect(IStatusEffect effect)
+    {
+        if (_effects.TryGetValue(effect.EffectType, out var existing))
+        {
+            existing.Refresh(effect);
+        }
+        else
+        {
+            _effects[effect.EffectType] = effect;
+            effect.Start(this);
+        }
+    }
+
+    public void RemoveStatusEffect(OnHitEffectType type)
+    {
+        if (_effects.ContainsKey(type))
+        {
+            _effects[type].Stop();
+            _effects.Remove(type);
         }
     }
 

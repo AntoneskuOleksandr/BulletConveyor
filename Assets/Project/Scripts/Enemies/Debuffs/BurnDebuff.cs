@@ -1,38 +1,54 @@
 using System.Collections;
 using UnityEngine;
-using static EffectChanceManager;
 
-public class BurnDebuff : IDebuff
+public class BurnDebuff : IStatusEffect
 {
-    private Enemy _enemy;
+    public OnHitEffectType EffectType => OnHitEffectType.Fire;
+
     private float _duration;
     private float _dps;
+    private float _timeLeft;
 
-    public ProjectileEffectType Type => ProjectileEffectType.Fire;
+    private Coroutine _burnRoutine;
 
-    public BurnDebuff(Enemy enemy, IProjectileEffect effect, Bullet bullet)
+    public BurnDebuff(float duration, float dps)
     {
-        _enemy = enemy;
-        _duration = effect.Duration;
-        _dps = effect.Value;
+        _duration = duration;
+        _dps = dps;
+        _timeLeft = duration;
     }
 
-    public void Start() => _enemy.StartCoroutine(ApplyRoutine());
-
-    public void Refresh(IProjectileEffect effect)
+    public void Start(Enemy enemy)
     {
-        _duration = Mathf.Max(_duration, effect.Duration); // Продлеваем эффект
-        _dps = Mathf.Max(_dps, effect.Value); // Усиливаем при необходимости
+        // Запускаем корутину горения
+        _burnRoutine = enemy.StartCoroutine(BurnRoutine(enemy));
     }
 
-    private IEnumerator ApplyRoutine()
+    public void Refresh(IStatusEffect newEffect)
     {
-        float elapsed = 0f;
-        while (elapsed < _duration && _enemy.IsAlive)
+        if (newEffect is BurnDebuff burn)
         {
-            _enemy.TakeDamage(_dps * Time.deltaTime);
-            elapsed += Time.deltaTime;
+            // Продлеваем время, можно усиливать урон, если нужно
+            _timeLeft = Mathf.Max(_timeLeft, burn._duration);
+            _dps = Mathf.Max(_dps, burn._dps);
+        }
+    }
+
+    public void Stop()
+    {
+        // Если нужно прерывать — останавливаем корутину
+        // (Враг сам вызывает Stop() при удалении эффекта)
+    }
+
+    private IEnumerator BurnRoutine(Enemy enemy)
+    {
+        while (_timeLeft > 0f && enemy.IsAlive)
+        {
+            enemy.TakeDamage(_dps * Time.deltaTime);
+            _timeLeft -= Time.deltaTime;
             yield return null;
         }
+
+        enemy.RemoveStatusEffect(EffectType);
     }
 }

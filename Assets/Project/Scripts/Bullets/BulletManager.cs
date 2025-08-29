@@ -33,13 +33,6 @@ public class BulletManager
 
     private void ModifyBullet(Bullet bullet)
     {
-        List<ProjectileEffectType> effects = _effectChanceManager.RollEffects();
-
-        foreach (var effectType in effects)
-        {
-            IProjectileEffect effectComponent = bullet.gameObject.AddComponentByEffectType(effectType);
-            if (effectComponent != null)
-                bullet.AddEffect(effectComponent);
-        }
+        List<OnHitEffectType> effects = _effectChanceManager.RollEffects();
     }
 }

@@ -8,9 +8,9 @@ public class EffectChanceManager
     public void RegisterEffectChance(ProjectileEffectChance chance) => _chances.Add(chance);
     public void Clear() => _chances.Clear();
 
-    public List<ProjectileEffectType> RollEffects()
+    public List<OnHitEffectType> RollEffects()
     {
-        List<ProjectileEffectType> results = new List<ProjectileEffectType>();
+        List<OnHitEffectType> results = new List<OnHitEffectType>();
         foreach (var c in _chances)
         {
             if (Random.value < c.TotalChance) results.Add(c.EffectType);
@@ -21,21 +21,12 @@ public class EffectChanceManager
     [System.Serializable]
     public class ProjectileEffectChance
     {
-        public ProjectileEffectType EffectType;
+        public OnHitEffectType EffectType;
         public float BaseChance;
         public float WeaponBonus;
         public float BuffBonus;
         public float EventBonus;
 
         public float TotalChance => Mathf.Clamp01(BaseChance + WeaponBonus + BuffBonus + EventBonus);
-    }
-
-    public enum ProjectileEffectType
-    {
-        Fire,
-        Ice,
-        Explosion,
-        Poison,
-        // новые эффекты легко добавлять сюда
     }
 }

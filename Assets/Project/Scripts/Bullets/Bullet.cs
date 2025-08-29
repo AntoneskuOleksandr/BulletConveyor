@@ -11,12 +11,12 @@ public abstract class Bullet : MonoBehaviour
     protected float _speed = 20f;
     protected float _damage = 10f;
 
-    protected List<IProjectileEffect> _effects = new List<IProjectileEffect>();
+    protected List<IOnHitEffect> _effects = new List<IOnHitEffect>();
 
     public float Damage => _damage;
     public float Speed => _speed;
 
-    public void AddEffect(IProjectileEffect effect) => _effects.Add(effect);
+    public void AddEffect(IOnHitEffect effect) => _effects.Add(effect);
 
     public virtual void Init(float damage, Transform spawnPoint, Transform target)
     {
