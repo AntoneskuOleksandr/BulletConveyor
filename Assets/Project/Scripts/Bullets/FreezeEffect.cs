@@ -2,10 +2,10 @@ public class FreezeEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Freeze;
 
-    private float _slowAmount;    // Например, 0.5 ? половина скорости
     private float _duration;      // Время действия "замедления"
+    private float _slowAmount;    // Например, 0.5 ? половина скорости
 
-    public FreezeEffect(float slowAmount = 0.3f, float duration = 2f)
+    public FreezeEffect(float duration = 2f, float slowAmount = 0.3f)
     {
         _slowAmount = slowAmount;
         _duration = duration;
