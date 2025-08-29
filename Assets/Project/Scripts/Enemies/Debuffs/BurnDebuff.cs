@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using static ModifierManager;
 
 public class BurnDebuff : IStatusEffect
 {
@@ -10,6 +11,7 @@ public class BurnDebuff : IStatusEffect
     private float _timeLeft;
 
     private Coroutine _burnRoutine;
+    private Enemy _enemy;
 
     public BurnDebuff(float duration, float dps)
     {
@@ -20,7 +22,12 @@ public class BurnDebuff : IStatusEffect
 
     public void Start(Enemy enemy)
     {
-        _burnRoutine = enemy.StartCoroutine(BurnRoutine(enemy));
+        _enemy = enemy;
+
+        // Добавляем модификатор урона от огня
+        _enemy.ModifierManager.AddModifier(ModifierType.FireDamageTaken, 1f); // 1.0 = без изменения, можно ставить 1.2, 1.5 и т.д.
+
+        _burnRoutine = _enemy.StartCoroutine(BurnRoutine());
     }
 
     public void Refresh(IStatusEffect newEffect)
@@ -32,24 +39,32 @@ public class BurnDebuff : IStatusEffect
         }
     }
 
-    public void Stop(Enemy enemy)
+    public void Stop()
     {
-        if (_burnRoutine != null)
+        if (_burnRoutine != null && _enemy != null)
         {
-            enemy.StopCoroutine(_burnRoutine);
+            _enemy.StopCoroutine(_burnRoutine);
             _burnRoutine = null;
         }
+
+        // Убираем модификатор
+        _enemy.ModifierManager.RemoveModifier(ModifierType.FireDamageTaken);
     }
 
-    private IEnumerator BurnRoutine(Enemy enemy)
+    private IEnumerator BurnRoutine()
     {
-        while (_timeLeft > 0f && enemy.IsAlive)
+        while (_timeLeft > 0f && _enemy.IsAlive)
         {
-            enemy.TakeDamage(_dps * Time.deltaTime);
+            float damage = _dps * Time.deltaTime;
+            damage = _enemy.ModifierManager.ApplyModifiers(ModifierType.FireDamageTaken, damage);
+
+            _enemy.TakeDamage(damage);
+
             _timeLeft -= Time.deltaTime;
             yield return null;
         }
 
-        enemy.RemoveStatusEffect(EffectType);
+        Stop();
+        _enemy.RemoveStatusEffect(EffectType);
     }
 }

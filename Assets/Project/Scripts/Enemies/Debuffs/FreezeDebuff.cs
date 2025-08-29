@@ -1,65 +1,68 @@
 using System.Collections;
 using UnityEngine;
+using static ModifierManager;
 
 public class FreezeDebuff : IStatusEffect
 {
-    public OnHitEffectType EffectType => OnHitEffectType.Freeze;
+    public OnHitEffectType EffectType => OnHitEffectType.Ice;
 
-    private float _slowAmount;      // базовое замедление
-    private float _duration;        // базовое время действия
-    private float _stackIncrement;  // на сколько увеличивается замедление при повторном попадании
-
-    private float _currentSlow;     // текущий эффект замедления
+    private float _duration;
+    private float _slowAmount;      // максимальное замедление (например 0.1f = 10% скорости)
     private float _timeLeft;
 
-    private Coroutine _routine;
+    private Coroutine _freezeRoutine;
+    private Enemy _enemy;
 
-    public FreezeDebuff(float slowAmount, float duration, float stackIncrement)
+    public FreezeDebuff(float duration, float slowAmount)
     {
-        _slowAmount = slowAmount;
         _duration = duration;
-        _stackIncrement = stackIncrement;
-        _currentSlow = slowAmount;
+        _slowAmount = Mathf.Clamp01(slowAmount);
         _timeLeft = duration;
     }
 
     public void Start(Enemy enemy)
     {
-        enemy.ModifySpeed(1f - _currentSlow); // сразу замедляем
-        _routine = enemy.StartCoroutine(FreezeRoutine(enemy));
+        _enemy = enemy;
+
+        // Запускаем корутину заморозки
+        _freezeRoutine = _enemy.StartCoroutine(FreezeRoutine());
     }
 
     public void Refresh(IStatusEffect newEffect)
     {
         if (newEffect is FreezeDebuff freeze)
         {
-            _timeLeft = Mathf.Max(_timeLeft, freeze._duration);          // продлеваем таймер
-            _currentSlow = Mathf.Min(_currentSlow + freeze._stackIncrement, 1f); // накапливаем эффект
+            // Продлеваем эффект
+            _timeLeft = Mathf.Max(_timeLeft, freeze._duration);
+            _slowAmount = Mathf.Max(_slowAmount, freeze._slowAmount);
         }
     }
 
-    public void Stop(Enemy enemy)
+    public void Stop()
     {
-        if (_routine != null) 
+        if (_freezeRoutine != null && _enemy != null)
         {
-            enemy.StopCoroutine(_routine);
-            _routine = null;
+            _enemy.StopCoroutine(_freezeRoutine);
+            _freezeRoutine = null;
+
+            // Убираем замедление
+            _enemy.ModifierManager.RemoveModifier(ModifierType.Slow);
         }
-        enemy.ModifySpeed(1f); // восстанавливаем скорость
     }
 
-    private IEnumerator FreezeRoutine(Enemy enemy)
+    private IEnumerator FreezeRoutine()
     {
-        while (_timeLeft > 0f && enemy.IsAlive)
+        while (_timeLeft > 0f && _enemy.IsAlive)
         {
-            // Обновляем скорость каждый кадр (можно сделать плавную интерполяцию)
-            enemy.ModifySpeed(1f - _currentSlow);
+            // Чем меньше времени осталось, тем сильнее замедление
+            float multiplier = Mathf.Lerp(1f, 1f - _slowAmount, 1f - (_timeLeft / _duration));
+            _enemy.ModifierManager.AddModifier(ModifierType.Slow, multiplier);
 
             _timeLeft -= Time.deltaTime;
             yield return null;
         }
 
-        Stop(enemy);
-        enemy.RemoveStatusEffect(EffectType);
+        Stop();
+        _enemy.RemoveStatusEffect(EffectType);
     }
 }

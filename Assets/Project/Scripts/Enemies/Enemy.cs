@@ -9,6 +9,7 @@ public abstract class Enemy : MonoBehaviour
     [Header("Debug Effects")]
     [SerializeField] private List<OnHitEffectType> _activeEffectsDebug = new List<OnHitEffectType>();
 
+    [Header("Stats")]
     [SerializeField] protected float maxHealth = 100f;
     [SerializeField] protected Transform hitTransform;
     [SerializeField] protected EnemyStatusCanvas enemyStatusCanvas;
@@ -22,16 +23,22 @@ public abstract class Enemy : MonoBehaviour
     protected float _currentHealth;
 
     public bool IsAlive => _currentHealth > 0f;
-
     public Transform HitTransform => hitTransform;
     public UnityEvent OnDeath;
 
+    // Все активные дебафы/бафы на враге
     protected Dictionary<OnHitEffectType, IStatusEffect> _effects = new();
+
+    // Менеджер модификаторов для комбинирования эффектов
+    public ModifierManager ModifierManager { get; private set; }
 
     [Inject]
     public void Construct(WeaponManager weaponManager)
     {
-        _target = weaponManager.GetRandomWeapon().transform;
+        // Добавляем менеджер модификаторов на врага
+        ModifierManager = this.gameObject.AddComponent<ModifierManager>();
+
+        _target = weaponManager.GetRandomWeapon()?.transform;
 
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
@@ -45,8 +52,11 @@ public abstract class Enemy : MonoBehaviour
     {
         OnDeath.AddListener(() => enemyStatusCanvas.HideHealthBar());
 
-        _agent.SetDestination(_target.position);
-        _animator.SetFloat("MoveSpeed", _agent.speed / 2f);
+        if (_target != null && _agent != null)
+        {
+            _agent.SetDestination(_target.position);
+            _animator.SetFloat("MoveSpeed", _agent.speed / 2f);
+        }
     }
 
     protected void OnDisable()
@@ -56,41 +66,50 @@ public abstract class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (!IsAlive) return;
+
         _currentHealth -= damage;
         enemyStatusCanvas.SetHealthBarFillAmount(_currentHealth / maxHealth);
 
         if (_currentHealth <= 0f)
-        {
             Die();
-        }
     }
 
+    /// <summary>
+    /// Добавление дебаффа/бафа на врага
+    /// </summary>
     public void AddStatusEffect(IStatusEffect effect)
     {
         if (_effects.TryGetValue(effect.EffectType, out var existing))
         {
-            existing.Refresh(effect);
+            existing.Refresh(effect); // продление или усиление эффекта
         }
         else
         {
             _effects[effect.EffectType] = effect;
-            effect.Start(this);
+            effect.Start(this); // запускаем эффект (например, корутину)
         }
 
         UpdateDebugEffects();
     }
 
+    /// <summary>
+    /// Удаление эффекта
+    /// </summary>
     public void RemoveStatusEffect(OnHitEffectType type)
     {
-        if (_effects.ContainsKey(type))
+        if (_effects.TryGetValue(type, out var effect))
         {
-            _effects[type].Stop(this);
+            effect.Stop(); // останавливаем корутину/эффект
             _effects.Remove(type);
         }
 
         UpdateDebugEffects();
     }
 
+    /// <summary>
+    /// Обновление debug-листа активных эффектов
+    /// </summary>
     private void UpdateDebugEffects()
     {
         _activeEffectsDebug.Clear();
@@ -98,25 +117,27 @@ public abstract class Enemy : MonoBehaviour
             _activeEffectsDebug.Add(effect);
     }
 
-    public void ModifySpeed(float multiplier)
-    {
-        if (_agent != null)
-            _agent.speed = _agent.speed * multiplier; // speedBase – исходная скорость агента
-        if (_animator != null)
-            _animator.SetFloat("MoveSpeed", _agent.speed / 2f); // чтобы анимация шла под новую скорость
-    }
-
+    /// <summary>
+    /// Смерть врага
+    /// </summary>
     protected void Die()
     {
+        if (!IsAlive) return;
+
+        _currentHealth = 0f;
         OnDeath?.Invoke();
 
         _collider.enabled = false;
-        _rigidbody.isKinematic = true;
+        if (_rigidbody != null) _rigidbody.isKinematic = true;
 
-        _agent.isStopped = true;
-        _agent.enabled = false;
+        if (_agent != null)
+        {
+            _agent.isStopped = true;
+            _agent.enabled = false;
+        }
 
-        _animator.SetTrigger("DeathTrigger");
+        if (_animator != null)
+            _animator.SetTrigger("DeathTrigger");
 
         Destroy(this.gameObject, 5f);
     }
