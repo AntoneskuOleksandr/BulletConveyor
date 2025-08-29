@@ -9,7 +9,8 @@ public interface IOnHitEffect
 public enum OnHitEffectType
 {
     Fire,
-    Ice,
+    Freeze,
     Poison,
+    Ice,
     Explosion
 }

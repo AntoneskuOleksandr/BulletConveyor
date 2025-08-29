@@ -50,7 +50,6 @@ public class BurnDebuff : IStatusEffect
             yield return null;
         }
 
-        Stop(enemy);
-        enemy.RemoveStatusEffect(EffectType); // Stop уже вызовется внутри RemoveStatusEffect
+        enemy.RemoveStatusEffect(EffectType);
     }
 }

@@ -6,6 +6,9 @@ using Zenject;
 
 public abstract class Enemy : MonoBehaviour
 {
+    [Header("Debug Effects")]
+    [SerializeField] private List<OnHitEffectType> _activeEffectsDebug = new List<OnHitEffectType>();
+
     [SerializeField] protected float maxHealth = 100f;
     [SerializeField] protected Transform hitTransform;
     [SerializeField] protected EnemyStatusCanvas enemyStatusCanvas;
@@ -73,14 +76,34 @@ public abstract class Enemy : MonoBehaviour
             _effects[effect.EffectType] = effect;
             effect.Start(this);
         }
+
+        UpdateDebugEffects();
     }
 
     public void RemoveStatusEffect(OnHitEffectType type)
     {
         if (_effects.ContainsKey(type))
         {
+            _effects[type].Stop(this);
             _effects.Remove(type);
         }
+
+        UpdateDebugEffects();
+    }
+
+    private void UpdateDebugEffects()
+    {
+        _activeEffectsDebug.Clear();
+        foreach (var effect in _effects.Keys)
+            _activeEffectsDebug.Add(effect);
+    }
+
+    public void ModifySpeed(float multiplier)
+    {
+        if (_agent != null)
+            _agent.speed = _agent.speed * multiplier; // speedBase – исходная скорость агента
+        if (_animator != null)
+            _animator.SetFloat("MoveSpeed", _agent.speed / 2f); // чтобы анимация шла под новую скорость
     }
 
     protected void Die()

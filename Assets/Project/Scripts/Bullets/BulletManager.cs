@@ -33,6 +33,7 @@ public class BulletManager
 
     private void ModifyBullet(Bullet bullet)
     {
+        Debug.Log("ModifyBullet");
         List<OnHitEffectType> effects = _effectChanceManager.RollEffects();
 
         foreach (var effectType in effects)
