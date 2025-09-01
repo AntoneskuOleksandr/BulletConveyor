@@ -28,17 +28,12 @@ public class ModifierManager : MonoBehaviour
     public void AddModifier(ModifierType type, float value)
     {
         _modifiers[type] = value;
-        if (type == ModifierType.Slow)
-            UpdateSpeed();
     }
 
     public void RemoveModifier(ModifierType type)
     {
         if (_modifiers.ContainsKey(type))
             _modifiers.Remove(type);
-
-        if (type == ModifierType.Slow)
-            UpdateSpeed();
     }
 
     public float ApplyModifiers(ModifierType type, float baseValue)
@@ -47,23 +42,6 @@ public class ModifierManager : MonoBehaviour
             return baseValue * multiplier;
 
         return baseValue;
-    }
-
-    private void UpdateSpeed()
-    {
-        if (_enemy == null) return;
-
-        float slowMultiplier = 1f;
-        if (_modifiers.TryGetValue(ModifierType.Slow, out float multiplier))
-            slowMultiplier = multiplier;
-
-        var agent = _enemy.GetComponent<NavMeshAgent>();
-        if (agent != null)
-            agent.speed = _baseSpeed * slowMultiplier;
-
-        var animator = _enemy.GetComponent<Animator>();
-        if (animator != null)
-            animator.SetFloat("MoveSpeed", agent.speed / 2f); // для анимации
     }
 
     public List<string> GetActiveModifiers()
