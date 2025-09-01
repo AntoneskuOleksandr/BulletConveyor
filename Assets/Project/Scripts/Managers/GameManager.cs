@@ -29,8 +29,14 @@ public class GameManager : MonoBehaviour
         _effectChanceManager.RegisterEffectChance(
             new EffectChanceManager.ProjectileEffectChance
             {
+                EffectType = OnHitEffectType.Freeze,
+                BaseChance = 0.5f
+            });
+        _effectChanceManager.RegisterEffectChance(
+            new EffectChanceManager.ProjectileEffectChance
+            {
                 EffectType = OnHitEffectType.Fire,
-                BaseChance = 1f
+                BaseChance = 0.5f
             });
 
         StartCoroutine(_bulletGenerator.StartBulletGeneration());

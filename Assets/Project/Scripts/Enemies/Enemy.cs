@@ -6,9 +6,6 @@ using Zenject;
 
 public abstract class Enemy : MonoBehaviour
 {
-    [Header("Debug Effects")]
-    [SerializeField] private List<OnHitEffectType> _activeEffectsDebug = new List<OnHitEffectType>();
-
     [Header("Stats")]
     [SerializeField] protected float baseSpeed = 1f;
     [SerializeField] protected float maxHealth = 100f;
@@ -39,7 +36,7 @@ public abstract class Enemy : MonoBehaviour
     {
         // Добавляем менеджер модификаторов на врага
         ModifierManager = this.gameObject.AddComponent<ModifierManager>();
-        ModifierManager.Initialize(this);
+        ModifierManager.Initialize(this, enemyStatusCanvas);
 
         _target = weaponManager.GetRandomWeapon()?.transform;
 
@@ -81,53 +78,6 @@ public abstract class Enemy : MonoBehaviour
 
         if (!IsAlive)
             Die();
-    }
-
-    /// <summary>
-    /// Добавление дебаффа/бафа на врага
-    /// </summary>
-    public void AddStatusEffect(IStatusEffect effect)
-    {
-        if (_effects.TryGetValue(effect.EffectType, out var existing))
-        {
-            existing.Refresh(effect); // обновляем существующий эффект
-        }
-        else
-        {
-            _effects[effect.EffectType] = effect;
-            effect.Start(this);
-
-            // создаём UI только для нового эффекта
-            enemyStatusCanvas.AddStatusEffect(effect, effect.Icon);
-        }
-
-        UpdateDebugEffects();
-    }
-
-    /// <summary>
-    /// Удаление эффекта
-    /// </summary>
-    public void RemoveStatusEffect(OnHitEffectType type)
-    {
-        if (_effects.TryGetValue(type, out var effect))
-        {
-            effect.Stop();
-            _effects.Remove(type);
-
-            enemyStatusCanvas.RemoveStatusEffect(type);
-        }
-
-        UpdateDebugEffects();
-    }
-
-    /// <summary>
-    /// Обновление debug-листа активных эффектов
-    /// </summary>
-    private void UpdateDebugEffects()
-    {
-        _activeEffectsDebug.Clear();
-        foreach (var effect in _effects.Keys)
-            _activeEffectsDebug.Add(effect);
     }
 
     /// <summary>

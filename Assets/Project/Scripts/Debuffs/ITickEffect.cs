@@ -1,4 +1,6 @@
 public interface ITickEffect : IStatusEffect
 {
-    public float DPS { get; }
+    float DPS { get; }
+    void Tick(float deltaTime, Enemy enemy);
+    bool IsFinished();
 }

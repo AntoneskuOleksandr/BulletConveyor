@@ -33,7 +33,6 @@ public class EnemyStatusCanvas : MonoBehaviour
     #region Status Effects
     public void AddStatusEffect(IStatusEffect effect, Sprite icon)
     {
-        Debug.Log(icon);
         if (_activeEffects.ContainsKey(effect.EffectType))
         {
             // Обновляем UI существующего эффекта

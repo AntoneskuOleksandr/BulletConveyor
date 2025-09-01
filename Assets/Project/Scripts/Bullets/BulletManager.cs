@@ -37,11 +37,18 @@ public class BulletManager
 
     private void AddEffectsToBullet(Bullet bullet)
     {
-        List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffects();
+        //List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffects();
+        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
+        {
+            OnHitEffectType.Fire,
+            OnHitEffectType.Freeze
+        };
+
 
         foreach (var type in effectTypes)
         {
             IOnHitEffect effect = _effectFactory.CreateEffect(type);
+
             if (effect != null)
                 bullet.AddEffect(effect);
         }

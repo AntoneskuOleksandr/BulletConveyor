@@ -1,69 +1,76 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class FreezeDebuff : IStatusEffect
+public class FreezeDebuff : ITickEffect, IModifierEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Freeze;
+    public float Duration { get; private set; }   // активная фаза заморозки
+    public float Elapsed { get; private set; }
+    public float DPS => 0f;
+    public Sprite Icon { get; private set; }
+    public float DurationLeft => Mathf.Max(Duration - Elapsed, 0f);
 
-    public float DurationLeft => throw new System.NotImplementedException();
-    public float Duration => throw new System.NotImplementedException();
+    private float _slow;           // текущий процент замедления (0-1)
+    private float _stackedSlow;    // прирост замедления при попадании
+    private float _meltSpeed;      // ускорение таяния от огня
 
-    public Sprite Icon => throw new System.NotImplementedException();
+    private const float BASE_MELT_SPEED = 0.3f;
 
-
-    private float _duration;
-    private float _slowAmount;      // максимальное замедление (например 0.1f = 10% скорости)
-    private float _timeLeft;
-
-    private Coroutine _freezeRoutine;
-    private Enemy _enemy;
-
-    public FreezeDebuff(float duration, float slowAmount)
+    public FreezeDebuff(float slowAmount, float duration, Sprite icon)
     {
-        _duration = duration;
-        _slowAmount = Mathf.Clamp01(slowAmount);
-        _timeLeft = duration;
+        Duration = duration;
+        Icon = icon;
+        Elapsed = 0f;
+        _slow = Mathf.Clamp01(slowAmount);
+        _stackedSlow = _slow;
+        _meltSpeed = 1f;
     }
 
-    public void Start(Enemy enemy)
+    public void Tick(float deltaTime, Enemy enemy)
     {
-        _enemy = enemy;
+        if (_slow <= 0f)
+            return;
 
-        // Запускаем корутину заморозки
-        _freezeRoutine = _enemy.StartCoroutine(FreezeRoutine());
+        if (Elapsed < Duration)
+        {
+            Elapsed += deltaTime * _meltSpeed;
+        }
+        else
+        {
+            // фаза таяния
+            float meltFactor = _meltSpeed * BASE_MELT_SPEED;
+            _slow -= meltFactor * deltaTime;
+            _slow = Mathf.Max(0f, _slow);
+        }
+
+        // применяем замедление врагу
+        enemy.SetSpeed(enemy.BaseSpeed * (1f - _slow));
     }
 
     public void Refresh(IStatusEffect newEffect)
     {
         if (newEffect is FreezeDebuff freeze)
         {
-            // Продлеваем эффект
-            _timeLeft = Mathf.Max(_timeLeft, freeze._duration);
-            _slowAmount = Mathf.Max(_slowAmount, freeze._slowAmount);
+            // стакуем замедление
+            _slow = Mathf.Clamp01(_slow + freeze._stackedSlow);
+            _stackedSlow = freeze._stackedSlow;
+
+            // продлеваем активную фазу
+            Duration = Mathf.Max(Duration, freeze.Duration);
+            Elapsed = 0f;
         }
     }
 
-    public void Stop()
+    public bool IsFinished() => _slow <= 0f;
+
+    // ускоренное таяние/сокращение Duration от огня
+    public void StartMelt(float fireMeltSpeed)
     {
-        if (_freezeRoutine != null && _enemy != null)
-        {
-            _enemy.StopCoroutine(_freezeRoutine);
-            _freezeRoutine = null;
-        }
+        _meltSpeed = Mathf.Max(_meltSpeed, fireMeltSpeed);
     }
 
-    private IEnumerator FreezeRoutine()
+    public Dictionary<ModifierType, float> GetModifiers()
     {
-        while (_timeLeft > 0f && _enemy.IsAlive)
-        {
-            // Чем меньше времени осталось, тем сильнее замедление
-            float multiplier = Mathf.Lerp(1f, 1f - _slowAmount, 1f - (_timeLeft / _duration));
-
-            _timeLeft -= Time.deltaTime;
-            yield return null;
-        }
-
-        Stop();
-        _enemy.RemoveStatusEffect(EffectType);
+        return new Dictionary<ModifierType, float> { { ModifierType.Slow, _slow } };
     }
 }

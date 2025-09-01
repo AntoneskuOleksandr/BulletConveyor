@@ -1,19 +1,23 @@
+using UnityEngine;
+
 public class FreezeEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Freeze;
 
-    private float _duration;      // Время действия "замедления"
-    private float _slowAmount;    // Например, 0.5 ? половина скорости
+    private float _slowAmount; // от 0 до 1
+    private float _duration;   // таймер для стаков (2 секунды)
+    private Sprite _icon;
 
-    public FreezeEffect(float duration = 2f, float slowAmount = 0.3f)
+    public FreezeEffect(float slowAmount, float duration, Sprite icon)
     {
-        _slowAmount = slowAmount;
+        _slowAmount = Mathf.Clamp01(slowAmount);
         _duration = duration;
+        _icon = icon;
     }
 
     public void Apply(Bullet bullet, Enemy target)
     {
-        var debuff = new FreezeDebuff(_duration, _slowAmount);
-        target.AddStatusEffect(debuff);
+        var debuff = new FreezeDebuff(_slowAmount, _duration, _icon);
+        target.ModifierManager.AddStatusEffect(debuff);
     }
 }
