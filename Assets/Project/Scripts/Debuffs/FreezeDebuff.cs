@@ -1,10 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using static ModifierManager;
 
 public class FreezeDebuff : IStatusEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Freeze;
+
+    public float DurationLeft => throw new System.NotImplementedException();
 
     private float _duration;
     private float _slowAmount;      // максимальное замедление (например 0.1f = 10% скорости)
@@ -44,9 +45,6 @@ public class FreezeDebuff : IStatusEffect
         {
             _enemy.StopCoroutine(_freezeRoutine);
             _freezeRoutine = null;
-
-            // Убираем замедление
-            _enemy.ModifierManager.RemoveModifier(ModifierType.Slow);
         }
     }
 
@@ -56,7 +54,6 @@ public class FreezeDebuff : IStatusEffect
         {
             // Чем меньше времени осталось, тем сильнее замедление
             float multiplier = Mathf.Lerp(1f, 1f - _slowAmount, 1f - (_timeLeft / _duration));
-            _enemy.ModifierManager.AddModifier(ModifierType.Slow, multiplier);
 
             _timeLeft -= Time.deltaTime;
             yield return null;

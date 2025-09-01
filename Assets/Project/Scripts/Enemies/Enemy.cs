@@ -10,6 +10,7 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] private List<OnHitEffectType> _activeEffectsDebug = new List<OnHitEffectType>();
 
     [Header("Stats")]
+    [SerializeField] protected float baseSpeed = 1f;
     [SerializeField] protected float maxHealth = 100f;
     [SerializeField] protected Transform hitTransform;
     [SerializeField] protected EnemyStatusCanvas enemyStatusCanvas;
@@ -23,6 +24,7 @@ public abstract class Enemy : MonoBehaviour
     protected float _currentHealth;
 
     public bool IsAlive => _currentHealth > 0f;
+    public float BaseSpeed => baseSpeed;
     public Transform HitTransform => hitTransform;
     public UnityEvent OnDeath;
 
@@ -37,6 +39,7 @@ public abstract class Enemy : MonoBehaviour
     {
         // Добавляем менеджер модификаторов на врага
         ModifierManager = this.gameObject.AddComponent<ModifierManager>();
+        ModifierManager.Initialize(this);
 
         _target = weaponManager.GetRandomWeapon()?.transform;
 
@@ -64,6 +67,11 @@ public abstract class Enemy : MonoBehaviour
         OnDeath.RemoveListener(() => enemyStatusCanvas.HideHealthBar());
     }
 
+    public void SetSpeed(float speed)
+    {
+        _agent.speed = speed;
+    }
+
     public void TakeDamage(float damage)
     {
         if (!IsAlive) return;
@@ -71,7 +79,7 @@ public abstract class Enemy : MonoBehaviour
         _currentHealth -= damage;
         enemyStatusCanvas.SetHealthBarFillAmount(_currentHealth / maxHealth);
 
-        if (_currentHealth <= 0f)
+        if (!IsAlive)
             Die();
     }
 
@@ -122,8 +130,6 @@ public abstract class Enemy : MonoBehaviour
     /// </summary>
     protected void Die()
     {
-        if (!IsAlive) return;
-
         _currentHealth = 0f;
         OnDeath?.Invoke();
 

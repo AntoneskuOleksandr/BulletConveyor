@@ -405,6 +405,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65161fa2363d244dbb145248c257d1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _activeEffectsDebug: 
+  baseSpeed: 1
   maxHealth: 100
   hitTransform: {fileID: 6859917437934386780}
   enemyStatusCanvas: {fileID: 1307107464858118680}
