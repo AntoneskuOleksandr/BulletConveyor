@@ -90,12 +90,15 @@ public abstract class Enemy : MonoBehaviour
     {
         if (_effects.TryGetValue(effect.EffectType, out var existing))
         {
-            existing.Refresh(effect); // продление или усиление эффекта
+            existing.Refresh(effect); // обновляем существующий эффект
         }
         else
         {
             _effects[effect.EffectType] = effect;
-            effect.Start(this); // запускаем эффект (например, корутину)
+            effect.Start(this);
+
+            // создаём UI только для нового эффекта
+            enemyStatusCanvas.AddStatusEffect(effect, effect.Icon);
         }
 
         UpdateDebugEffects();
@@ -108,8 +111,10 @@ public abstract class Enemy : MonoBehaviour
     {
         if (_effects.TryGetValue(type, out var effect))
         {
-            effect.Stop(); // останавливаем корутину/эффект
+            effect.Stop();
             _effects.Remove(type);
+
+            enemyStatusCanvas.RemoveStatusEffect(type);
         }
 
         UpdateDebugEffects();

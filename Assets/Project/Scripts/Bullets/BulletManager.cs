@@ -6,6 +6,7 @@ public class BulletManager
 {
     [Inject] private BulletsStack _bulletsStack;
     [Inject] private EffectChanceManager _effectChanceManager;
+    [Inject] private EffectFactory _effectFactory;
 
     public Bullet GetBullet(Weapon weapon)
     {
@@ -40,24 +41,9 @@ public class BulletManager
 
         foreach (var type in effectTypes)
         {
-            IOnHitEffect effect = CreateEffectFromType(type);
+            IOnHitEffect effect = _effectFactory.CreateEffect(type);
             if (effect != null)
                 bullet.AddEffect(effect);
-        }
-    }
-
-    // Здесь создаём конкретный IOnHitEffect по типу
-    private IOnHitEffect CreateEffectFromType(OnHitEffectType type)
-    {
-        switch (type)
-        {
-            case OnHitEffectType.Fire:
-                return new FireEffect(3f, 5f); // 3 сек, 5 урона/сек
-            case OnHitEffectType.Freeze:
-                return new FreezeEffect(2f, 0.5f); // 2 сек, -50% скорости
-            // Добавляй другие эффекты по необходимости
-            default:
-                return null;
         }
     }
 }

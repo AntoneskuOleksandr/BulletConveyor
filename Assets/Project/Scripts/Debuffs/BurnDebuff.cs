@@ -10,14 +10,18 @@ public class BurnDebuff : ITickEffect
     public float DPS { get; private set; }
     public float DurationLeft => Mathf.Max(Duration - Elapsed, 0f);
 
+    public Sprite Icon { get; private set; }
+
     private Coroutine _burnRoutine;
     private Enemy _enemy;
 
-    public BurnDebuff(float duration, float dps)
+    public BurnDebuff(float duration, float dps, Sprite icon)
     {
         Duration = duration;
         DPS = dps;
         Elapsed = 0f;
+
+        Icon = icon;
     }
 
     public void Start(Enemy enemy)

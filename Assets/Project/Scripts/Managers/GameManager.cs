@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private WaveManager _waveManager;
     [Inject] private EffectChanceManager _effectChanceManager;
+    [Inject] private EffectFactory _effectFactory;
 
     private void Start()
     {

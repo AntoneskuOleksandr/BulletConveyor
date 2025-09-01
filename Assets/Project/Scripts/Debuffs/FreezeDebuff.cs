@@ -6,6 +6,10 @@ public class FreezeDebuff : IStatusEffect
     public OnHitEffectType EffectType => OnHitEffectType.Freeze;
 
     public float DurationLeft => throw new System.NotImplementedException();
+    public float Duration => throw new System.NotImplementedException();
+
+    public Sprite Icon => throw new System.NotImplementedException();
+
 
     private float _duration;
     private float _slowAmount;      // максимальное замедление (например 0.1f = 10% скорости)
