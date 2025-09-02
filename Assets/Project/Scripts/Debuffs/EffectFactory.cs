@@ -5,6 +5,7 @@ public class EffectFactory : MonoBehaviour
     [SerializeField] private Sprite fireIcon;
     [SerializeField] private Sprite freezeIcon;
     [SerializeField] private Sprite iceIcon;
+    [SerializeField] private Sprite lightningIcon;
 
     [SerializeField] private StatusEffectSO[] allEffects; // массив всех ScriptableObject эффектов
 
@@ -25,6 +26,9 @@ public class EffectFactory : MonoBehaviour
                 return new FreezeEffect(data.GetParameter("Strength"), data.Duration);
             case OnHitEffectType.Ice:
                 return new IceEffect(data.GetParameter("MeltSpeed"), data.Duration);
+            case OnHitEffectType.Lightning:
+                return new LightningEffect(data.GetParameter("DamagePerTick"), data.GetParameter("Radius"),
+                    (int)data.GetParameter("MaxBounces"), data.GetParameter("TicksPerSecond"), data.Duration);
             default:
                 return null;
         }
@@ -44,6 +48,7 @@ public class EffectFactory : MonoBehaviour
             OnHitEffectType.Fire => fireIcon,
             OnHitEffectType.Freeze => freezeIcon,
             OnHitEffectType.Ice => iceIcon,
+            OnHitEffectType.Lightning => lightningIcon,
             _ => null
         };
     }

@@ -10,7 +10,6 @@ public enum OnHitEffectType
 {
     Fire,
     Freeze,
-    Poison,
     Ice,
-    Explosion
+    Lightning
 }
