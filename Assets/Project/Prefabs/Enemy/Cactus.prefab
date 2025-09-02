@@ -32,6 +32,68 @@ Transform:
   - {fileID: 4241805018542109692}
   m_Father: {fileID: 9168669578900586330}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1109682701708598185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5629395328369406369}
+  - component: {fileID: 4422166274026902767}
+  m_Layer: 7
+  m_Name: 'EffectsContainer '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5629395328369406369
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109682701708598185}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5636765221417673934}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 30.49}
+  m_SizeDelta: {x: 100, y: 31.17}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4422166274026902767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109682701708598185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 3
+  m_Spacing: 10
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 1
+  m_ChildScaleHeight: 1
+  m_ReverseArrangement: 0
 --- !u!1 &1761876594259046278
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,6 +467,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65161fa2363d244dbb145248c257d1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _activeEffectsDebug: 
+  baseSpeed: 1
   maxHealth: 100
   hitTransform: {fileID: 6859917437934386780}
   enemyStatusCanvas: {fileID: 1307107464858118680}
@@ -1285,7 +1349,7 @@ PrefabInstance:
     - target: {fileID: 1070659071426190891, guid: f00661b329494be4b984ad645ac57fa6,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1070659071426190895, guid: f00661b329494be4b984ad645ac57fa6,
         type: 3}
@@ -1394,7 +1458,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1070659071426190895, guid: f00661b329494be4b984ad645ac57fa6,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5629395328369406369}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1070659071426190891, guid: f00661b329494be4b984ad645ac57fa6,
         type: 3}
@@ -1420,6 +1488,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 5636765221916614440}
+  effectsContainer: {fileID: 5629395328369406369}
+  effectUIPrefab: {fileID: 290238559842600086, guid: 34c4fbff1c3fc9c42a6b9e8c89f27548,
+    type: 3}
 --- !u!224 &5636765221417673934 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1070659071426190895, guid: f00661b329494be4b984ad645ac57fa6,

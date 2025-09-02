@@ -24,8 +24,6 @@ public class TileGenerator : MonoBehaviour
                 tiles[x, y].name = string.Format("X:{0}, Y:{1}", x, y);
             }
         }
-
-        Debug.Log("Grid generated with size: " + rows + "x" + columns);
     }
 
     public Tile[,] GetAllTiles()

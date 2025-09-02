@@ -28,7 +28,6 @@ public class UIManager : MonoBehaviour
 
     private void OnBuyBlockByAdButtonClicked()
     {
-        Debug.Log("Buy Block by Ad button clicked.");
         if (_blockManager != null)
         {
             _blockManager.CreateBlock(0); // Assuming 0 is the index of the block to create

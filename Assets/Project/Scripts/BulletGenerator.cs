@@ -53,7 +53,6 @@ public class BulletGenerator : MonoBehaviour
 
     public IEnumerator StartBulletGeneration()
     {
-        Debug.Log("Bullet Generation Started");
         while (true)
         {
             yield return new WaitForSeconds(spawnInterval);

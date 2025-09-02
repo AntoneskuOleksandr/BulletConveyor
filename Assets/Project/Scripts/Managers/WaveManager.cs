@@ -58,8 +58,6 @@ public class WaveManager : MonoBehaviour
 
     private void StartWave(int waveIndex)
     {
-        Debug.Log($"Starting wave {waveIndex}.");
-
         // —читаем, сколько врагов нужно спавнить
         int minCount = minEnemyCount + enemyIncrementPerWave * (waveIndex - 1);
         int maxCount = maxEnemyCount + enemyIncrementPerWave * (waveIndex - 1);
@@ -74,7 +72,6 @@ public class WaveManager : MonoBehaviour
 
     private void EndWave(int waveIndex)
     {
-        Debug.Log($"Wave {waveIndex} completed.");
         OnWaveCompleted?.Invoke(waveIndex);
     }
 
