@@ -30,7 +30,7 @@ public class WaveManager : MonoBehaviour
 
     public void Initialize()
     {
-        _enemyManager.OnEnemyDied += HandleEnemyDied;
+        _enemyManager.OnEnemyDied += HandleEnemyDeath;
         StartCoroutine(WaveRoutine());
     }
 
@@ -75,7 +75,7 @@ public class WaveManager : MonoBehaviour
         OnWaveCompleted?.Invoke(waveIndex);
     }
 
-    private void HandleEnemyDied(Enemy enemy)
+    private void HandleEnemyDeath(Enemy enemy)
     {
         enemiesAlive = Mathf.Max(0, enemiesAlive - 1);
         OnEnemiesChanged?.Invoke(enemiesAlive, enemiesAlive);

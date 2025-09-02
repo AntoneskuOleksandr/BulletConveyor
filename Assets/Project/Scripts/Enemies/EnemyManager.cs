@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class EnemyManager : MonoBehaviour
 {
+    public event Action<Enemy> OnEnemyDied;
+
     private List<Enemy> _enemies = new List<Enemy>();
 
-    public event Action<Enemy> OnEnemyDied;
+    [Inject] private PlayerManager _playerManager;
 
     public void RegisterEnemies(List<Enemy> enemies)
     {
@@ -24,6 +27,7 @@ public class EnemyManager : MonoBehaviour
         {
             OnEnemyDied?.Invoke(enemy);
             _enemies.Remove(enemy);
+            _playerManager.AddMoney(enemy.KillReward);
         }
     }
 

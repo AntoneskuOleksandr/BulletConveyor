@@ -9,6 +9,7 @@ public abstract class Enemy : MonoBehaviour
     [Header("Stats")]
     [SerializeField] protected float baseSpeed = 1f;
     [SerializeField] protected float maxHealth = 100f;
+    [SerializeField] private float killReward = 10f;
     [SerializeField] protected Transform hitTransform;
     [SerializeField] protected EnemyStatusCanvas enemyStatusCanvas;
 
@@ -22,6 +23,7 @@ public abstract class Enemy : MonoBehaviour
 
     public bool IsAlive => _currentHealth > 0f;
     public float BaseSpeed => baseSpeed;
+    public float KillReward => killReward;
     public Transform HitTransform => hitTransform;
     public UnityEvent OnDeath;
 

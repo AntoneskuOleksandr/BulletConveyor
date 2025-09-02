@@ -3,6 +3,9 @@ using Zenject;
 
 public class GameplayInstaller : MonoInstaller
 {
+    [Header("Player")]
+    [SerializeField] private PlayerManager playerManager;
+
     [Header("Board-Related Managers")]
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TileManager tileManager;
@@ -24,6 +27,9 @@ public class GameplayInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
+        //Player
+        Container.Bind<PlayerManager>().FromInstance(playerManager).AsSingle();
+
         //Board-Related Managers
         Container.Bind<BoardManager>().FromInstance(boardManager).AsSingle();
         Container.Bind<TileManager>().FromInstance(tileManager).AsSingle();

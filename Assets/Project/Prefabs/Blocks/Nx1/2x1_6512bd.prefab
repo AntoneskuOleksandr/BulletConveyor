@@ -53,7 +53,7 @@ MonoBehaviour:
   scaleZ: 1
   blockState: 0
   blockPreviousState: 0
-  bulletsToGenerate: 1
+  bulletsToGenerate: 2
   nextRangBlock: {fileID: 23882373455884952, guid: 853e2c3ea32ffe64f8b600dda0fb4c44,
     type: 3}
   rank: 0
