@@ -1,29 +1,24 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 public class BulletManager
 {
-    private BulletsStack _bulletsStack;
-
-    [Inject]
-    public void Construct(BulletsStack bulletsStack)
-    {
-        _bulletsStack = bulletsStack;
-    }
+    [Inject] private BulletsStack _bulletsStack;
+    [Inject] private EffectChanceManager _effectChanceManager;
+    [Inject] private EffectFactory _effectFactory;
 
     public Bullet GetBullet(Weapon weapon)
     {
-        if (_bulletsStack.HaveBullet)
-        {
-            GameObject bulletGO = _bulletsStack.GetBulletGOFromStack();
+        if (!_bulletsStack.HaveBullet) return null;
 
-            if (bulletGO == null)
-                return null; // No available bullets in the stack
+        GameObject bulletGO = _bulletsStack.GetBulletGOFromStack();
+        if (bulletGO == null) return null;
 
-            return CreateBullet(bulletGO, weapon);
-        }
+        Bullet bullet = CreateBullet(bulletGO, weapon);
+        AddEffectsToBullet(bullet);
 
-        return null;
+        return bullet;
     }
 
     private Bullet CreateBullet(GameObject bulletGO, Weapon weapon)
@@ -37,7 +32,27 @@ public class BulletManager
                 bulletGO.AddComponent<Missile>();
                 break;
         }
-
         return bulletGO.GetComponent<Bullet>();
+    }
+
+    private void AddEffectsToBullet(Bullet bullet)
+    {
+        List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffects();
+
+/*        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
+        {
+            OnHitEffectType.Ice
+        };*/
+
+
+        foreach (var type in effectTypes)
+        {
+            IOnHitEffect effect = _effectFactory.CreateEffect(type);
+
+            Debug.Log("Add Effect To Bullet: " + effect);
+
+            if (effect != null)
+                bullet.AddEffect(effect);
+        }
     }
 }
