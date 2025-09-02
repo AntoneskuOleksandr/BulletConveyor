@@ -64,7 +64,7 @@ public class BlockManager : MonoBehaviour
         parent.rank = blockToCreateIndex;
     }
 
-    public void IncreaseBlockPrice()
+    private void IncreaseBlockPrice()
     {
         currentBlockPrice = Mathf.Ceil(currentBlockPrice * priceMultiplier);
     }
