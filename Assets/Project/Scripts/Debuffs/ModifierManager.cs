@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class ModifierManager : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class ModifierManager : MonoBehaviour
 
     private Dictionary<OnHitEffectType, IStatusEffect> _effects = new();
     private List<IEffectRule> _rules = new();
+
+    [Inject] private EffectRulesConfigSO _config;
 
     public void Initialize(Enemy enemy, EnemyStatusCanvas enemyStatusCanvas)
     {
@@ -23,8 +26,6 @@ public class ModifierManager : MonoBehaviour
 
     public void AddStatusEffect(IStatusEffect effect)
     {
-        Debug.Log("AddStatusEffect: " + effect);
-
         if (_effects.TryGetValue(effect.EffectType, out var existing))
         {
             existing.Refresh(effect);
@@ -92,6 +93,6 @@ public class ModifierManager : MonoBehaviour
     private void HandleEffectCombinations()
     {
         foreach (var rule in _rules)
-            rule.Evaluate(_effects, this);
+            rule.Evaluate(_effects, this, _config);
     }
 }

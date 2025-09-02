@@ -39,10 +39,10 @@ public class BulletManager
     {
         List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffects();
 
-        /*        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
-                {
-                    OnHitEffectType.Freeze
-                };*/
+/*        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
+        {
+            OnHitEffectType.Ice
+        };*/
 
 
         foreach (var type in effectTypes)

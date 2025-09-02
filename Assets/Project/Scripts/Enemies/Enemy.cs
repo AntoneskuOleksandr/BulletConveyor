@@ -32,10 +32,10 @@ public abstract class Enemy : MonoBehaviour
     public ModifierManager ModifierManager { get; private set; }
 
     [Inject]
-    public void Construct(WeaponManager weaponManager)
+    public void Construct(WeaponManager weaponManager, DiContainer container)
     {
         // Добавляем менеджер модификаторов на врага
-        ModifierManager = this.gameObject.AddComponent<ModifierManager>();
+        ModifierManager = container.InstantiateComponent<ModifierManager>(this.gameObject);
         ModifierManager.Initialize(this, enemyStatusCanvas);
 
         _target = weaponManager.GetRandomWeapon()?.transform;

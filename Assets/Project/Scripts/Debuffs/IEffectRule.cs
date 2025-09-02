@@ -2,13 +2,13 @@
 
 public interface IEffectRule
 {
-    void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager);
+    void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager, EffectRulesConfigSO config);
 }
 
 // Freeze → Ice
 public class FreezeToIceRule : IEffectRule
 {
-    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager)
+    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager, EffectRulesConfigSO config)
     {
         if (effects.TryGetValue(OnHitEffectType.Freeze, out var effect)
             && effect is FreezeDebuff freeze
@@ -16,7 +16,7 @@ public class FreezeToIceRule : IEffectRule
             && !manager.HasStatusEffect(OnHitEffectType.Ice))
         {
             manager.RemoveStatusEffect(OnHitEffectType.Freeze);
-            manager.AddStatusEffect(new IceDebuff(2f));
+            manager.AddStatusEffect(new IceDebuff(1f, 2f));
         }
     }
 }
@@ -24,7 +24,7 @@ public class FreezeToIceRule : IEffectRule
 // Fire ускоряет таяние Freeze
 public class FireMeltsFreezeRule : IEffectRule
 {
-    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager)
+    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager, EffectRulesConfigSO config)
     {
         if (effects.TryGetValue(OnHitEffectType.Freeze, out var freezeEffect)
             && freezeEffect is FreezeDebuff freeze
@@ -38,7 +38,7 @@ public class FireMeltsFreezeRule : IEffectRule
 
 public class FireMeltsIceRule : IEffectRule
 {
-    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager)
+    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager, EffectRulesConfigSO config)
     {
         if (effects.TryGetValue(OnHitEffectType.Ice, out var iceEffect)
             && iceEffect is IceDebuff ice
@@ -53,7 +53,7 @@ public class FireMeltsIceRule : IEffectRule
 // Если враг заморожен (Ice), то Freeze продлевает длительность Ice
 public class FreezeRefreshesIceRule : IEffectRule
 {
-    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager)
+    public void Evaluate(Dictionary<OnHitEffectType, IStatusEffect> effects, ModifierManager manager, EffectRulesConfigSO config)
     {
         if (effects.TryGetValue(OnHitEffectType.Ice, out var iceEffect)
             && iceEffect is IceDebuff ice
@@ -64,7 +64,7 @@ public class FreezeRefreshesIceRule : IEffectRule
             manager.RemoveStatusEffect(OnHitEffectType.Freeze);
 
             // Продлеваем Ice на половину от Duration Freeze
-            ice.Refresh(new IceDebuff(freeze.Duration / 2f));
+            ice.Refresh(new IceDebuff(1f, freeze.Duration / 2f));
         }
     }
 }

@@ -11,7 +11,6 @@ public class StatusEffectUI : MonoBehaviour
         iconImage.sprite = icon;
         this.effect = effect;
         iconImage.fillAmount = 1f;
-        Debug.Log($"Effect: {effect.EffectType}; Duration: {effect.Duration}");
     }
 
     private void Update()

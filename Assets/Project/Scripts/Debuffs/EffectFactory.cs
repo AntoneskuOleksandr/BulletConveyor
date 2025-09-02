@@ -6,33 +6,45 @@ public class EffectFactory : MonoBehaviour
     [SerializeField] private Sprite freezeIcon;
     [SerializeField] private Sprite iceIcon;
 
+    [SerializeField] private StatusEffectSO[] allEffects; // массив всех ScriptableObject эффектов
+
     public IOnHitEffect CreateEffect(OnHitEffectType type)
     {
+        StatusEffectSO data = GetEffectSO(type);
+        if (data == null)
+        {
+            Debug.LogError($"There is no {type} effect assigned!");
+            return null;
+        }
+
         switch (type)
         {
             case OnHitEffectType.Fire:
-                return new FireEffect(5f, 3f);
+                return new FireEffect(data.GetParameter("DPS"), data.Duration);
             case OnHitEffectType.Freeze:
-                return new FreezeEffect(0.5f, 3f);
+                return new FreezeEffect(data.GetParameter("Strength"), data.Duration);
             case OnHitEffectType.Ice:
-                return new IceEffect(2f);
+                return new IceEffect(data.GetParameter("MeltSpeed"), data.Duration);
             default:
                 return null;
         }
     }
 
+    private StatusEffectSO GetEffectSO(OnHitEffectType type)
+    {
+        foreach (var e in allEffects)
+            if (e.Type == type) return e;
+        return null;
+    }
+
     public Sprite GetIconByEffectType(OnHitEffectType type)
     {
-        switch (type)
+        return type switch
         {
-            case OnHitEffectType.Fire:
-                return fireIcon;
-            case OnHitEffectType.Freeze:
-                return freezeIcon;
-            case OnHitEffectType.Ice:
-                return iceIcon;
-            default:
-                return null;
-        }
+            OnHitEffectType.Fire => fireIcon,
+            OnHitEffectType.Freeze => freezeIcon,
+            OnHitEffectType.Ice => iceIcon,
+            _ => null
+        };
     }
 }

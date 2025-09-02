@@ -11,11 +11,11 @@ public class IceDebuff : ITickEffect, IModifierEffect
 
     private float _meltSpeed; // скорость таяния от внешних факторов
 
-    public IceDebuff(float duration)
+    public IceDebuff(float meltSpeed, float duration)
     {
+        _meltSpeed = meltSpeed;
         Duration = duration;
         Elapsed = 0f;
-        _meltSpeed = 1f;
     }
 
     public void Tick(float deltaTime, Enemy enemy)

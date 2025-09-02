@@ -1699,6 +1699,10 @@ MonoBehaviour:
   fireIcon: {fileID: 21300000, guid: 3178c9e72405787479f4ca847398e9fa, type: 3}
   freezeIcon: {fileID: 21300000, guid: 8c93084811e623443847e65e7ab17d6a, type: 3}
   iceIcon: {fileID: 21300000, guid: 02c054d48feb0c1448dedf03a9d19f9b, type: 3}
+  allEffects:
+  - {fileID: 11400000, guid: 3d74b0bf6c45d304fb953ab2ee6613ae, type: 2}
+  - {fileID: 11400000, guid: 7ae2818974c36ac41872a58b1c480374, type: 2}
+  - {fileID: 11400000, guid: f9f6ac2ef834d4a4b9290ae3f9073688, type: 2}
 --- !u!4 &1349853965
 Transform:
   m_ObjectHideFlags: 0
@@ -2262,6 +2266,8 @@ MonoBehaviour:
   bulletGenerator: {fileID: 174477905}
   bulletsStack: {fileID: 1356500595}
   effectFactory: {fileID: 1349853964}
+  effectRulesConfigSO: {fileID: 11400000, guid: 5fd853ec1d3f7df419f4700d6fd9f5bc,
+    type: 2}
   enemyManager: {fileID: 1224671384}
   enemySpawner: {fileID: 919379981}
   waveManager: {fileID: 1354856229}
