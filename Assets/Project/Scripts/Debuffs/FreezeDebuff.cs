@@ -7,19 +7,18 @@ public class FreezeDebuff : ITickEffect, IModifierEffect
     public float Duration { get; private set; }   // активная фаза заморозки
     public float Elapsed { get; private set; }
     public float DPS => 0f;
-    public Sprite Icon { get; private set; }
     public float DurationLeft => Mathf.Max(Duration - Elapsed, 0f);
+    public float Strength => _slow; // сила замедления (0..1)
 
-    private float _slow;           // текущий процент замедления (0-1)
+    private float _slow;           // текущий процент замедления
     private float _stackedSlow;    // прирост замедления при попадании
     private float _meltSpeed;      // ускорение таяния от огня
 
     private const float BASE_MELT_SPEED = 0.3f;
 
-    public FreezeDebuff(float slowAmount, float duration, Sprite icon)
+    public FreezeDebuff(float slowAmount, float duration)
     {
         Duration = duration;
-        Icon = icon;
         Elapsed = 0f;
         _slow = Mathf.Clamp01(slowAmount);
         _stackedSlow = _slow;
@@ -37,13 +36,13 @@ public class FreezeDebuff : ITickEffect, IModifierEffect
         }
         else
         {
-            // фаза таяния
+            // Фаза таяния после окончания Duration
             float meltFactor = _meltSpeed * BASE_MELT_SPEED;
             _slow -= meltFactor * deltaTime;
             _slow = Mathf.Max(0f, _slow);
         }
 
-        // применяем замедление врагу
+        // Применяем замедление напрямую
         enemy.SetSpeed(enemy.BaseSpeed * (1f - _slow));
     }
 
@@ -63,7 +62,6 @@ public class FreezeDebuff : ITickEffect, IModifierEffect
 
     public bool IsFinished() => _slow <= 0f;
 
-    // ускоренное таяние/сокращение Duration от огня
     public void StartMelt(float fireMeltSpeed)
     {
         _meltSpeed = Mathf.Max(_meltSpeed, fireMeltSpeed);

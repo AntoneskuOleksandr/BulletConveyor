@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class EnemyStatusCanvas : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class EnemyStatusCanvas : MonoBehaviour
     [Header("Status Effects")]
     [SerializeField] private Transform effectsContainer;
     [SerializeField] private GameObject effectUIPrefab;
+
+    [Inject] private EffectFactory _effectFactory;
 
     private Dictionary<OnHitEffectType, StatusEffectUI> _activeEffects = new();
 
@@ -31,8 +34,10 @@ public class EnemyStatusCanvas : MonoBehaviour
     #endregion
 
     #region Status Effects
-    public void AddStatusEffect(IStatusEffect effect, Sprite icon)
+    public void AddStatusEffect(IStatusEffect effect)
     {
+        Sprite icon = _effectFactory.GetIconByEffectType(effect.EffectType);
+
         if (_activeEffects.ContainsKey(effect.EffectType))
         {
             // Обновляем UI существующего эффекта

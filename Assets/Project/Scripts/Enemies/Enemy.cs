@@ -66,6 +66,7 @@ public abstract class Enemy : MonoBehaviour
 
     public void SetSpeed(float speed)
     {
+        _animator.SetFloat("MoveSpeed", _agent.speed / 2f);
         _agent.speed = speed;
     }
 

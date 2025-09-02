@@ -15,11 +15,6 @@ public interface IStatusEffect
     float DurationLeft { get; }
 
     /// <summary>
-    /// Иконка эффекта для UI.
-    /// </summary>
-    Sprite Icon { get; }
-
-    /// <summary>
     /// Обновление при повторном наложении (продлевает таймер, усиливает эффект).
     /// </summary>
     void Refresh(IStatusEffect newEffect);

@@ -7,19 +7,24 @@ public class ModifierManager : MonoBehaviour
     private EnemyStatusCanvas _enemyStatusCanvas;
 
     private Dictionary<OnHitEffectType, IStatusEffect> _effects = new();
-    private HashSet<string> _activeCombinations = new HashSet<string>();
+    private List<IEffectRule> _rules = new();
 
     public void Initialize(Enemy enemy, EnemyStatusCanvas enemyStatusCanvas)
     {
         _enemy = enemy;
         _enemyStatusCanvas = enemyStatusCanvas;
+
+        // Регистрируем правила взаимодействий эффектов
+        _rules.Add(new FreezeToIceRule());
+        _rules.Add(new FireMeltsFreezeRule());
+        _rules.Add(new FireMeltsIceRule());
+        _rules.Add(new FreezeRefreshesIceRule());
     }
 
     public void AddStatusEffect(IStatusEffect effect)
     {
         Debug.Log("AddStatusEffect: " + effect);
 
-        // Обновляем существующий эффект или добавляем новый
         if (_effects.TryGetValue(effect.EffectType, out var existing))
         {
             existing.Refresh(effect);
@@ -27,10 +32,9 @@ public class ModifierManager : MonoBehaviour
         else
         {
             _effects[effect.EffectType] = effect;
-            _enemyStatusCanvas.AddStatusEffect(effect, effect.Icon);
+            _enemyStatusCanvas.AddStatusEffect(effect);
         }
 
-        // Проверяем комбинации после добавления
         HandleEffectCombinations();
     }
 
@@ -40,8 +44,12 @@ public class ModifierManager : MonoBehaviour
         {
             _effects.Remove(type);
             _enemyStatusCanvas.RemoveStatusEffect(type);
+
+            HandleEffectCombinations();
         }
     }
+
+    public bool HasStatusEffect(OnHitEffectType type) => _effects.ContainsKey(type);
 
     private void Update()
     {
@@ -51,11 +59,11 @@ public class ModifierManager : MonoBehaviour
         float speedModifier = 1f;
         List<OnHitEffectType> toRemove = new List<OnHitEffectType>();
 
-        // Tick всех эффектов
         foreach (var kv in _effects)
         {
             var effect = kv.Value;
 
+            // Tick для эффектов с временем действия
             if (effect is ITickEffect tick)
             {
                 tick.Tick(Time.deltaTime, _enemy);
@@ -64,6 +72,7 @@ public class ModifierManager : MonoBehaviour
                     toRemove.Add(kv.Key);
             }
 
+            // Применяем модификаторы (например, замедление)
             if (effect is IModifierEffect mod)
             {
                 var modifiers = mod.GetModifiers();
@@ -72,43 +81,17 @@ public class ModifierManager : MonoBehaviour
             }
         }
 
-        // Удаляем завершившиеся эффекты
+        // Удаляем эффекты, которые закончились
         foreach (var type in toRemove)
             RemoveStatusEffect(type);
 
-        // Применяем замедление к врагу
+        // Применяем итоговое замедление
         _enemy.SetSpeed(_enemy.BaseSpeed * speedModifier);
     }
 
-    /// <summary>
-    /// Обрабатывает комбинации эффектов и их триггеры
-    /// </summary>
     private void HandleEffectCombinations()
     {
-        // Пример: Freeze + Fire = Melt
-        FreezeDebuff freezeDebuff = null;
-        ITickEffect fireEffect = null;
-
-        bool hasFreeze = _effects.TryGetValue(OnHitEffectType.Freeze, out var freezeObj) && (freezeDebuff = freezeObj as FreezeDebuff) != null;
-        bool hasFire = _effects.TryGetValue(OnHitEffectType.Fire, out var fireObj) && (fireEffect = fireObj as ITickEffect) != null;
-
-        string comboKey = "Freeze+Fire";
-
-        if (hasFreeze && hasFire)
-        {
-            if (!_activeCombinations.Contains(comboKey))
-            {
-                freezeDebuff.StartMelt(2f); // ускоряем таяние
-                _activeCombinations.Add(comboKey);
-            }
-        }
-        else
-        {
-            // Комбинация больше не выполняется
-            _activeCombinations.Remove(comboKey);
-        }
-
-        // Здесь можно добавить другие комбинации, например:
-        // Freeze + Poison, Fire + Poison и т.д.
+        foreach (var rule in _rules)
+            rule.Evaluate(_effects, this);
     }
 }
