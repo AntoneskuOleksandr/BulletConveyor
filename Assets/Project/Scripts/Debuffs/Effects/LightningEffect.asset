@@ -12,6 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b459bd4294b8824b891ea12fa1d4a13, type: 3}
   m_Name: LightningEffect
   m_EditorClassIdentifier: 
-  Type: 0
-  Duration: 0
-  parameters: []
+  Type: 3
+  Duration: 1
+  parameters:
+  - Key: DamagePerTick
+    Value: 1
+  - Key: Radius
+    Value: 100
+  - Key: MaxBounces
+    Value: 100
+  - Key: TicksPerSecond
+    Value: 10

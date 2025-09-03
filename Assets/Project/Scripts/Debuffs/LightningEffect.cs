@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LightningEffect : IOnHitEffect
@@ -21,7 +22,12 @@ public class LightningEffect : IOnHitEffect
 
     public void Apply(Bullet bullet, Enemy target)
     {
-        var debuff = new LightningDebuff(_damage, _radius, _maxBounces, _duration, _ticksPerSecond);
+        LightningVisual lightningVisual = target.GetComponent<LightningVisual>();
+        if (lightningVisual == null)
+            lightningVisual = target.gameObject.AddComponent<LightningVisual>();
+
+        LightningDebuff debuff = new LightningDebuff(_damage, _radius, _maxBounces, _duration, _ticksPerSecond, lightningVisual);
         target.ModifierManager.AddStatusEffect(debuff);
     }
+
 }

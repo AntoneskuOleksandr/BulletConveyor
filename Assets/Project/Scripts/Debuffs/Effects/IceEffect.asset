@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b459bd4294b8824b891ea12fa1d4a13, type: 3}
   m_Name: IceEffect
   m_EditorClassIdentifier: 
-  Type: 3
+  Type: 1
   Duration: 2
   parameters:
   - Key: MeltSpeed

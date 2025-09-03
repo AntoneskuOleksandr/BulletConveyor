@@ -17,7 +17,9 @@ public class LightningDebuff : ITickEffect
 
     private const float DEFAULT_DAMAGE_FALLOFF = 1f;
 
-    public LightningDebuff(float damage, float radius, int maxBounces, float duration, float ticksPerSecond = 2f)
+    private LightningVisual _visual;
+
+    public LightningDebuff(float damage, float radius, int maxBounces, float duration, float ticksPerSecond = 2f, LightningVisual visual = null)
     {
         _damage = damage;
         _radius = radius;
@@ -25,7 +27,24 @@ public class LightningDebuff : ITickEffect
         Duration = duration;
         _ticksPerSecond = Mathf.Max(0.01f, ticksPerSecond);
         Elapsed = 0f;
-        _nextTickTime = 0f; // первый удар сразу
+        _nextTickTime = 0f;
+        _visual = visual; // визуализация
+    }
+
+    private void ChainLightning(Enemy sourceEnemy, Vector3 startPosition, float damage, int bouncesLeft, HashSet<Enemy> hitEnemies, List<Vector3> path)
+    {
+        Enemy next = FindRandomNearbyEnemy(startPosition, hitEnemies, 3); // берём случайного из 3 ближайших
+        if (next == null) return;
+
+        next.TakeDamage(damage);
+        hitEnemies.Add(next);
+        path.Add(next.HitTransform.position);
+
+        if (bouncesLeft > 0)
+        {
+            float nextDamage = damage * DEFAULT_DAMAGE_FALLOFF;
+            ChainLightning(sourceEnemy, next.HitTransform.position, nextDamage, bouncesLeft - 1, hitEnemies, path);
+        }
     }
 
     public void Tick(float deltaTime, Enemy enemy)
@@ -34,53 +53,46 @@ public class LightningDebuff : ITickEffect
 
         float tickInterval = 1f / _ticksPerSecond;
 
-        // наносим все тики, которые должны были произойти за это deltaTime
         while (_nextTickTime <= Elapsed && _nextTickTime < Duration)
         {
-            HashSet<Enemy> hitEnemies = new HashSet<Enemy>();
-            ChainLightning(enemy, enemy.transform.position, _damage, _maxBounces, hitEnemies);
-
             _nextTickTime += tickInterval;
+
+            HashSet<Enemy> hitEnemies = new HashSet<Enemy>();
+            List<Vector3> path = new List<Vector3> { enemy.HitTransform.position }; // стартовая точка
+            ChainLightning(enemy, enemy.HitTransform.position, _damage, _maxBounces, hitEnemies, path);
+
+            // визуализируем молнию
+            if (_visual != null && path.Count > 1)
+                _visual.DrawChain(path);
         }
     }
 
-    private void ChainLightning(Enemy sourceEnemy, Vector3 startPosition, float damage, int bouncesLeft, HashSet<Enemy> hitEnemies)
-    {
-        Enemy nearest = FindNearestEnemy(startPosition, hitEnemies);
-        if (nearest == null) return;
-
-        nearest.TakeDamage(damage);
-        hitEnemies.Add(nearest);
-
-        Debug.DrawLine(startPosition, nearest.transform.position, Color.yellow, 0.1f);
-
-        if (bouncesLeft > 0)
-        {
-            float nextDamage = damage * DEFAULT_DAMAGE_FALLOFF;
-            ChainLightning(sourceEnemy, nearest.transform.position, nextDamage, bouncesLeft - 1, hitEnemies);
-        }
-    }
-
-    private Enemy FindNearestEnemy(Vector3 position, HashSet<Enemy> exclude)
+    /// <summary>
+    /// Находит случайного врага из N ближайших, который ещё не был поражён
+    /// </summary>
+    private Enemy FindRandomNearbyEnemy(Vector3 position, HashSet<Enemy> exclude, int nearestCount)
     {
         Collider[] colliders = Physics.OverlapSphere(position, _radius);
-        Enemy nearest = null;
-        float minDistance = float.MaxValue;
+        List<(Enemy enemy, float dist)> candidates = new List<(Enemy, float)>();
 
         foreach (var col in colliders)
         {
             if (!col.TryGetComponent<Enemy>(out Enemy enemy) || !enemy.IsAlive || exclude.Contains(enemy))
                 continue;
 
-            float dist = Vector3.Distance(position, enemy.transform.position);
-            if (dist < minDistance)
-            {
-                minDistance = dist;
-                nearest = enemy;
-            }
+            float dist = Vector3.Distance(position, enemy.HitTransform.position);
+            candidates.Add((enemy, dist));
         }
 
-        return nearest;
+        if (candidates.Count == 0) return null;
+
+        // сортируем по расстоянию и берём N ближайших
+        candidates.Sort((a, b) => a.dist.CompareTo(b.dist));
+        int count = Mathf.Min(nearestCount, candidates.Count);
+
+        // случайный выбор из N ближайших
+        int index = Random.Range(0, count);
+        return candidates[index].enemy;
     }
 
     public void Refresh(IStatusEffect newEffect)
