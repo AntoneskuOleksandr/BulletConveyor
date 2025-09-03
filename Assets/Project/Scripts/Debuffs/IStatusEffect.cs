@@ -3,6 +3,7 @@ using UnityEngine;
 public interface IStatusEffect
 {
     OnHitEffectType EffectType { get; }
+    EffectStackType StackType { get; }
 
     /// <summary>
     /// ƒлительность эффекта (в секундах).
@@ -18,4 +19,10 @@ public interface IStatusEffect
     /// ќбновление при повторном наложении (продлевает таймер, усиливает эффект).
     /// </summary>
     void Refresh(IStatusEffect newEffect);
+}
+
+public enum EffectStackType
+{
+    Refreshable,   // перезаписываемый: новый эффект обновл€ет старый
+    Stackable      // накапливаемый: каждый экземпл€р отдельный
 }

@@ -7,7 +7,8 @@ public class ModifierManager : MonoBehaviour
     private Enemy _enemy;
     private EnemyStatusCanvas _enemyStatusCanvas;
 
-    private Dictionary<OnHitEffectType, IStatusEffect> _effects = new();
+    // Словарь: тип эффекта -> список экземпляров эффектов
+    private Dictionary<OnHitEffectType, List<IStatusEffect>> _effects = new();
     private List<IEffectRule> _rules = new();
 
     [Inject] private EffectRulesConfigSO _config;
@@ -24,27 +25,52 @@ public class ModifierManager : MonoBehaviour
         _rules.Add(new FreezeRefreshesIceRule());
     }
 
+    /// <summary>
+    /// Добавляем эффект
+    /// </summary>
     public void AddStatusEffect(IStatusEffect effect)
     {
-        if (_effects.TryGetValue(effect.EffectType, out var existing))
+        if (!_effects.TryGetValue(effect.EffectType, out var list))
         {
-            existing.Refresh(effect);
+            list = new List<IStatusEffect>();
+            _effects[effect.EffectType] = list;
         }
-        else
+
+        switch (effect.StackType)
         {
-            _effects[effect.EffectType] = effect;
-            _enemyStatusCanvas.AddStatusEffect(effect);
+            case EffectStackType.Refreshable:
+                if (list.Count > 0)
+                {
+                    list[0].Refresh(effect); // обновляем существующий
+                }
+                else
+                {
+                    list.Add(effect);
+                    _enemyStatusCanvas.AddStatusEffect(effect);
+                }
+                break;
+
+            case EffectStackType.Stackable:
+                list.Add(effect);
+                _enemyStatusCanvas.AddStatusEffect(effect);
+                break;
         }
 
         HandleEffectCombinations();
     }
 
-    public void RemoveStatusEffect(OnHitEffectType type)
+    /// <summary>
+    /// Удаляем эффект
+    /// </summary>
+    public void RemoveStatusEffect(IStatusEffect effect)
     {
-        if (_effects.TryGetValue(type, out var effect))
+        if (_effects.TryGetValue(effect.EffectType, out var list))
         {
-            _effects.Remove(type);
-            _enemyStatusCanvas.RemoveStatusEffect(type);
+            list.Remove(effect);
+            _enemyStatusCanvas.RemoveStatusEffect(effect);
+
+            if (list.Count == 0)
+                _effects.Remove(effect.EffectType);
 
             HandleEffectCombinations();
         }
@@ -58,38 +84,41 @@ public class ModifierManager : MonoBehaviour
             return;
 
         float speedModifier = 1f;
-        List<OnHitEffectType> toRemove = new List<OnHitEffectType>();
+        List<IStatusEffect> toRemove = new List<IStatusEffect>();
 
         foreach (var kv in _effects)
         {
-            var effect = kv.Value;
-
-            // Tick для эффектов с временем действия
-            if (effect is ITickEffect tick)
+            foreach (var effect in kv.Value)
             {
-                tick.Tick(Time.deltaTime, _enemy);
+                // Tick для эффектов с временем действия
+                if (effect is ITickEffect tick)
+                {
+                    tick.Tick(Time.deltaTime, _enemy);
+                    if (tick.IsFinished())
+                        toRemove.Add(effect);
+                }
 
-                if (tick.IsFinished())
-                    toRemove.Add(kv.Key);
-            }
-
-            // Применяем модификаторы (например, замедление)
-            if (effect is IModifierEffect mod)
-            {
-                var modifiers = mod.GetModifiers();
-                if (modifiers.TryGetValue(ModifierType.Slow, out float slow))
-                    speedModifier *= 1f - slow;
+                // Применяем модификаторы (например, замедление)
+                if (effect is IModifierEffect mod)
+                {
+                    var modifiers = mod.GetModifiers();
+                    if (modifiers.TryGetValue(ModifierType.Slow, out float slow))
+                        speedModifier *= 1f - slow;
+                }
             }
         }
 
         // Удаляем эффекты, которые закончились
-        foreach (var type in toRemove)
-            RemoveStatusEffect(type);
+        foreach (var effect in toRemove)
+            RemoveStatusEffect(effect);
 
         // Применяем итоговое замедление
         _enemy.SetSpeed(_enemy.BaseSpeed * speedModifier);
     }
 
+    /// <summary>
+    /// Обрабатываем комбинации эффектов
+    /// </summary>
     private void HandleEffectCombinations()
     {
         foreach (var rule in _rules)

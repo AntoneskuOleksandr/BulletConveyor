@@ -3,6 +3,8 @@ using UnityEngine;
 public class BurnDebuff : ITickEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Fire;
+    public EffectStackType StackType => EffectStackType.Refreshable;
+
     public float Duration { get; private set; }
     public float Elapsed { get; private set; }
     public float DPS { get; private set; }

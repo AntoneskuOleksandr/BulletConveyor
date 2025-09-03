@@ -4,6 +4,7 @@ using UnityEngine;
 public class IceDebuff : ITickEffect, IModifierEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Ice;
+    public EffectStackType StackType => EffectStackType.Refreshable;
     public float Duration { get; private set; }
     public float Elapsed { get; private set; }
     public float DPS => 0f;

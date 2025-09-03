@@ -1,6 +1,3 @@
-using Unity.VisualScripting;
-using UnityEngine;
-
 public class LightningEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Lightning;

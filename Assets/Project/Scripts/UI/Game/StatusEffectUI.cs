@@ -4,6 +4,8 @@ using UnityEngine.UI;
 public class StatusEffectUI : MonoBehaviour
 {
     [SerializeField] private Image iconImage;  // Filled Image ñ Radial360
+    public IStatusEffect Effect => effect;
+
     private IStatusEffect effect;
 
     public void Initialize(Sprite icon, IStatusEffect effect)

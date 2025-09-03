@@ -4,6 +4,8 @@ using UnityEngine;
 public class LightningDebuff : ITickEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Lightning;
+    public EffectStackType StackType => EffectStackType.Stackable;
+
     public float Duration { get; private set; }
     public float Elapsed { get; private set; }
     public float DPS => 0f;

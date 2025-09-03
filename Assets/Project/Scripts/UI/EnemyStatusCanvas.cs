@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+п»їusing System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -14,7 +14,11 @@ public class EnemyStatusCanvas : MonoBehaviour
 
     [Inject] private EffectFactory _effectFactory;
 
-    private Dictionary<OnHitEffectType, StatusEffectUI> _activeEffects = new();
+    // Р”Р»СЏ Refreshable: С‚РёРї в†’ РѕРґРёРЅ UI
+    private Dictionary<OnHitEffectType, StatusEffectUI> _refreshableEffects = new();
+
+    // Р”Р»СЏ Stackable: С‚РёРї в†’ СЃРїРёСЃРѕРє UI
+    private Dictionary<OnHitEffectType, List<StatusEffectUI>> _stackableEffects = new();
 
     #region Health Bar
     public void SetHealthBarFillAmount(float fillAmount)
@@ -38,29 +42,75 @@ public class EnemyStatusCanvas : MonoBehaviour
     {
         Sprite icon = _effectFactory.GetIconByEffectType(effect.EffectType);
 
-        if (_activeEffects.ContainsKey(effect.EffectType))
+        if (effect.StackType == EffectStackType.Refreshable)
         {
-            // Обновляем UI существующего эффекта
-            _activeEffects[effect.EffectType].Initialize(icon, effect);
-            return;
-        }
+            if (_refreshableEffects.ContainsKey(effect.EffectType))
+            {
+                _refreshableEffects[effect.EffectType].Initialize(icon, effect);
+                return;
+            }
 
+            CreateUI(effect, icon, _refreshableEffects);
+        }
+        else // Stackable
+        {
+            if (!_stackableEffects.TryGetValue(effect.EffectType, out var list))
+            {
+                list = new List<StatusEffectUI>();
+                _stackableEffects[effect.EffectType] = list;
+            }
+
+            CreateUI(effect, icon, list);
+        }
+    }
+
+    public void RemoveStatusEffect(IStatusEffect effect)
+    {
+        if (effect.StackType == EffectStackType.Refreshable)
+        {
+            if (_refreshableEffects.TryGetValue(effect.EffectType, out var ui))
+            {
+                Destroy(ui.gameObject);
+                _refreshableEffects.Remove(effect.EffectType);
+            }
+        }
+        else // Stackable
+        {
+            if (_stackableEffects.TryGetValue(effect.EffectType, out var list))
+            {
+                StatusEffectUI toRemove = list.Find(ui => ui.Effect == effect);
+                if (toRemove != null)
+                {
+                    Destroy(toRemove.gameObject);
+                    list.Remove(toRemove);
+                }
+
+                if (list.Count == 0)
+                    _stackableEffects.Remove(effect.EffectType);
+            }
+        }
+    }
+
+    private void CreateUI(IStatusEffect effect, Sprite icon, Dictionary<OnHitEffectType, StatusEffectUI> dict)
+    {
         if (effectUIPrefab == null || effectsContainer == null) return;
 
         GameObject uiObj = Instantiate(effectUIPrefab, effectsContainer);
         StatusEffectUI ui = uiObj.GetComponent<StatusEffectUI>();
         ui.Initialize(icon, effect);
 
-        _activeEffects[effect.EffectType] = ui;
+        dict[effect.EffectType] = ui;
     }
 
-    public void RemoveStatusEffect(OnHitEffectType type)
+    private void CreateUI(IStatusEffect effect, Sprite icon, List<StatusEffectUI> list)
     {
-        if (_activeEffects.TryGetValue(type, out StatusEffectUI ui))
-        {
-            Destroy(ui.gameObject);
-            _activeEffects.Remove(type);
-        }
+        if (effectUIPrefab == null || effectsContainer == null) return;
+
+        GameObject uiObj = Instantiate(effectUIPrefab, effectsContainer);
+        StatusEffectUI ui = uiObj.GetComponent<StatusEffectUI>();
+        ui.Initialize(icon, effect);
+
+        list.Add(ui);
     }
     #endregion
 }
