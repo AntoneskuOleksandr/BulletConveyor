@@ -2,36 +2,53 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
+public class EffectParameter
+{
+    public EffectParameterType Type;
+    public float Value;
+}
+
 [CreateAssetMenu(fileName = "NewStatusEffect", menuName = "Effects/StatusEffect")]
 public class StatusEffectSO : ScriptableObject
 {
     public OnHitEffectType Type;
     public float Duration;
 
-    [SerializeField]
-    private List<EffectParameter> parameters = new List<EffectParameter>();
+    [Header("Effect Parameters")]
+    public List<EffectParameter> Parameters = new List<EffectParameter>();
 
-    // Получение значения параметра по ключу
-    public float GetParameter(string key, float defaultValue = 0f)
+    [Header("Allowed Parameters")]
+    public EffectParameterType[] AllowedParameters;
+
+    /// <summary>
+    /// Получение параметра с проверкой на разрешённость
+    /// </summary>
+    public float GetParameter(EffectParameterType type, float defaultValue = 0f)
     {
-        var param = parameters.Find(p => p.Key == key);
+        if (!Array.Exists(AllowedParameters, t => t == type))
+        {
+            Debug.LogWarning($"Parameter {type} is not allowed for effect {Type}");
+            return defaultValue;
+        }
+
+        var param = Parameters.Find(p => p.Type == type);
         return param != null ? param.Value : defaultValue;
     }
 
-    // Установка значения параметра
-    public void SetParameter(string key, float value)
+    /// <summary>
+    /// Установка параметра с проверкой на разрешённость
+    /// </summary>
+    public void SetParameter(EffectParameterType type, float value)
     {
-        var param = parameters.Find(p => p.Key == key);
-        if (param != null)
-            param.Value = value;
-        else
-            parameters.Add(new EffectParameter { Key = key, Value = value });
-    }
+        if (!Array.Exists(AllowedParameters, t => t == type))
+        {
+            Debug.LogWarning($"Cannot set parameter {type} for effect {Type}");
+            return;
+        }
 
-    [Serializable]
-    public class EffectParameter
-    {
-        public string Key;
-        public float Value;
+        var param = Parameters.Find(p => p.Type == type);
+        if (param != null) param.Value = value;
+        else Parameters.Add(new EffectParameter { Type = type, Value = value });
     }
 }

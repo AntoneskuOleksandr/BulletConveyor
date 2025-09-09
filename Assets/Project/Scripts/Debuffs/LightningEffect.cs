@@ -2,19 +2,19 @@ public class LightningEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Lightning;
 
-    private float _damage;
-    private float _radius;
-    private int _maxBounces;
-    private float _duration;
-    private float _ticksPerSecond;
+    private readonly float _damage;
+    private readonly float _radius;
+    private readonly int _maxBounces;
+    private readonly float _duration;
+    private readonly float _ticksPerSecond;
 
-    public LightningEffect(float damage, float radius, int maxBounces, float ticksPerSecond, float duration)
+    public LightningEffect(StatusEffectSO so)
     {
-        _damage = damage;
-        _radius = radius;
-        _maxBounces = maxBounces;
-        _ticksPerSecond = ticksPerSecond;
-        _duration = duration;
+        _damage = so.GetParameter(EffectParameterType.Damage);
+        _radius = so.GetParameter(EffectParameterType.Radius);
+        _maxBounces = (int)so.GetParameter(EffectParameterType.MaxBounces);
+        _ticksPerSecond = so.GetParameter(EffectParameterType.TicksPerSecond);
+        _duration = so.Duration;
     }
 
     public void Apply(Bullet bullet, Enemy target)
@@ -23,8 +23,7 @@ public class LightningEffect : IOnHitEffect
         if (lightningVisual == null)
             lightningVisual = target.gameObject.AddComponent<LightningVisual>();
 
-        LightningDebuff debuff = new LightningDebuff(_damage, _radius, _maxBounces, _duration, _ticksPerSecond, lightningVisual);
+        var debuff = new LightningDebuff(_damage, _radius, _maxBounces, _duration, _ticksPerSecond, lightningVisual);
         target.ModifierManager.AddStatusEffect(debuff);
     }
-
 }

@@ -15,5 +15,5 @@ MonoBehaviour:
   Type: 0
   Duration: 10
   parameters:
-  - Key: DPS
+  - Type: 0
     Value: 5

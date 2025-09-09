@@ -1,21 +1,19 @@
-using UnityEngine;
-
-public class FireEffect : IOnHitEffect
+public class FireEffect : OnHitEffectBase
 {
-    public OnHitEffectType EffectType => OnHitEffectType.Fire;
+    public override OnHitEffectType EffectType => OnHitEffectType.Fire;
 
     private float _duration;
     private float _dps;
 
-    public FireEffect(float dps, float duration)
+    public FireEffect(StatusEffectSO so) : base(so)
     {
-        _duration = duration;
-        _dps = dps;
+        _duration = so.Duration;
+        _dps = so.GetParameter(EffectParameterType.DPS);
     }
 
-    public void Apply(Bullet bullet, Enemy target)
+    public override void Apply(Bullet bullet, Enemy target)
     {
-        BurnDebuff debuff = new BurnDebuff(_dps, _duration);
+        var debuff = new BurnDebuff(_dps, _duration);
         target.ModifierManager.AddStatusEffect(debuff);
     }
 }

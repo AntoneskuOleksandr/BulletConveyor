@@ -4,13 +4,13 @@ public class FreezeEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Freeze;
 
-    private float _slowAmount; // от 0 до 1
-    private float _duration;   // таймер для стаков (2 секунды)
+    private readonly float _slowAmount; // от 0 до 1
+    private readonly float _duration;   // таймер для стаков
 
-    public FreezeEffect(float slowAmount, float duration)
+    public FreezeEffect(StatusEffectSO so)
     {
-        _slowAmount = Mathf.Clamp01(slowAmount);
-        _duration = duration;
+        _slowAmount = Mathf.Clamp01(so.GetParameter(EffectParameterType.SlowAmount));
+        _duration = so.Duration;
     }
 
     public void Apply(Bullet bullet, Enemy target)
