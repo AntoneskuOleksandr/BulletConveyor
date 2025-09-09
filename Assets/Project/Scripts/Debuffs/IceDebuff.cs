@@ -27,7 +27,7 @@ public class IceDebuff : ITickEffect, IModifierEffect
         }
 
         // Полностью блокируем движение
-        enemy.SetSpeed(0f);
+        //enemy.SetSpeed(0f);
     }
 
     public void Refresh(IStatusEffect newEffect)

@@ -102,6 +102,10 @@ public class ModifierManager : MonoBehaviour
                 if (effect is IModifierEffect mod)
                 {
                     var modifiers = mod.GetModifiers();
+
+                    foreach (var modifier in modifiers)
+                        Debug.Log($"Modifier: {modifier.Key} Value: {modifier.Value} from Effect: {effect.EffectType}");
+
                     if (modifiers.TryGetValue(ModifierType.Slow, out float slow))
                         speedModifier *= 1f - slow;
                 }

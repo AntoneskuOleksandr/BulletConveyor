@@ -41,7 +41,7 @@ public class BulletManager
 
         List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
         {
-            OnHitEffectType.Lightning
+            OnHitEffectType.Ice
         };
 
 
