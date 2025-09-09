@@ -1,14 +1,14 @@
 using UnityEngine;
 
-public class BurnDebuff : ITickEffect
+/// <summary>
+/// Дебаф: огонь (Burn)
+/// </summary>
+public class BurnDebuff : BaseStatusEffect, ITickableEffect
 {
-    public OnHitEffectType EffectType => OnHitEffectType.Fire;
-    public EffectStackType StackType => EffectStackType.Refreshable;
+    public override OnHitEffectType EffectType => OnHitEffectType.Fire;
+    public override EffectStackType StackType => EffectStackType.Refreshable;
 
-    public float Duration { get; private set; }
-    public float Elapsed { get; private set; }
     public float DPS { get; private set; }
-    public float DurationLeft => Mathf.Max(Duration - Elapsed, 0f);
 
     public BurnDebuff(float dps, float duration)
     {
@@ -19,24 +19,19 @@ public class BurnDebuff : ITickEffect
 
     public void Tick(float deltaTime, Enemy enemy)
     {
-        if (Elapsed < Duration)
-        {
-            Elapsed += deltaTime;
-            // Наносим урон от горения
-            enemy.TakeDamage(DPS * deltaTime);
-        }
+        if (IsFinished) return;
+
+        Elapsed += deltaTime;
+        enemy.TakeDamage(DPS * deltaTime);
     }
 
-    public void Refresh(IStatusEffect newEffect)
+    public override void Refresh(IStatusEffect newEffect)
     {
         if (newEffect is BurnDebuff burn)
         {
-            // обновляем время и увеличиваем dps
             Duration = Mathf.Max(Duration, burn.Duration);
             DPS += burn.DPS;
             Elapsed = 0f;
         }
     }
-
-    public bool IsFinished() => Elapsed >= Duration;
 }

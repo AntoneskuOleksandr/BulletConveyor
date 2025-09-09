@@ -1,15 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightningDebuff : ITickEffect
+public class LightningDebuff : BaseStatusEffect, ITickableEffect
 {
-    public OnHitEffectType EffectType => OnHitEffectType.Lightning;
-    public EffectStackType StackType => EffectStackType.Stackable;
-
-    public float Duration { get; private set; }
-    public float Elapsed { get; private set; }
-    public float DPS => 0f;
-    public float DurationLeft => Mathf.Max(Duration - Elapsed, 0f);
+    public override OnHitEffectType EffectType => OnHitEffectType.Ice;
+    public override EffectStackType StackType => EffectStackType.Refreshable;
 
     private float _damage;
     private float _radius;
@@ -97,7 +92,7 @@ public class LightningDebuff : ITickEffect
         return candidates[index].enemy;
     }
 
-    public void Refresh(IStatusEffect newEffect)
+    public override void Refresh(IStatusEffect newEffect)
     {
         if (newEffect is LightningDebuff lightning)
         {
@@ -107,6 +102,4 @@ public class LightningDebuff : ITickEffect
             _nextTickTime = 0f; // сброс для мгновенного первого удара
         }
     }
-
-    public bool IsFinished() => Elapsed >= Duration;
 }

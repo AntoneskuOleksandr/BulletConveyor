@@ -1,23 +1,26 @@
-using UnityEngine;
+using System;
 
+/// <summary>
+/// Основной интерфейс любого статус-эффекта (баф/дебаф/мгновенный эффект)
+/// </summary>
 public interface IStatusEffect
 {
     OnHitEffectType EffectType { get; }
     EffectStackType StackType { get; }
 
-    /// <summary>
-    /// Длительность эффекта (в секундах).
-    /// </summary>
+    /// <summary>Общая длительность эффекта в секундах</summary>
     float Duration { get; }
 
-    /// <summary>
-    /// Оставшееся время действия эффекта (в секундах).
-    /// </summary>
+    /// <summary>Прошедшее время с момента наложения эффекта</summary>
+    float Elapsed { get; }
+
+    /// <summary>Оставшееся время действия эффекта</summary>
     float DurationLeft { get; }
 
-    /// <summary>
-    /// Обновление при повторном наложении (продлевает таймер, усиливает эффект).
-    /// </summary>
+    /// <summary>Флаг завершения эффекта</summary>
+    bool IsFinished { get; }
+
+    /// <summary>Обновление при повторном наложении</summary>
     void Refresh(IStatusEffect newEffect);
 }
 

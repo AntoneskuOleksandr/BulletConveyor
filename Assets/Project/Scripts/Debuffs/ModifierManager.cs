@@ -7,8 +7,21 @@ public class ModifierManager : MonoBehaviour
     private Enemy _enemy;
     private EnemyStatusCanvas _enemyStatusCanvas;
 
-    // Словарь: тип эффекта -> список экземпляров эффектов
-    private Dictionary<OnHitEffectType, List<IStatusEffect>> _effects = new();
+    // Активные эффекты: Fire, Ice и т.д.
+    private readonly Dictionary<OnHitEffectType, List<IStatusEffect>> _effects = new();
+
+    // Только тикеры (для оптимизации)
+    private readonly List<ITickableEffect> _tickables = new();
+
+    // Только модификаторы (для быстрого пересчета статы)
+    private readonly List<IModifierEffect> _modifiers = new();
+
+    // Кэш итоговых модификаторов
+    private readonly Dictionary<ModifierType, float> _modifierTotals = new();
+
+    // Dirty-флаг: нужно ли пересчитать модификаторы
+    private bool _modifiersDirty = true;
+
     private List<IEffectRule> _rules = new();
 
     [Inject] private EffectRulesConfigSO _config;
@@ -30,6 +43,13 @@ public class ModifierManager : MonoBehaviour
     /// </summary>
     public void AddStatusEffect(IStatusEffect effect)
     {
+        // Instant-эффекты выполняются сразу и не сохраняются
+        if (effect is IInstantEffect instant)
+        {
+            instant.Apply(_enemy);
+            return;
+        }
+
         if (!_effects.TryGetValue(effect.EffectType, out var list))
         {
             list = new List<IStatusEffect>();
@@ -41,18 +61,20 @@ public class ModifierManager : MonoBehaviour
             case EffectStackType.Refreshable:
                 if (list.Count > 0)
                 {
-                    list[0].Refresh(effect); // обновляем существующий
+                    list[0].Refresh(effect);
                 }
                 else
                 {
                     list.Add(effect);
                     _enemyStatusCanvas.AddStatusEffect(effect);
+                    RegisterEffect(effect);
                 }
                 break;
 
             case EffectStackType.Stackable:
                 list.Add(effect);
                 _enemyStatusCanvas.AddStatusEffect(effect);
+                RegisterEffect(effect);
                 break;
         }
 
@@ -66,13 +88,16 @@ public class ModifierManager : MonoBehaviour
     {
         if (_effects.TryGetValue(effect.EffectType, out var list))
         {
-            list.Remove(effect);
-            _enemyStatusCanvas.RemoveStatusEffect(effect);
+            if (list.Remove(effect))
+            {
+                _enemyStatusCanvas.RemoveStatusEffect(effect);
+                UnregisterEffect(effect);
 
-            if (list.Count == 0)
-                _effects.Remove(effect.EffectType);
+                if (list.Count == 0)
+                    _effects.Remove(effect.EffectType);
 
-            HandleEffectCombinations();
+                HandleEffectCombinations();
+            }
         }
     }
 
@@ -83,41 +108,83 @@ public class ModifierManager : MonoBehaviour
         if (_enemy == null || !_enemy.IsAlive)
             return;
 
-        float speedModifier = 1f;
-        List<IStatusEffect> toRemove = new List<IStatusEffect>();
+        float deltaTime = Time.deltaTime;
+        List<IStatusEffect> toRemove = null;
 
-        foreach (var kv in _effects)
+        // Тикаем только нужные эффекты
+        foreach (var tickable in _tickables)
         {
-            foreach (var effect in kv.Value)
+            tickable.Tick(deltaTime, _enemy);
+            if (tickable.IsFinished)
             {
-                // Tick для эффектов с временем действия
-                if (effect is ITickEffect tick)
-                {
-                    tick.Tick(Time.deltaTime, _enemy);
-                    if (tick.IsFinished())
-                        toRemove.Add(effect);
-                }
-
-                // Применяем модификаторы (например, замедление)
-                if (effect is IModifierEffect mod)
-                {
-                    var modifiers = mod.GetModifiers();
-
-                    foreach (var modifier in modifiers)
-                        Debug.Log($"Modifier: {modifier.Key} Value: {modifier.Value} from Effect: {effect.EffectType}");
-
-                    if (modifiers.TryGetValue(ModifierType.Slow, out float slow))
-                        speedModifier *= 1f - slow;
-                }
+                toRemove ??= new List<IStatusEffect>();
+                toRemove.Add(tickable);
             }
         }
 
-        // Удаляем эффекты, которые закончились
-        foreach (var effect in toRemove)
-            RemoveStatusEffect(effect);
+        // Удаляем законченные эффекты
+        if (toRemove != null)
+        {
+            foreach (var eff in toRemove)
+                RemoveStatusEffect(eff);
+        }
 
-        // Применяем итоговое замедление
-        _enemy.SetSpeed(_enemy.BaseSpeed * speedModifier);
+        // Применяем модификаторы, если были изменения
+        if (_modifiersDirty)
+        {
+            RecalculateModifiers();
+            _modifiersDirty = false;
+        }
+
+        // Применяем итоговую скорость
+        float speed = _enemy.BaseSpeed;
+        if (_modifierTotals.TryGetValue(ModifierType.Slow, out float slow))
+        {
+            speed *= 1f - slow;
+        }
+
+        _enemy.SetSpeed(speed);
+    }
+
+    private void RegisterEffect(IStatusEffect effect)
+    {
+        if (effect is ITickableEffect tickable)
+            _tickables.Add(tickable);
+
+        if (effect is IModifierEffect modifier)
+        {
+            _modifiers.Add(modifier);
+            _modifiersDirty = true;
+        }
+    }
+
+    private void UnregisterEffect(IStatusEffect effect)
+    {
+        if (effect is ITickableEffect tickable)
+            _tickables.Remove(tickable);
+
+        if (effect is IModifierEffect modifier)
+        {
+            _modifiers.Remove(modifier);
+            _modifiersDirty = true;
+        }
+    }
+
+    private void RecalculateModifiers()
+    {
+        _modifierTotals.Clear();
+
+        foreach (var mod in _modifiers)
+        {
+            var dict = mod.GetModifiers();
+            foreach (var kv in dict)
+            {
+                if (_modifierTotals.ContainsKey(kv.Key))
+                    _modifierTotals[kv.Key] += kv.Value;
+                else
+                    _modifierTotals[kv.Key] = kv.Value;
+            }
+        }
     }
 
     /// <summary>

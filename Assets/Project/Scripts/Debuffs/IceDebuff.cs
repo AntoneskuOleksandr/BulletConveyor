@@ -1,16 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IceDebuff : ITickEffect, IModifierEffect
+public class IceDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
 {
-    public OnHitEffectType EffectType => OnHitEffectType.Ice;
-    public EffectStackType StackType => EffectStackType.Refreshable;
-    public float Duration { get; private set; }
-    public float Elapsed { get; private set; }
-    public float DPS => 0f;
-    public float DurationLeft => Mathf.Max(Duration - Elapsed, 0f);
+    public override OnHitEffectType EffectType => OnHitEffectType.Ice;
+    public override EffectStackType StackType => EffectStackType.Refreshable;
 
-    private float _meltSpeed; // скорость та€ни€ от внешних факторов
+    private float _meltSpeed;
 
     public IceDebuff(float meltSpeed, float duration)
     {
@@ -19,21 +15,17 @@ public class IceDebuff : ITickEffect, IModifierEffect
         Elapsed = 0f;
     }
 
+    /// <summary>Tick вызываетс€ каждый кадр</summary>
     public void Tick(float deltaTime, Enemy enemy)
     {
-        if (Elapsed < Duration)
-        {
-            Elapsed += deltaTime * _meltSpeed;
-        }
+        if (IsFinished) return;
 
-        // ѕолностью блокируем движение
-        //enemy.SetSpeed(0f);
+        Elapsed += deltaTime * _meltSpeed;
     }
 
-    public void Refresh(IStatusEffect newEffect)
+    /// <summary>ќбновление при повторном наложении</summary>
+    public override void Refresh(IStatusEffect newEffect)
     {
-        // ѕолностью замороженный враг не стакует лед,
-        // но можно обновл€ть врем€ действи€, если нужно
         if (newEffect is IceDebuff ice)
         {
             Duration = Mathf.Max(Duration, ice.Duration);
@@ -41,15 +33,17 @@ public class IceDebuff : ITickEffect, IModifierEffect
         }
     }
 
-    public bool IsFinished() => Elapsed >= Duration;
+    /// <summary>ћодификаторы дл€ вли€ни€ на врага</summary>
+    public Dictionary<ModifierType, float> GetModifiers()
+    {
+        return new Dictionary<ModifierType, float>
+        {
+            { ModifierType.Slow, 1f } // полностью замораживает
+        };
+    }
 
     public void StartMelt(float fireMeltSpeed)
     {
         _meltSpeed = Mathf.Max(_meltSpeed, fireMeltSpeed);
-    }
-
-    public Dictionary<ModifierType, float> GetModifiers()
-    {
-        return new Dictionary<ModifierType, float> { { ModifierType.Slow, 1f } };
     }
 }
