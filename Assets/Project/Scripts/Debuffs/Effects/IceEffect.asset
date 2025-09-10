@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 2
   Duration: 2
-  parameters: []
+  Parameters:
+  - Type: 2
+    Value: 1
+  AllowedParameters: 02000000

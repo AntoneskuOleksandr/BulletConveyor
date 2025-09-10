@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: FireEffect
   m_EditorClassIdentifier: 
   Type: 0
-  Duration: 10
-  parameters:
+  Duration: 5
+  Parameters:
   - Type: 0
     Value: 5
+  AllowedParameters: 00000000

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -21,9 +22,6 @@ public class StatusEffectSO : ScriptableObject
     [Header("Allowed Parameters")]
     public EffectParameterType[] AllowedParameters;
 
-    /// <summary>
-    /// Получение параметра с проверкой на разрешённость
-    /// </summary>
     public float GetParameter(EffectParameterType type, float defaultValue = 0f)
     {
         if (!Array.Exists(AllowedParameters, t => t == type))
@@ -36,19 +34,33 @@ public class StatusEffectSO : ScriptableObject
         return param != null ? param.Value : defaultValue;
     }
 
-    /// <summary>
-    /// Установка параметра с проверкой на разрешённость
-    /// </summary>
-    public void SetParameter(EffectParameterType type, float value)
+#if UNITY_EDITOR
+    private void OnValidate()
     {
-        if (!Array.Exists(AllowedParameters, t => t == type))
+        // Удаляем параметры, которых больше нет в AllowedParameters
+        Parameters.RemoveAll(p => !Array.Exists(AllowedParameters, t => t == p.Type));
+
+        // Добавляем типы по порядку при наличии свободных AllowedParameters
+        var existingTypes = Parameters.Select(p => p.Type).ToList();
+
+        for (int i = 0; i < AllowedParameters.Length; i++)
         {
-            Debug.LogWarning($"Cannot set parameter {type} for effect {Type}");
-            return;
+            var allowed = AllowedParameters[i];
+
+            if (!existingTypes.Contains(allowed))
+            {
+                // Если список Parameters меньше, чем количество Allowed, добавляем новый элемент
+                if (Parameters.Count < AllowedParameters.Length)
+                {
+                    Parameters.Add(new EffectParameter { Type = allowed, Value = 0f });
+                    existingTypes.Add(allowed); // чтобы дальше не дублировать
+                }
+            }
         }
 
-        var param = Parameters.Find(p => p.Type == type);
-        if (param != null) param.Value = value;
-        else Parameters.Add(new EffectParameter { Type = type, Value = value });
+        // Если вдруг Parameters больше AllowedParameters, обрезаем
+        Parameters.RemoveAll(p => !AllowedParameters.Contains(p.Type));
     }
+#endif
 }
+

@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 3
   Duration: 1
-  parameters:
-  - Key: DamagePerTick
-    Value: 1
-  - Key: Radius
-    Value: 100
-  - Key: MaxBounces
-    Value: 100
-  - Key: TicksPerSecond
-    Value: 10
+  Parameters:
+  - Type: 3
+    Value: 2
+  - Type: 4
+    Value: 15
+  - Type: 5
+    Value: 5
+  - Type: 6
+    Value: 2
+  AllowedParameters: 03000000040000000500000006000000

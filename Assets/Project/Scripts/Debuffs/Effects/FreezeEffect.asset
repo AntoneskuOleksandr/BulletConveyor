@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 1
   Duration: 3
-  parameters:
-  - Key: Strength
-    Value: 0.5
+  Parameters:
+  - Type: 1
+    Value: 0.2
+  AllowedParameters: 01000000
