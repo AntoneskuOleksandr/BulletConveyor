@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Zenject;
 
 /// <summary>
 /// Фабрика для создания эффектов (IOnHitEffect)
@@ -13,6 +14,9 @@ public class EffectFactory : MonoBehaviour
     [SerializeField] private Sprite freezeIcon;
     [SerializeField] private Sprite iceIcon;
     [SerializeField] private Sprite lightningIcon;
+
+    [Inject] private LightningManager _lightningManager;
+
     public IOnHitEffect CreateEffect(OnHitEffectType type)
     {
         StatusEffectSO so = GetEffectSO(type);
@@ -27,7 +31,7 @@ public class EffectFactory : MonoBehaviour
             OnHitEffectType.Fire => new FireEffect(so),
             OnHitEffectType.Ice => new IceEffect(so),
             OnHitEffectType.Freeze => new FreezeEffect(so),
-            OnHitEffectType.Lightning => new LightningEffect(so),
+            OnHitEffectType.Lightning => new LightningEffect(so, _lightningManager),
             _ => null
         };
     }

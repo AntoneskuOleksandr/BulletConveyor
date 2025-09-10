@@ -1,28 +1,38 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class LightningVisual : MonoBehaviour
 {
-    [Header("Line Settings")]
-    [SerializeField] private float lineWidth = 0.1f;
-    [SerializeField] private int segmentsPerSection = 10; // сегментов на каждую линию
-    [SerializeField] private float baseDisplacement = 0.05f; // базовое смещение
-    [SerializeField] private float distanceFactor = 0.02f; // коэффициент нарастани€ смещени€ от рассто€ни€
-
-    [Header("Animation Settings")]
-    [SerializeField] private float lineDuration = 0.2f;
-
-    [Header("Glow Settings")]
-    [SerializeField] private Color color = Color.yellow;
-    [SerializeField] private float brightness = 2f;
+    private float lineWidth;
+    private int segmentsPerSection;
+    private float baseDisplacement;
+    private float distanceFactor;
+    private float lineDuration;
+    private Color color;
+    private float brightness;
 
     private LineRenderer line;
     private Material lineMaterial;
 
-    /// <summary>
-    /// –исует цепочку молний через несколько точек
-    /// </summary>
+    public void Configure(
+        float lineWidth,
+        int segmentsPerSection,
+        float baseDisplacement,
+        float distanceFactor,
+        float lineDuration,
+        Color color,
+        float brightness)
+    {
+        this.lineWidth = lineWidth;
+        this.segmentsPerSection = segmentsPerSection;
+        this.baseDisplacement = baseDisplacement;
+        this.distanceFactor = distanceFactor;
+        this.lineDuration = lineDuration;
+        this.color = color;
+        this.brightness = brightness;
+    }
+
     public void DrawChain(List<Vector3> positions)
     {
         if (positions.Count < 2) return;
@@ -48,11 +58,9 @@ public class LightningVisual : MonoBehaviour
 
     private IEnumerator DrawChainCoroutine(List<Vector3> positions)
     {
-        // считаем общее количество сегментов
         int totalSegments = segmentsPerSection * (positions.Count - 1);
         Vector3[] points = new Vector3[totalSegments + 1];
 
-        // базовые точки и смещение дл€ каждого сегмента
         int index = 0;
         for (int i = 0; i < positions.Count - 1; i++)
         {
@@ -66,8 +74,7 @@ public class LightningVisual : MonoBehaviour
                 float t = s / (float)segmentsPerSection;
                 Vector3 point = Vector3.Lerp(start, end, t);
 
-                // промежуточные точки смещаем случайно
-                if (s != 0) // не трогаем первый сегмент точки
+                if (s != 0)
                 {
                     point += new Vector3(
                         Random.Range(-displacement, displacement),
@@ -79,7 +86,8 @@ public class LightningVisual : MonoBehaviour
                 points[index++] = point;
             }
         }
-        points[index] = positions[positions.Count - 1]; // последн€€ точка
+
+        points[index] = positions[positions.Count - 1];
 
         line.positionCount = points.Length;
         line.enabled = true;
@@ -87,7 +95,6 @@ public class LightningVisual : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < lineDuration)
         {
-            // плавное затухание
             Color currentColor = color * brightness;
             currentColor.a = Mathf.Lerp(1f, 0f, elapsed / lineDuration);
             line.material.color = currentColor;

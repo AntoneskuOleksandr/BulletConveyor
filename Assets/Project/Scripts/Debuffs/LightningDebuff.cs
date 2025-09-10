@@ -1,105 +1,70 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightningDebuff : BaseStatusEffect, ITickableEffect
+/// <summary>
+/// ƒебафф молнии: при первом тикe наносит указанный урон (однократно)
+/// и даЄт посто€нное замедление _slow на прот€жении duration.
+/// –еализован как Refreshable: при повторном наложении обновл€ет duration и берЄт максимум slow.
+/// </summary>
+public class LightningDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
 {
-    public override OnHitEffectType EffectType => OnHitEffectType.Ice;
+    public override OnHitEffectType EffectType => OnHitEffectType.Lightning;
     public override EffectStackType StackType => EffectStackType.Refreshable;
 
     private float _damage;
-    private float _radius;
-    private int _maxBounces;
-    private float _ticksPerSecond;
-    private float _nextTickTime;
+    private float _slow;
+    private bool _damageApplied;
 
-    private const float DEFAULT_DAMAGE_FALLOFF = 1f;
-
-    private LightningVisual _visual;
-
-    public LightningDebuff(float damage, float radius, int maxBounces, float duration, float ticksPerSecond = 2f, LightningVisual visual = null)
+    public LightningDebuff(float damage, float slowAmount, float duration)
     {
-        _damage = damage;
-        _radius = radius;
-        _maxBounces = maxBounces;
-        Duration = duration;
-        _ticksPerSecond = Mathf.Max(0.01f, ticksPerSecond);
+        _damage = Mathf.Max(0f, damage);
+        _slow = Mathf.Clamp01(slowAmount);
+        Duration = Mathf.Max(0.01f, duration);
         Elapsed = 0f;
-        _nextTickTime = 0f;
-        _visual = visual; // визуализаци€
+        _damageApplied = false;
     }
 
-    private void ChainLightning(Enemy sourceEnemy, Vector3 startPosition, float damage, int bouncesLeft, HashSet<Enemy> hitEnemies, List<Vector3> path)
-    {
-        Enemy next = FindRandomNearbyEnemy(startPosition, hitEnemies, 3); // берЄм случайного из 3 ближайших
-        if (next == null) return;
-
-        next.TakeDamage(damage);
-        hitEnemies.Add(next);
-        path.Add(next.HitTransform.position);
-
-        if (bouncesLeft > 0)
-        {
-            float nextDamage = damage * DEFAULT_DAMAGE_FALLOFF;
-            ChainLightning(sourceEnemy, next.HitTransform.position, nextDamage, bouncesLeft - 1, hitEnemies, path);
-        }
-    }
-
+    // Tick вызываетс€ менеджером эффектов каждый кадр: даЄм урон один раз и поддерживаем замедление
     public void Tick(float deltaTime, Enemy enemy)
     {
+        if (enemy == null || IsFinished) return;
+
+        // первый тик Ч нанесЄм урон сразу
+        if (!_damageApplied)
+        {
+            if (_damage > 0f)
+                enemy.TakeDamage(_damage);
+            _damageApplied = true;
+        }
+
+        // увеличиваем врем€
         Elapsed += deltaTime;
 
-        float tickInterval = 1f / _ticksPerSecond;
-
-        while (_nextTickTime <= Elapsed && _nextTickTime < Duration)
-        {
-            _nextTickTime += tickInterval;
-
-            HashSet<Enemy> hitEnemies = new HashSet<Enemy>();
-            List<Vector3> path = new List<Vector3> { enemy.HitTransform.position }; // стартова€ точка
-            ChainLightning(enemy, enemy.HitTransform.position, _damage, _maxBounces, hitEnemies, path);
-
-            // визуализируем молнию
-            if (_visual != null && path.Count > 1)
-                _visual.DrawChain(path);
-        }
-    }
-
-    /// <summary>
-    /// Ќаходит случайного врага из N ближайших, который ещЄ не был поражЄн
-    /// </summary>
-    private Enemy FindRandomNearbyEnemy(Vector3 position, HashSet<Enemy> exclude, int nearestCount)
-    {
-        Collider[] colliders = Physics.OverlapSphere(position, _radius);
-        List<(Enemy enemy, float dist)> candidates = new List<(Enemy, float)>();
-
-        foreach (var col in colliders)
-        {
-            if (!col.TryGetComponent<Enemy>(out Enemy enemy) || !enemy.IsAlive || exclude.Contains(enemy))
-                continue;
-
-            float dist = Vector3.Distance(position, enemy.HitTransform.position);
-            candidates.Add((enemy, dist));
-        }
-
-        if (candidates.Count == 0) return null;
-
-        // сортируем по рассто€нию и берЄм N ближайших
-        candidates.Sort((a, b) => a.dist.CompareTo(b.dist));
-        int count = Mathf.Min(nearestCount, candidates.Count);
-
-        // случайный выбор из N ближайших
-        int index = Random.Range(0, count);
-        return candidates[index].enemy;
+        // примен€ем замедление напр€мую (как у FreezeDebuff Ч чтобы гарантированно было)
+        // если в твоей системе модификаторы складываютс€ централизованно, можно убрать SetSpeed
+        enemy.SetSpeed(enemy.BaseSpeed * (1f - _slow));
     }
 
     public override void Refresh(IStatusEffect newEffect)
     {
-        if (newEffect is LightningDebuff lightning)
+        if (newEffect is LightningDebuff ld)
         {
-            Duration = Mathf.Max(Duration, lightning.Duration);
+            // продлеваем наибольшую длительность, берЄм максимальное замедление
+            Duration = Mathf.Max(Duration, ld.Duration);
+            _slow = Mathf.Max(_slow, ld._slow);
+            // при обновлении можно заново нанести урон (если хочетс€) Ч здесь мы сбросим флаг,
+            // чтобы урон повторно сработал при следующем тике:
+            _damageApplied = false;
             Elapsed = 0f;
-            _damage = Mathf.Max(_damage, lightning._damage);
-            _nextTickTime = 0f; // сброс дл€ мгновенного первого удара
         }
+    }
+
+    // если у теб€ централизованна€ система модификаторов Ч отдаЄм текущую величину замедлени€
+    public Dictionary<ModifierType, float> GetModifiers()
+    {
+        return new Dictionary<ModifierType, float>
+        {
+            { ModifierType.Slow, _slow }
+        };
     }
 }

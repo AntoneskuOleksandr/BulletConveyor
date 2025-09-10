@@ -17,8 +17,11 @@ public class GameplayInstaller : MonoInstaller
     [SerializeField] private WeaponManager weaponManager;
     [SerializeField] private BulletGenerator bulletGenerator;
     [SerializeField] private BulletsStack bulletsStack;
+
+    [Header("Effects Managers")]
     [SerializeField] private EffectFactory effectFactory;
     [SerializeField] private EffectRulesConfigSO effectRulesConfigSO;
+    [SerializeField] private LightningManager lightningManager;
 
     [Header("Enemy-Related Scripts")]
     [SerializeField] private EnemyManager enemyManager;
@@ -43,8 +46,11 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<BulletsStack>().FromInstance(bulletsStack).AsSingle();
         Container.Bind<BulletManager>().AsSingle();
         Container.Bind<EffectChanceManager>().AsSingle();
+
+        //Effects Managers
         Container.Bind<EffectFactory>().FromInstance(effectFactory).AsSingle();
         Container.Bind<EffectRulesConfigSO>().FromInstance(effectRulesConfigSO).AsSingle();
+        Container.Bind<LightningManager>().FromInstance(lightningManager).AsSingle();
 
         //Enemy-Related Scripts
         Container.Bind<EnemyManager>().FromInstance(enemyManager).AsSingle();

@@ -26,7 +26,7 @@ public class StatusEffectSO : ScriptableObject
     {
         if (!Array.Exists(AllowedParameters, t => t == type))
         {
-            Debug.LogWarning($"Parameter {type} is not allowed for effect {Type}");
+            Debug.LogWarning($"StatusEffectSO: Parameter {type} is not signed for effect {Type}. Returning default value.");
             return defaultValue;
         }
 
