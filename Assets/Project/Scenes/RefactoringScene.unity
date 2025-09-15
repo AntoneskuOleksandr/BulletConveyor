@@ -1795,8 +1795,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9baff27ca1e90e349b21f410ec75164f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalWaves: 100
-  waveDuration: 2
+  totalWaves: 10
+  waveDuration: 10
   timeBetweenWaves: 0
   minEnemyCount: 1
   maxEnemyCount: 1

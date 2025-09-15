@@ -21,10 +21,12 @@ public class WaveManager : MonoBehaviour
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private EnemyManager _enemyManager;
 
-    public event Action<float> OnWaveRoutineStarted;   //Время между волнами, количество волн
+    // События
+    public event Action<float> OnWaveRoutineStarted;   // Время между волнами
     public event Action<int, float> OnWaveStarted;     // Номер волны, длительность волны
     public event Action<int> OnWaveCompleted;          // Номер волны
     public event Action<int, int> OnEnemiesChanged;    // alive, total
+    public event Action<float, int> OnWaveProgress;         // Прогресс текущей волны (0..1) + номер волны
 
     public int TotalWaves => totalWaves;
 
@@ -44,13 +46,16 @@ public class WaveManager : MonoBehaviour
 
             StartWave(currentWave);
 
-            // Ждём окончания волны: по времени или пока все враги не умерли
-            float timer = 0f;
-            while (timer < waveDuration && enemiesAlive > 0)
+            float elapsed = 0f;
+            while (elapsed < waveDuration && enemiesAlive > 0)
             {
-                timer += Time.deltaTime;
+                elapsed += Time.deltaTime;
+                OnWaveProgress?.Invoke(Mathf.Clamp01(elapsed / waveDuration), currentWave);
                 yield return null;
             }
+
+            // Если волна закончилась раньше времени
+            OnWaveProgress?.Invoke(1f, currentWave);
 
             EndWave(currentWave);
         }
@@ -58,13 +63,12 @@ public class WaveManager : MonoBehaviour
 
     private void StartWave(int waveIndex)
     {
-        // Считаем, сколько врагов нужно спавнить
         int minCount = minEnemyCount + enemyIncrementPerWave * (waveIndex - 1);
         int maxCount = maxEnemyCount + enemyIncrementPerWave * (waveIndex - 1);
         int enemyCount = UnityEngine.Random.Range(minCount, maxCount + 1);
 
-        // Отправляем спавнеру нужное количество врагов и получаем их количество
-        enemiesAlive = _enemySpawner.SpawnWave(enemyCount, waveIndex, totalWaves);
+        // Добавляем новых врагов к уже существующим
+        enemiesAlive += _enemySpawner.SpawnWave(enemyCount, waveIndex, totalWaves);
 
         OnWaveStarted?.Invoke(waveIndex, waveDuration);
         OnEnemiesChanged?.Invoke(enemiesAlive, enemiesAlive);
