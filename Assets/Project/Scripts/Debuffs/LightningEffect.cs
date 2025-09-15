@@ -36,11 +36,9 @@ public class LightningEffect : IOnHitEffect
     {
         if (initialTarget == null)
         {
-            Debug.Log("LightningEffect: initialTarget is null!");
             return;
         }
 
-        Debug.Log($"LightningEffect: Applying to target {initialTarget.name}, IsAlive={initialTarget.IsAlive}");
         _lightningManager.StartCoroutine(DoLightningChain(initialTarget));
     }
 
