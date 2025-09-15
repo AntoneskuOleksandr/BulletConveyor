@@ -13,5 +13,21 @@ public abstract class BaseStatusEffect : IStatusEffect
     public float DurationLeft => Mathf.Max(Duration - Elapsed, 0f);
     public virtual bool IsFinished => Elapsed >= Duration;
 
-    public abstract void Refresh(IStatusEffect newEffect);
+    /// <summary>
+    /// Метод обновления эффекта. 
+    /// Вызывается только для Refreshable эффектов.
+    /// Для Stackable эффекта не используется.
+    /// </summary>
+    public virtual void Refresh(IStatusEffect newEffect)
+    {
+        if (StackType == EffectStackType.Refreshable)
+        {
+            OnRefresh(newEffect);
+        }
+    }
+
+    /// <summary>
+    /// Собственно логика обновления для Refreshable эффектов.
+    /// </summary>
+    protected abstract void OnRefresh(IStatusEffect newEffect);
 }

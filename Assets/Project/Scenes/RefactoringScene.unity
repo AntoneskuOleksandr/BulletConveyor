@@ -773,7 +773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &410087040
 Light:
   m_ObjectHideFlags: 0
@@ -1074,7 +1074,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &832575518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1750,7 +1750,7 @@ MonoBehaviour:
   fireIcon: {fileID: 21300000, guid: 3178c9e72405787479f4ca847398e9fa, type: 3}
   freezeIcon: {fileID: 21300000, guid: 8c93084811e623443847e65e7ab17d6a, type: 3}
   iceIcon: {fileID: 21300000, guid: 02c054d48feb0c1448dedf03a9d19f9b, type: 3}
-  lightningIcon: {fileID: 21300000, guid: 0a622ee65aa898b4d9be4f70e0476c85, type: 3}
+  lightningIcon: {fileID: 21300000, guid: c126601ff2cbc884ab0ca88b5583970e, type: 3}
 --- !u!4 &1349853965
 Transform:
   m_ObjectHideFlags: 0
@@ -1795,12 +1795,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9baff27ca1e90e349b21f410ec75164f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalWaves: 10
-  waveDuration: 100
-  timeBetweenWaves: 1
-  minEnemyCount: 3
-  maxEnemyCount: 3
-  enemyIncrementPerWave: 1
+  totalWaves: 100
+  waveDuration: 2
+  timeBetweenWaves: 0
+  minEnemyCount: 1
+  maxEnemyCount: 1
+  enemyIncrementPerWave: 0
 --- !u!4 &1354856230
 Transform:
   m_ObjectHideFlags: 0
@@ -2076,7 +2076,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletType: 0
-  damage: 10
+  damage: 100
   firePoint: {fileID: 774441091}
   partToRotate: {fileID: 1540644355}
   turnSpeed: 5

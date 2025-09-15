@@ -24,7 +24,7 @@ public class IceDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
     }
 
     /// <summary>Обновление при повторном наложении</summary>
-    public override void Refresh(IStatusEffect newEffect)
+    protected override void OnRefresh(IStatusEffect newEffect)
     {
         if (newEffect is IceDebuff ice)
         {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Менеджер, который рисует цепочки молний через всех врагов
+/// Менеджер, который рисует цепочки молний через всех врагов.
 /// </summary>
 public class LightningManager : MonoBehaviour
 {
@@ -16,28 +16,33 @@ public class LightningManager : MonoBehaviour
     [SerializeField] private float brightness = 2f;
 
     /// <summary>
-    /// Отрисовывает цепочку между всеми врагами в списке
+    /// Отрисовывает цепочку между всеми врагами в списке.
     /// </summary>
     public void DrawChain(List<Enemy> enemies)
     {
         if (enemies == null || enemies.Count < 2) return;
 
         List<Vector3> positions = new List<Vector3>();
-        foreach (var e in enemies)
-            positions.Add(e.transform.position);
 
-        // Создаём GameObject под молнию
+        foreach (var enemy in enemies)
+        {
+            if (enemy != null && enemy.HitTransform != null)
+            {
+                positions.Add(enemy.HitTransform.position);
+            }
+        }
+
+        if (positions.Count < 2) return;
+
         GameObject lightningGO = new GameObject("LightningVisual");
         lightningGO.transform.SetParent(transform, false);
 
-        // Добавляем компонент и настраиваем его
         LightningVisual visual = lightningGO.AddComponent<LightningVisual>();
         visual.Configure(lineWidth, segmentsPerSection, baseDisplacement, distanceFactor, lineDuration, color, brightness);
 
-        // Запускаем отрисовку
         visual.DrawChain(positions);
 
-        // Уничтожаем объект после анимации
         Destroy(lightningGO, lineDuration + 0.1f);
     }
+
 }

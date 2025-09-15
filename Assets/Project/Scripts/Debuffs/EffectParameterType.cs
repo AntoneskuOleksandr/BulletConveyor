@@ -6,5 +6,6 @@ public enum EffectParameterType
     Damage,
     Radius,
     MaxBounces,
-    TicksPerSecond
+    TicksPerSecond,
+    DebuffDuration
 }

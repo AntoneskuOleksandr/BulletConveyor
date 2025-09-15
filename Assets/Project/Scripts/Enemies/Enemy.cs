@@ -19,9 +19,10 @@ public abstract class Enemy : MonoBehaviour
     protected Collider _collider;
     protected Rigidbody _rigidbody;
 
-    protected float _currentHealth;
+    [SerializeField] protected float _currentHealth;
 
     public bool IsAlive => _currentHealth > 0f;
+    public float Health => _currentHealth;
     public float BaseSpeed => baseSpeed;
     public float KillReward => killReward;
     public Transform HitTransform => hitTransform;

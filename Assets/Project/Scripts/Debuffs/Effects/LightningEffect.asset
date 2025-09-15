@@ -15,12 +15,16 @@ MonoBehaviour:
   Type: 3
   Duration: 1
   Parameters:
-  - Type: 3
-    Value: 2
+  - Type: 1
+    Value: 0.3
+  - Type: 0
+    Value: 10
   - Type: 4
-    Value: 15
+    Value: 100
   - Type: 5
-    Value: 5
+    Value: 100
   - Type: 6
     Value: 2
-  AllowedParameters: 03000000040000000500000006000000
+  - Type: 7
+    Value: 0.5
+  AllowedParameters: 010000000000000004000000050000000600000007000000

@@ -25,7 +25,7 @@ public class BurnDebuff : BaseStatusEffect, ITickableEffect
         enemy.TakeDamage(DPS * deltaTime);
     }
 
-    public override void Refresh(IStatusEffect newEffect)
+    protected override void OnRefresh(IStatusEffect newEffect)
     {
         if (newEffect is BurnDebuff burn)
         {

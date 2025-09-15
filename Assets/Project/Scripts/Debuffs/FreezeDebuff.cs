@@ -47,7 +47,7 @@ public class FreezeDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
         enemy.SetSpeed(enemy.BaseSpeed * (1f - _slow));
     }
 
-    public override void Refresh(IStatusEffect newEffect)
+    protected override void OnRefresh(IStatusEffect newEffect)
     {
         if (newEffect is FreezeDebuff freeze)
         {

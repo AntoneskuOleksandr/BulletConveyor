@@ -15,6 +15,8 @@ public class EnemySpawner : MonoBehaviour
     [Inject] private DiContainer _container;
     [Inject] private EnemyManager _enemyManager;
 
+    private float totalSpawnedEnemies = 0;
+
     /// <summary>
     /// Спавнит указанное количество врагов.
     /// WaveIndex и totalWaves нужны для расчета типа врага.
@@ -41,6 +43,10 @@ public class EnemySpawner : MonoBehaviour
 
             GameObject enemyObj = _container.InstantiatePrefab(prefabToSpawn, spawnPosition, Quaternion.identity, null);
             enemyObj.transform.Rotate(0f, 180f, 0f);
+
+            totalSpawnedEnemies++;
+
+            enemyObj.name = $"Enemy({totalSpawnedEnemies})";
 
             Enemy enemy = enemyObj.GetComponent<Enemy>();
             spawnedEnemies.Add(enemy);
