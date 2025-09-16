@@ -1797,7 +1797,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalWaves: 10
   waveDuration: 10
-  timeBetweenWaves: 0
+  timeBetweenWaves: 5
   minEnemyCount: 1
   maxEnemyCount: 1
   enemyIncrementPerWave: 0
@@ -20176,6 +20176,8 @@ MonoBehaviour:
   upgradeWave: {fileID: -358363405, guid: 48b8ae9cfa23e9f4e9881e6cfdeaec18, type: 3}
   upcomingWave: {fileID: 1232976461, guid: 48b8ae9cfa23e9f4e9881e6cfdeaec18, type: 3}
   finishWave: {fileID: 140548900, guid: 48b8ae9cfa23e9f4e9881e6cfdeaec18, type: 3}
+  fillSmoothSpeed: 3
+  scrollSmoothSpeed: 3
 --- !u!222 &7262064369096976777
 CanvasRenderer:
   m_ObjectHideFlags: 0

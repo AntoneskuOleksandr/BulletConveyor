@@ -22,53 +22,62 @@ public class ProgressBar : MonoBehaviour
     private List<Image> _waveIcons = new List<Image>();
     private bool _scrollStarted = false;
 
-    private float _initialFill; // запомненное значение после заполнени€ левой пустой области
+    private float _initialFill;
+    private float _targetFill;   // целевой fillAmount
+    private float _targetScroll; // целевой scroll
+
+    [SerializeField] private float fillSmoothSpeed = 5f;   // чем больше Ч тем быстрее анимаци€
+    [SerializeField] private float scrollSmoothSpeed = 5f; // отдельна€ скорость дл€ скролла
 
     private void Awake()
     {
         GenerateProgressBar();
 
-        // 1) «аполн€ем левую пустую область перед первой волной
         _waveManager.OnWaveRoutineStarted += (timeBetweenWaves) => StartCoroutine(FillInitialEmptyArea(timeBetweenWaves));
 
-        // 2) ѕодписка на прогресс волны
         _waveManager.OnWaveProgress += (waveProgress, waveIndex) =>
         {
-            // ѕрогресс бара: прибавл€ем прогресс волны к уже заполненной левой области
-            float filledAmount = _initialFill + (waveIndex - 1 + waveProgress) / (_waveManager.TotalWaves + 2f);
-            filledPart.fillAmount = filledAmount;
+            // целевое значение fillAmount (учитывает левую пустую область)
+            _targetFill = _initialFill + (waveIndex - 1 + waveProgress) / (_waveManager.TotalWaves + 2f);
 
-            // —кролл двигаетс€ только после старта первой волны
             if (_scrollStarted)
-            {
-                float scrollPos = (waveIndex - 1 + waveProgress) / (float)_waveManager.TotalWaves;
-                scrollRect.horizontalNormalizedPosition = scrollPos;
-            }
+                _targetScroll = (waveIndex - 1 + waveProgress) / (float)_waveManager.TotalWaves;
         };
 
-        // 3) ѕри старте волны отмечаем еЄ как начатую
         _waveManager.OnWaveStarted += (waveIndex, _) =>
         {
             MarkWaveAsStarted(waveIndex - 1);
-            _scrollStarted = true; // включаем скролл после первой волны
+            _scrollStarted = true;
         };
+    }
+
+    private void Update()
+    {
+        // ѕлавно приближаем fillAmount к targetFill
+        filledPart.fillAmount = Mathf.Lerp(filledPart.fillAmount, _targetFill, Time.deltaTime * fillSmoothSpeed);
+
+        // ѕлавно приближаем scroll к targetScroll (если скролл активен)
+        if (_scrollStarted)
+            scrollRect.horizontalNormalizedPosition = Mathf.Lerp(scrollRect.horizontalNormalizedPosition, _targetScroll, Time.deltaTime * scrollSmoothSpeed);
     }
 
     private IEnumerator FillInitialEmptyArea(float duration)
     {
-        float target = 1f / (_waveManager.TotalWaves + 2f); // лева€ пуста€ область
+        float target = 1f / (_waveManager.TotalWaves + 2f);
         float start = 0f;
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            filledPart.fillAmount = Mathf.Lerp(start, target, elapsed / duration);
+            _targetFill = Mathf.Lerp(start, target, elapsed / duration);
+            filledPart.fillAmount = _targetFill;
             yield return null;
         }
 
+        _targetFill = target;
         filledPart.fillAmount = target;
-        _initialFill = target; // запоминаем заполненное значение
+        _initialFill = target;
     }
 
     private void GenerateProgressBar()
