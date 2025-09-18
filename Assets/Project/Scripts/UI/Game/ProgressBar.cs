@@ -12,6 +12,9 @@ public class ProgressBar : MonoBehaviour
     [SerializeField] private RectTransform content;
     [SerializeField] private GameObject waveIconPrefab;
 
+    [SerializeField] private TMP_Text nextWaveTimer;
+
+    [Header("Wave Icons Sprites")]
     [SerializeField] private Sprite startedWave;
     [SerializeField] private Sprite upgradeWave;
     [SerializeField] private Sprite upcomingWave;
@@ -49,6 +52,11 @@ public class ProgressBar : MonoBehaviour
             MarkWaveAsStarted(waveIndex - 1);
             _scrollStarted = true;
         };
+
+        _waveManager.OnTimerBetweenWavesStarted += (waveIndex, timeBetweenWaves) =>
+        {
+            StartCoroutine(WaveCountdownText(timeBetweenWaves));
+        };
     }
 
     private void Update()
@@ -59,6 +67,18 @@ public class ProgressBar : MonoBehaviour
         // Плавно приближаем scroll к targetScroll (если скролл активен)
         if (_scrollStarted)
             scrollRect.horizontalNormalizedPosition = Mathf.Lerp(scrollRect.horizontalNormalizedPosition, _targetScroll, Time.deltaTime * scrollSmoothSpeed);
+    }
+
+    private IEnumerator WaveCountdownText(float countdownTime)
+    {
+        while (countdownTime > 0)
+        {
+            nextWaveTimer.text = $"Wave starting in <color=#00ffff>{countdownTime:F1} secs</color>";
+            countdownTime -= Time.deltaTime;
+            yield return null;
+        }
+
+        nextWaveTimer.text = "";
     }
 
     private IEnumerator FillInitialEmptyArea(float duration)

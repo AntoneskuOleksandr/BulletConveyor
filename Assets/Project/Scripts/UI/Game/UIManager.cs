@@ -4,6 +4,9 @@ using UnityEngine.UI;
 using Zenject;
 public class UIManager : MonoBehaviour
 {
+    [Header("Panels")]
+    [SerializeField] private AbilityPanel abilityPanel;
+
     [Header("Text")]
     [SerializeField] private TMP_Text playerMoney;
     [SerializeField] private TMP_Text buyBlockText;
@@ -20,6 +23,7 @@ public class UIManager : MonoBehaviour
 
     [Inject] private BlockManager _blockManager;
     [Inject] private PlayerManager _playerManager;
+    [Inject] private WaveManager _waveManager;
 
     private void OnEnable()
     {
@@ -38,6 +42,16 @@ public class UIManager : MonoBehaviour
         if (_playerManager != null)
         {
             _playerManager.OnMoneyChanged += UpdateUI;
+        }
+        if (_waveManager != null && abilityPanel != null)
+        {
+            _waveManager.OnTimerBetweenWavesStarted += (waveIndex, timeBetweenWaves) =>
+            {
+                if (waveIndex % 2 == 0)
+                {
+                    abilityPanel.ShowPanel();
+                }
+            };
         }
     }
 
