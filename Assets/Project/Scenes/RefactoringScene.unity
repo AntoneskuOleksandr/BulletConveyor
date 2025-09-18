@@ -2076,7 +2076,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletType: 0
-  damage: 100
+  damage: 0
   firePoint: {fileID: 774441091}
   partToRotate: {fileID: 1540644355}
   turnSpeed: 5
@@ -2084,6 +2084,9 @@ MonoBehaviour:
   aimThreshold: 5
   attackRadius: 25
   idleReturnDelay: 1
+  effectChances:
+  - effectType: 0
+    chance: 1
 --- !u!4 &1540644355 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7429299505993265296, guid: 901cce198903abd4d9ce739298f5c55e,

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -5,6 +7,13 @@ public enum BulletType
 {
     Standard,
     Missile
+}
+
+[Serializable]
+public class WeaponEffectChance
+{
+    public OnHitEffectType effectType;
+    [Range(0f, 1f)] public float chance;
 }
 
 public abstract class Weapon : MonoBehaviour
@@ -16,15 +25,20 @@ public abstract class Weapon : MonoBehaviour
     public float damage = 10f;
     public Transform firePoint;
     public Transform partToRotate;
-    public float turnSpeed = 3f;           // скорость поворота ствола
-    public float fireRate = 1f;            // выстрелов в секунду
-    public float aimThreshold = 2f;        // допустимый угол наведения (в градусах)
-    public float attackRadius = 50f;       // радиус действия башни
-    public float idleReturnDelay = 2f;     // через сколько секунд без цели возвращаться в исходное положение
+    public float turnSpeed = 3f;
+    public float fireRate = 1f;
+    public float aimThreshold = 2f;
+    public float attackRadius = 50f;
+    public float idleReturnDelay = 2f;
+
+    [Header("Effect Chances from Weapon")]
+    [Tooltip("Задайте стартовые шансы на разные дебаффы от этой пушки.")]
+    public List<WeaponEffectChance> effectChances = new List<WeaponEffectChance>();
 
     protected Bullet _bulletInAmmo;
     protected BulletManager _bulletManager;
     protected EnemyManager _enemyManager;
+    protected EffectChanceManager _effectChanceManager;
 
     protected Enemy target;
     protected float _fireCountdown = 0f;
@@ -36,16 +50,26 @@ public abstract class Weapon : MonoBehaviour
     private float _idleTimer = 0f;
 
     [Inject]
-    public void Construct(BulletManager bulletManager, EnemyManager enemyManager)
+    public void Construct(BulletManager bulletManager, EnemyManager enemyManager, EffectChanceManager effectChanceManager)
     {
         _bulletManager = bulletManager;
         _enemyManager = enemyManager;
+        _effectChanceManager = effectChanceManager;
     }
 
     protected virtual void Start()
     {
         if (partToRotate != null)
             _initialRotation = partToRotate.rotation;
+
+        foreach (var effectChance in effectChances)
+        {
+            _effectChanceManager.RegisterWeaponChance(
+                this,
+                effectChance.effectType,
+                effectChance.chance
+            );
+        }
     }
 
     protected virtual void OnDisable()
@@ -56,7 +80,6 @@ public abstract class Weapon : MonoBehaviour
 
     protected void Update()
     {
-        // Периодический поиск цели
         _targetRefreshTimer -= Time.deltaTime;
         if (_targetRefreshTimer <= 0f)
         {
@@ -67,14 +90,11 @@ public abstract class Weapon : MonoBehaviour
         if (target != null)
         {
             _idleTimer = 0f;
-
-            // Всегда смотрим на цель, даже если пуль нет
             LockOnTarget();
 
-            if (_bulletInAmmo == null && IsAimedAtTarget() && _fireCountdown <= 0f) // Trying to get bullet and shoot 
+            if (_bulletInAmmo == null && IsAimedAtTarget() && _fireCountdown <= 0f)
             {
                 _bulletInAmmo = _bulletManager.GetBullet(this);
-
                 TryToShoot();
             }
         }
@@ -83,7 +103,6 @@ public abstract class Weapon : MonoBehaviour
             HandleIdleRotation();
         }
 
-        // Отсчёт до следующего выстрела
         if (_fireCountdown > 0f)
             _fireCountdown -= Time.deltaTime;
     }
@@ -116,14 +135,10 @@ public abstract class Weapon : MonoBehaviour
             return;
 
         Vector3 dir = target.HitTransform.position - partToRotate.position;
-
         dir.y = 0f;
-
-        if (dir == Vector3.zero)
-            return;
+        if (dir == Vector3.zero) return;
 
         Quaternion lookRotation = Quaternion.LookRotation(dir);
-
         partToRotate.rotation = Quaternion.Lerp(
             partToRotate.rotation,
             lookRotation,
@@ -131,11 +146,9 @@ public abstract class Weapon : MonoBehaviour
         );
     }
 
-
     private void HandleIdleRotation()
     {
         _idleTimer += Time.deltaTime;
-
         if (_idleTimer >= idleReturnDelay)
         {
             partToRotate.rotation = Quaternion.Lerp(
@@ -148,8 +161,7 @@ public abstract class Weapon : MonoBehaviour
 
     protected bool IsAimedAtTarget()
     {
-        if (target == null)
-            return false;
+        if (target == null) return false;
 
         Vector3 dirToTarget = target.HitTransform.position - partToRotate.position;
         dirToTarget.y = 0f;

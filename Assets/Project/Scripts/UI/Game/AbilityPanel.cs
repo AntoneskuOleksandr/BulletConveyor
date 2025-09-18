@@ -84,7 +84,7 @@ public class AbilityPanel : MonoBehaviour
     private void OnAbilitySelected(AbilityData data)
     {
         Debug.Log($"[AbilityPanel] Ability selected: {data.onHitEffectType}");
-        _effectChanceManager.RegisterEffectChance(
+        _effectChanceManager.RegisterGlobalChance(
             data.onHitEffectType,
             data.probability,
             ChanceSource.Base
