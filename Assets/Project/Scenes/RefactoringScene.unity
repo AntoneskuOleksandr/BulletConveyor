@@ -1796,11 +1796,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalWaves: 10
-  waveDuration: 10
+  waveDuration: 30
   timeBetweenWaves: 5
   minEnemyCount: 1
   maxEnemyCount: 1
-  enemyIncrementPerWave: 0
+  enemyIncrementPerWave: 10
 --- !u!4 &1354856230
 Transform:
   m_ObjectHideFlags: 0
@@ -8216,12 +8216,14 @@ MonoBehaviour:
   abilityPrefab: {fileID: 7697917980256732490, guid: d4022d484ddddb14dbffdb384400b71d,
     type: 3}
   abilities:
-  - name: FireBullet
+  - onHitEffectType: 0
     icon: {fileID: 21300000, guid: f17127d11fc70a24b951d0fa130de0ff, type: 3}
     description: Burning the enemy
-  - name: IceBullet
+    probability: 0.5
+  - onHitEffectType: 2
     icon: {fileID: 21300000, guid: 8c93084811e623443847e65e7ab17d6a, type: 3}
-    description: 
+    description: Iced the enemy
+    probability: 0.5
   abilitiesCount: 3
 --- !u!33 &2435309953627822989
 MeshFilter:

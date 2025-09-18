@@ -168,7 +168,6 @@ public abstract class Weapon : MonoBehaviour
         UpdateTarget();
     }
 
-
     protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

@@ -37,12 +37,12 @@ public class BulletManager
 
     private void AddEffectsToBullet(Bullet bullet)
     {
-        //List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffects();
+        List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffects();
 
-        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
-        {
-            OnHitEffectType.Lightning
-        };
+        /*        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
+                {
+                    OnHitEffectType.Lightning
+                };*/
 
 
         foreach (var type in effectTypes)

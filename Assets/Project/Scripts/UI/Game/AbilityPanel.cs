@@ -2,13 +2,16 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
+using static EffectChanceManager;
 
 [System.Serializable]
 public class AbilityData
 {
-    public string name;
+    public OnHitEffectType onHitEffectType;
     public Sprite icon;
     public string description;
+    public float probability;
 }
 
 public class AbilityPanel : MonoBehaviour
@@ -18,6 +21,8 @@ public class AbilityPanel : MonoBehaviour
 
     [SerializeField] private List<AbilityData> abilities;
     [SerializeField] private int abilitiesCount = 3;
+
+    [Inject] private EffectChanceManager _effectChanceManager;
 
     public void ShowPanel()
     {
@@ -53,17 +58,6 @@ public class AbilityPanel : MonoBehaviour
                 continue;
             }
 
-            button.onClick.AddListener(() =>
-            {
-                Debug.Log($"[{ability.name}] Ability selected.");
-                Time.timeScale = 1f;
-                this.gameObject.SetActive(false);
-                foreach (Transform child in abilitiesRoot.transform)
-                {
-                    Destroy(child.gameObject);
-                }
-            });
-
             Image img = button.image ?? ability.GetComponentInChildren<Image>(true);
             if (img == null)
             {
@@ -83,6 +77,29 @@ public class AbilityPanel : MonoBehaviour
 
             img.sprite = data.icon;
             text.text = data.description;
+
+            button.onClick.AddListener(() => OnAbilitySelected(data));
         }
+    }
+    private void OnAbilitySelected(AbilityData data)
+    {
+        Debug.Log($"[AbilityPanel] Ability selected: {data.onHitEffectType}");
+        _effectChanceManager.RegisterEffectChance(
+            data.onHitEffectType,
+            data.probability,
+            ChanceSource.Base
+        );
+        HidePanel();
+    }
+
+
+    public void HidePanel()
+    {
+        foreach (Transform child in abilitiesRoot.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        this.gameObject.SetActive(false);
+        Time.timeScale = 1f;
     }
 }
