@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +24,11 @@ public class AbilityPanel : MonoBehaviour
 
     [Inject] private EffectChanceManager _effectChanceManager;
 
+    public List<AbilityData> SelectedAbilities => _selectedAbilities;
+
+    private List<AbilityData> _selectedAbilities = new List<AbilityData>();
+
+
     public void ShowPanel()
     {
         this.gameObject.SetActive(true);
@@ -46,7 +51,11 @@ public class AbilityPanel : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < abilitiesCount; i++)
+        List<AbilityData> pool = new List<AbilityData>(abilities);
+
+        int count = Mathf.Min(abilitiesCount, pool.Count);
+
+        for (int i = 0; i < count; i++)
         {
             GameObject ability = Instantiate(abilityPrefab, abilitiesRoot.transform, false);
             ability.name = $"Ability_{i}";
@@ -72,8 +81,10 @@ public class AbilityPanel : MonoBehaviour
                 continue;
             }
 
-            int randomIndex = Random.Range(0, abilities.Count);
-            AbilityData data = abilities[randomIndex];
+            int randomIndex = Random.Range(0, pool.Count);
+            AbilityData data = pool[randomIndex];
+
+            pool.RemoveAt(randomIndex);
 
             img.sprite = data.icon;
             text.text = data.description;
@@ -81,8 +92,11 @@ public class AbilityPanel : MonoBehaviour
             button.onClick.AddListener(() => OnAbilitySelected(data));
         }
     }
+
     private void OnAbilitySelected(AbilityData data)
     {
+        _selectedAbilities.Add(data);
+
         Debug.Log($"[AbilityPanel] Ability selected: {data.onHitEffectType}");
         _effectChanceManager.RegisterGlobalChance(
             data.onHitEffectType,

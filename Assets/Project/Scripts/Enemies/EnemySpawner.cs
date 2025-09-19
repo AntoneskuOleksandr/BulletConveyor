@@ -41,7 +41,7 @@ public class EnemySpawner : MonoBehaviour
             // Определяем тип врага
             GameObject prefabToSpawn = (Random.value < type1Percent) ? enemyPrefab1 : enemyPrefab2;
 
-            GameObject enemyObj = _container.InstantiatePrefab(prefabToSpawn, spawnPosition, Quaternion.identity, null);
+            GameObject enemyObj = _container.InstantiatePrefab(prefabToSpawn, spawnPosition, Quaternion.identity, this.transform);
             enemyObj.transform.Rotate(0f, 180f, 0f);
 
             totalSpawnedEnemies++;

@@ -39,12 +39,6 @@ public class BulletManager
     {
         List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffectsForWeapon(sourceWeapon);
 
-        /*        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
-                {
-                    OnHitEffectType.Lightning
-                };*/
-
-
         foreach (var type in effectTypes)
         {
             IOnHitEffect effect = _effectFactory.CreateEffect(type);
