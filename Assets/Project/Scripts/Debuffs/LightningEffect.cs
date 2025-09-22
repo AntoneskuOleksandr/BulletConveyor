@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Эффект молнии: визуал всегда от начальной цели, урон и дебафф только живым.
-/// </summary>
 public class LightningEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Lightning;
@@ -34,11 +31,7 @@ public class LightningEffect : IOnHitEffect
 
     public void Apply(Bullet bullet, Enemy initialTarget)
     {
-        if (initialTarget == null)
-        {
-            return;
-        }
-
+        if (initialTarget == null) return;
         _lightningManager.StartCoroutine(DoLightningChain(initialTarget));
     }
 
@@ -46,73 +39,62 @@ public class LightningEffect : IOnHitEffect
     {
         float elapsed = 0f;
         float tickInterval = 1f / _ticksPerSecond;
+        float tickDamage = _dps / _ticksPerSecond;
 
-        bool firstTick = true;
-        Enemy currentRoot = initialTarget.IsAlive ? initialTarget : FindClosestEnemyToPoint(initialTarget.HitTransform.position, null);
+        Vector3 initialPos = initialTarget.HitTransform.position;
+        bool isFirstTick = true;
 
         while (elapsed < _duration)
         {
             List<Enemy> chain = new List<Enemy>();
 
-            if (firstTick)
+            if (isFirstTick)
             {
-                // На первом тике рисуем initialTarget для визуала
+                // На первом тике всегда добавляем initialTarget в визуал
                 chain.Add(initialTarget);
-                firstTick = false;
+
+                if (initialTarget.IsAlive)
+                {
+                    initialTarget.TakeDamage(tickDamage);
+                    initialTarget.ModifierManager.AddStatusEffect(new LightningDebuff(_slowAmount, _debuffDuration));
+                }
             }
 
-            // Достраиваем цепочку из живых врагов
-            if (currentRoot != null)
+            // Определяем стартовую точку для поиска следующего
+            Enemy current = (isFirstTick && initialTarget.IsAlive)
+                ? initialTarget
+                : FindClosestEnemyToPoint(isFirstTick ? initialPos : initialTarget.HitTransform.position, chain);
+
+            for (int i = 0; i < _maxBounces; i++)
             {
-                var additionalChain = BuildLightningChain(currentRoot);
+                if (current == null) break;
 
-                // Не дублируем initialTarget
-                additionalChain.Remove(initialTarget);
-                chain.AddRange(additionalChain);
+                Enemy next = FindClosestEnemyToPoint(current.HitTransform.position, chain);
+                if (next == null) break;
 
-                // Наносим урон и дебафф только живым
-                foreach (var enemy in additionalChain)
+                chain.Add(next);
+
+                if (next.IsAlive)
                 {
-                    if (enemy == null || !enemy.IsAlive) continue;
-
-                    enemy.TakeDamage(_dps / _ticksPerSecond);
-                    enemy.ModifierManager.AddStatusEffect(new LightningDebuff(_slowAmount, _debuffDuration));
+                    next.TakeDamage(tickDamage);
+                    next.ModifierManager.AddStatusEffect(new LightningDebuff(_slowAmount, _debuffDuration));
                 }
 
-                // Для следующего тика
-                currentRoot = additionalChain.Count > 0 ? additionalChain[0] : FindClosestEnemyToPoint(initialTarget.HitTransform.position, null);
+                current = next;
             }
 
             if (chain.Count >= 2)
                 _lightningManager.DrawChain(chain);
 
-            if (currentRoot == null && chain.Count <= 1)
-                yield break;
-
             yield return new WaitForSeconds(tickInterval);
             elapsed += tickInterval;
+            isFirstTick = false;
         }
     }
 
-    private List<Enemy> BuildLightningChain(Enemy start)
-    {
-        List<Enemy> chain = new List<Enemy>();
-        if (start == null || !start.IsAlive) return chain;
-
-        chain.Add(start);
-        Enemy current = start;
-
-        for (int i = 0; i < _maxBounces; i++)
-        {
-            Enemy next = FindClosestEnemyToPoint(current.HitTransform.position, chain);
-            if (next == null) break;
-            chain.Add(next);
-            current = next;
-        }
-
-        return chain;
-    }
-
+    /// <summary>
+    /// Ищет ближайшего живого врага к точке, исключая список exclude.
+    /// </summary>
     private Enemy FindClosestEnemyToPoint(Vector3 point, List<Enemy> exclude = null)
     {
         Collider[] hits = Physics.OverlapSphere(point, _radius);

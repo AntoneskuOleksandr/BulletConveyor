@@ -4,6 +4,10 @@ using UnityEngine.UI;
 using Zenject;
 public class UIManager : MonoBehaviour
 {
+    [Header("Panels")]
+    [SerializeField] private AbilityPanel abilityPanel;
+    [SerializeField] private PauseMenuPanel pauseMenuPanel;
+
     [Header("Text")]
     [SerializeField] private TMP_Text playerMoney;
     [SerializeField] private TMP_Text buyBlockText;
@@ -12,6 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button buyBlockButton;
     [SerializeField] private Button buyBlockByAdButton;
     [SerializeField] private Button speedUpGameButton;
+    [SerializeField] private Button pauseGameButton;
 
     [SerializeField] private float timeSpeedUpValue = 3f;
 
@@ -20,6 +25,7 @@ public class UIManager : MonoBehaviour
 
     [Inject] private BlockManager _blockManager;
     [Inject] private PlayerManager _playerManager;
+    [Inject] private WaveManager _waveManager;
 
     private void OnEnable()
     {
@@ -35,9 +41,23 @@ public class UIManager : MonoBehaviour
         {
             speedUpGameButton.onClick.AddListener(OnSpeedUpButtonClicked);
         }
+        if (pauseGameButton != null && pauseMenuPanel != null)
+        {
+            pauseGameButton.onClick.AddListener(pauseMenuPanel.ShowPanel);
+        }
         if (_playerManager != null)
         {
             _playerManager.OnMoneyChanged += UpdateUI;
+        }
+        if (_waveManager != null && abilityPanel != null)
+        {
+            _waveManager.OnTimerBetweenWavesStarted += (waveIndex, timeBetweenWaves) =>
+            {
+                if (waveIndex % 2 == 0)
+                {
+                    abilityPanel.ShowPanel();
+                }
+            };
         }
     }
 

@@ -25,8 +25,9 @@ public class WaveManager : MonoBehaviour
     public event Action<float> OnWaveRoutineStarted;   // Время между волнами
     public event Action<int, float> OnWaveStarted;     // Номер волны, длительность волны
     public event Action<int> OnWaveCompleted;          // Номер волны
+    public event Action<int, float> OnTimerBetweenWavesStarted; // Номер волны, время между волнами
     public event Action<int, int> OnEnemiesChanged;    // alive, total
-    public event Action<float, int> OnWaveProgress;         // Прогресс текущей волны (0..1) + номер волны
+    public event Action<float, int> OnWaveProgress;    // Прогресс текущей волны (0..1) + номер волны
 
     public int TotalWaves => totalWaves;
 
@@ -42,6 +43,8 @@ public class WaveManager : MonoBehaviour
 
         for (currentWave = 1; currentWave <= totalWaves; currentWave++)
         {
+            OnTimerBetweenWavesStarted?.Invoke(currentWave, timeBetweenWaves);
+
             yield return new WaitForSeconds(timeBetweenWaves);
 
             StartWave(currentWave);

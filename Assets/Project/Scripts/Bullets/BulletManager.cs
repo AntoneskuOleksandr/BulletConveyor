@@ -16,7 +16,7 @@ public class BulletManager
         if (bulletGO == null) return null;
 
         Bullet bullet = CreateBullet(bulletGO, weapon);
-        AddEffectsToBullet(bullet);
+        AddEffectsToBullet(bullet, weapon);
 
         return bullet;
     }
@@ -35,15 +35,9 @@ public class BulletManager
         return bulletGO.GetComponent<Bullet>();
     }
 
-    private void AddEffectsToBullet(Bullet bullet)
+    private void AddEffectsToBullet(Bullet bullet, Weapon sourceWeapon)
     {
-        //List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffects();
-
-        List<OnHitEffectType> effectTypes = new List<OnHitEffectType>
-        {
-            OnHitEffectType.Lightning
-        };
-
+        List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffectsForWeapon(sourceWeapon);
 
         foreach (var type in effectTypes)
         {
