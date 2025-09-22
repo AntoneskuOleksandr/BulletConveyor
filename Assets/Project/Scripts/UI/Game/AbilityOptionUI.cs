@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -12,14 +12,12 @@ public class AbilityOptionUI : MonoBehaviour
     [SerializeField] private TMP_Text probabilityText;
 
     [Header("Details")]
-    [SerializeField] private Button probabilityButton;           // кнопка для раскрытия деталей
-    [SerializeField] private GameObject probabilityDetailsPanel; // панель с формулой
-    [SerializeField] private TMP_Text detailsText;               // текст внутри панели
+    [SerializeField] private Button probabilityButton;
+    [SerializeField] private GameObject probabilityDetailsPanel;
+    [SerializeField] private TMP_Text detailsText;
 
     private AbilityData _data;
     private Action<AbilityData> _onSelected;
-
-    // для запроса данных из менеджера
     private EffectChanceManager _effectChanceManager;
 
     public void Setup(AbilityData data, Action<AbilityData> onSelected, EffectChanceManager effectChanceManager)
@@ -30,7 +28,17 @@ public class AbilityOptionUI : MonoBehaviour
 
         if (iconImage != null) iconImage.sprite = data.icon;
         if (descriptionText != null) descriptionText.text = data.description;
-        if (probabilityText != null) probabilityText.text = $"{data.probability * 100f:0.#}%";
+
+        float nowTotal = _effectChanceManager != null
+            ? _effectChanceManager.GetTotalChanceForEffect(_data.onHitEffectType)
+            : 0f;
+
+        float afterPick = Mathf.Clamp01(nowTotal + _data.probability);
+        float delta = afterPick - nowTotal;
+
+        if (probabilityText != null)
+            probabilityText.text =
+                $"{nowTotal * 100f:0.#}% в†’ {afterPick * 100f:0.#}% (+{delta * 100f:0.#}%)";
 
         selectButton.onClick.RemoveAllListeners();
         selectButton.onClick.AddListener(() => _onSelected?.Invoke(_data));
@@ -60,27 +68,24 @@ public class AbilityOptionUI : MonoBehaviour
 
     private string BuildDetails()
     {
-        if (_effectChanceManager == null)
-            return $"Base chance: {_data.probability * 100f:0.#}%";
+        var current = _effectChanceManager.GetChancesForEffect(_data.onHitEffectType);
 
-        var chances = _effectChanceManager.GetChancesForEffect(_data.onHitEffectType);
-
-        float total = 0f;
-        StringBuilder sb = new StringBuilder();
-
+        var sb = new StringBuilder();
         sb.AppendLine($"Effect: {_data.onHitEffectType}");
         sb.AppendLine("Sources:");
 
-        foreach (var (source, value) in chances)
+        if (current.Count == 0)
         {
-            sb.AppendLine($" - {source}: {value * 100f:0.#}%");
-            total += value;
+            sb.AppendLine(" - ");
         }
-
-        sb.AppendLine("--------------------");
-        sb.AppendLine($"Total: {Mathf.Clamp01(total) * 100f:0.#}%");
+        else
+        {
+            foreach (var (source, value) in current)
+            {
+                sb.AppendLine($" - {source}: {value * 100f:0.#}%");
+            }
+        }
 
         return sb.ToString();
     }
-
 }

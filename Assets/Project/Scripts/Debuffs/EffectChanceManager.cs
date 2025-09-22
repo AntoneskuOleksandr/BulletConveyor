@@ -16,17 +16,11 @@ public class EffectChanceManager
 
     // ----------------- ПУБЛИЧНЫЕ МЕТОДЫ -----------------
 
-    /// <summary>
-    /// Добавить шанс глобально (применяется для всех оружий)
-    /// </summary>
     public void RegisterGlobalChance(OnHitEffectType type, float value, ChanceSource source = ChanceSource.Base)
     {
         RegisterChanceInternal(_globalChances, type, value, source);
     }
 
-    /// <summary>
-    /// Добавить шанс для конкретного оружия
-    /// </summary>
     public void RegisterWeaponChance(Weapon weapon, OnHitEffectType type, float value)
     {
         if (!_weaponChances.TryGetValue(weapon, out var list))
@@ -37,24 +31,16 @@ public class EffectChanceManager
         RegisterChanceInternal(list, type, value, ChanceSource.Weapon);
     }
 
-    /// <summary>
-    /// Сбросить все шансы (например, при рестарте уровня)
-    /// </summary>
     public void ClearAll()
     {
         _globalChances.Clear();
         _weaponChances.Clear();
     }
 
-    /// <summary>
-    /// Получить список эффектов, которые выпали, для конкретного оружия.
-    /// Складывает глобальные шансы + шансы оружия.
-    /// </summary>
     public List<OnHitEffectType> RollEffectsForWeapon(Weapon weapon)
     {
         var results = new List<OnHitEffectType>();
 
-        // Собрать все шансы (глобальные + локальные)
         var allChances = new List<ProjectileEffectChance>();
         allChances.AddRange(_globalChances);
 
@@ -70,9 +56,6 @@ public class EffectChanceManager
         return results;
     }
 
-    /// <summary>
-    /// Удалить все бонусы для конкретного оружия (например, при его продаже)
-    /// </summary>
     public void ClearWeaponChances(Weapon weapon)
     {
         if (_weaponChances.ContainsKey(weapon))
@@ -86,7 +69,6 @@ public class EffectChanceManager
     {
         var result = new List<(ChanceSource, float)>();
 
-        // ищем среди глобальных
         var global = _globalChances.Find(c => c.EffectType == type);
         if (global != null)
         {
@@ -94,7 +76,6 @@ public class EffectChanceManager
                 result.Add((kvp.Key, kvp.Value));
         }
 
-        // ищем среди оружейных
         if (weapon != null && _weaponChances.TryGetValue(weapon, out var weaponList))
         {
             var local = weaponList.Find(c => c.EffectType == type);
@@ -106,6 +87,33 @@ public class EffectChanceManager
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Получить итоговый шанс (глобально + оружейные).
+    /// </summary>
+    public float GetTotalChanceForEffect(OnHitEffectType type, Weapon weapon = null)
+    {
+        float total = 0f;
+
+        var global = _globalChances.Find(c => c.EffectType == type);
+        if (global != null)
+        {
+            foreach (var kv in global.GetAllModifiers())
+                total += kv.Value;
+        }
+
+        if (weapon != null && _weaponChances.TryGetValue(weapon, out var list))
+        {
+            var local = list.Find(c => c.EffectType == type);
+            if (local != null)
+            {
+                foreach (var kv in local.GetAllModifiers())
+                    total += kv.Value;
+            }
+        }
+
+        return Mathf.Clamp01(total);
     }
 
     // ----------------- ВСПОМОГАТЕЛЬНЫЕ -----------------
@@ -125,12 +133,12 @@ public class EffectChanceManager
 
     public enum ChanceSource
     {
-        Base,       // Базовый шанс (например, от выбора абилки)
-        Weapon,     // Бонус от оружия
-        Buff,       // Бонус от баффа
-        Event,      // Бонус от события
-        Perk,       // Бонус от постоянного перка
-        Other       // На будущее
+        Base,
+        Weapon,
+        Buff,
+        Event,
+        Perk,
+        Other
     }
 
     [System.Serializable]
@@ -157,17 +165,11 @@ public class EffectChanceManager
             return _modifiers.TryGetValue(source, out var val) ? val : 0f;
         }
 
-        /// <summary>
-        /// Получить все модификаторы (источники → значения).
-        /// </summary>
         public IReadOnlyDictionary<ChanceSource, float> GetAllModifiers()
         {
             return _modifiers;
         }
 
-        /// <summary>
-        /// Итоговый шанс (сумма всех модификаторов, ограничена 0..1).
-        /// </summary>
         public float TotalChance
         {
             get
