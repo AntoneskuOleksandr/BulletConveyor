@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 using static EffectChanceManager;
 
@@ -26,12 +24,12 @@ public class AbilityPanel : MonoBehaviour
 
     public List<AbilityData> SelectedAbilities => _selectedAbilities;
 
-    private List<AbilityData> _selectedAbilities = new List<AbilityData>();
+    private readonly List<AbilityData> _selectedAbilities = new();
 
 
     public void ShowPanel()
     {
-        this.gameObject.SetActive(true);
+        gameObject.SetActive(true);
         Debug.Log("[AbilityPanel] ShowPanel called.");
         GenerateAbilities();
         Time.timeScale = 0f;
@@ -51,45 +49,27 @@ public class AbilityPanel : MonoBehaviour
             return;
         }
 
+        // Копируем пул и ограничиваем по abilitiesCount
         List<AbilityData> pool = new List<AbilityData>(abilities);
-
         int count = Mathf.Min(abilitiesCount, pool.Count);
 
         for (int i = 0; i < count; i++)
         {
-            GameObject ability = Instantiate(abilityPrefab, abilitiesRoot.transform, false);
-            ability.name = $"Ability_{i}";
-
-            Button button = ability.GetComponentInChildren<Button>(true);
-            if (button == null)
-            {
-                Debug.LogWarning($"[{ability.name}] Button not found in prefab.");
-                continue;
-            }
-
-            Image img = button.image ?? ability.GetComponentInChildren<Image>(true);
-            if (img == null)
-            {
-                Debug.LogWarning($"[{ability.name}] Image component not found.");
-                continue;
-            }
-
-            TMP_Text text = ability.GetComponentInChildren<TMP_Text>(true);
-            if (text == null)
-            {
-                Debug.LogWarning($"[{ability.name}] Text component not found.");
-                continue;
-            }
+            GameObject abilityGO = Instantiate(abilityPrefab, abilitiesRoot.transform, false);
+            abilityGO.name = $"Ability_{i}";
 
             int randomIndex = Random.Range(0, pool.Count);
             AbilityData data = pool[randomIndex];
-
             pool.RemoveAt(randomIndex);
 
-            img.sprite = data.icon;
-            text.text = data.description;
+            AbilityOptionUI optionUI = abilityGO.GetComponent<AbilityOptionUI>();
+            if (optionUI == null)
+            {
+                Debug.LogError($"[{abilityGO.name}] AbilityOptionUI component not found!");
+                continue;
+            }
 
-            button.onClick.AddListener(() => OnAbilitySelected(data));
+            optionUI.Setup(data, OnAbilitySelected, _effectChanceManager);
         }
     }
 
@@ -103,9 +83,9 @@ public class AbilityPanel : MonoBehaviour
             data.probability,
             ChanceSource.Base
         );
+
         HidePanel();
     }
-
 
     public void HidePanel()
     {
@@ -113,7 +93,7 @@ public class AbilityPanel : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
         Time.timeScale = 1f;
     }
 }

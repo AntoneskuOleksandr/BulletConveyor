@@ -4,20 +4,20 @@ using UnityEngine;
 public class EffectChanceManager
 {
     /// <summary>
-    /// Глобальные шансы (применяются для всех оружий)
+    /// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ С€Р°РЅСЃС‹ (РїСЂРёРјРµРЅСЏСЋС‚СЃСЏ РґР»СЏ РІСЃРµС… РѕСЂСѓР¶РёР№)
     /// </summary>
     private readonly List<ProjectileEffectChance> _globalChances = new List<ProjectileEffectChance>();
 
     /// <summary>
-    /// Шансы для конкретных оружий
+    /// РЁР°РЅСЃС‹ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅС‹С… РѕСЂСѓР¶РёР№
     /// </summary>
     private readonly Dictionary<Weapon, List<ProjectileEffectChance>> _weaponChances
         = new Dictionary<Weapon, List<ProjectileEffectChance>>();
 
-    // ----------------- ПУБЛИЧНЫЕ МЕТОДЫ -----------------
+    // ----------------- РџРЈР‘Р›РР§РќР«Р• РњР•РўРћР”Р« -----------------
 
     /// <summary>
-    /// Добавить шанс глобально (применяется для всех оружий)
+    /// Р”РѕР±Р°РІРёС‚СЊ С€Р°РЅСЃ РіР»РѕР±Р°Р»СЊРЅРѕ (РїСЂРёРјРµРЅСЏРµС‚СЃСЏ РґР»СЏ РІСЃРµС… РѕСЂСѓР¶РёР№)
     /// </summary>
     public void RegisterGlobalChance(OnHitEffectType type, float value, ChanceSource source = ChanceSource.Base)
     {
@@ -25,7 +25,7 @@ public class EffectChanceManager
     }
 
     /// <summary>
-    /// Добавить шанс для конкретного оружия
+    /// Р”РѕР±Р°РІРёС‚СЊ С€Р°РЅСЃ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РѕСЂСѓР¶РёСЏ
     /// </summary>
     public void RegisterWeaponChance(Weapon weapon, OnHitEffectType type, float value)
     {
@@ -38,7 +38,7 @@ public class EffectChanceManager
     }
 
     /// <summary>
-    /// Сбросить все шансы (например, при рестарте уровня)
+    /// РЎР±СЂРѕСЃРёС‚СЊ РІСЃРµ С€Р°РЅСЃС‹ (РЅР°РїСЂРёРјРµСЂ, РїСЂРё СЂРµСЃС‚Р°СЂС‚Рµ СѓСЂРѕРІРЅСЏ)
     /// </summary>
     public void ClearAll()
     {
@@ -47,14 +47,14 @@ public class EffectChanceManager
     }
 
     /// <summary>
-    /// Получить список эффектов, которые выпали, для конкретного оружия.
-    /// Складывает глобальные шансы + шансы оружия.
+    /// РџРѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє СЌС„С„РµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ РІС‹РїР°Р»Рё, РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РѕСЂСѓР¶РёСЏ.
+    /// РЎРєР»Р°РґС‹РІР°РµС‚ РіР»РѕР±Р°Р»СЊРЅС‹Рµ С€Р°РЅСЃС‹ + С€Р°РЅСЃС‹ РѕСЂСѓР¶РёСЏ.
     /// </summary>
     public List<OnHitEffectType> RollEffectsForWeapon(Weapon weapon)
     {
         var results = new List<OnHitEffectType>();
 
-        // Собрать все шансы (глобальные + локальные)
+        // РЎРѕР±СЂР°С‚СЊ РІСЃРµ С€Р°РЅСЃС‹ (РіР»РѕР±Р°Р»СЊРЅС‹Рµ + Р»РѕРєР°Р»СЊРЅС‹Рµ)
         var allChances = new List<ProjectileEffectChance>();
         allChances.AddRange(_globalChances);
 
@@ -71,7 +71,7 @@ public class EffectChanceManager
     }
 
     /// <summary>
-    /// Удалить все бонусы для конкретного оружия (например, при его продаже)
+    /// РЈРґР°Р»РёС‚СЊ РІСЃРµ Р±РѕРЅСѓСЃС‹ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РѕСЂСѓР¶РёСЏ (РЅР°РїСЂРёРјРµСЂ, РїСЂРё РµРіРѕ РїСЂРѕРґР°Р¶Рµ)
     /// </summary>
     public void ClearWeaponChances(Weapon weapon)
     {
@@ -79,7 +79,36 @@ public class EffectChanceManager
             _weaponChances.Remove(weapon);
     }
 
-    // ----------------- ВСПОМОГАТЕЛЬНЫЕ -----------------
+    /// <summary>
+    /// РџРѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє РІСЃРµС… РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРІ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЌС„С„РµРєС‚Р° (РіР»РѕР±Р°Р»СЊРЅС‹С… Рё РѕСЂСѓР¶РµР№РЅС‹С…).
+    /// </summary>
+    public List<(ChanceSource source, float value)> GetChancesForEffect(OnHitEffectType type, Weapon weapon = null)
+    {
+        var result = new List<(ChanceSource, float)>();
+
+        // РёС‰РµРј СЃСЂРµРґРё РіР»РѕР±Р°Р»СЊРЅС‹С…
+        var global = _globalChances.Find(c => c.EffectType == type);
+        if (global != null)
+        {
+            foreach (var kvp in global.GetAllModifiers())
+                result.Add((kvp.Key, kvp.Value));
+        }
+
+        // РёС‰РµРј СЃСЂРµРґРё РѕСЂСѓР¶РµР№РЅС‹С…
+        if (weapon != null && _weaponChances.TryGetValue(weapon, out var weaponList))
+        {
+            var local = weaponList.Find(c => c.EffectType == type);
+            if (local != null)
+            {
+                foreach (var kvp in local.GetAllModifiers())
+                    result.Add((kvp.Key, kvp.Value));
+            }
+        }
+
+        return result;
+    }
+
+    // ----------------- Р’РЎРџРћРњРћР“РђРўР•Р›Р¬РќР«Р• -----------------
 
     private void RegisterChanceInternal(List<ProjectileEffectChance> list, OnHitEffectType type, float value, ChanceSource source)
     {
@@ -92,16 +121,16 @@ public class EffectChanceManager
         existing.AddModifier(source, value);
     }
 
-    // ----------------- ВНУТРЕННИЕ ТИПЫ -----------------
+    // ----------------- Р’РќРЈРўР Р•РќРќРР• РўРРџР« -----------------
 
     public enum ChanceSource
     {
-        Base,       // Базовый шанс (например, от выбора абилки)
-        Weapon,     // Бонус от оружия
-        Buff,       // Бонус от баффа
-        Event,      // Бонус от события
-        Perk,       // Бонус от постоянного перка
-        Other       // На будущее
+        Base,       // Р‘Р°Р·РѕРІС‹Р№ С€Р°РЅСЃ (РЅР°РїСЂРёРјРµСЂ, РѕС‚ РІС‹Р±РѕСЂР° Р°Р±РёР»РєРё)
+        Weapon,     // Р‘РѕРЅСѓСЃ РѕС‚ РѕСЂСѓР¶РёСЏ
+        Buff,       // Р‘РѕРЅСѓСЃ РѕС‚ Р±Р°С„С„Р°
+        Event,      // Р‘РѕРЅСѓСЃ РѕС‚ СЃРѕР±С‹С‚РёСЏ
+        Perk,       // Р‘РѕРЅСѓСЃ РѕС‚ РїРѕСЃС‚РѕСЏРЅРЅРѕРіРѕ РїРµСЂРєР°
+        Other       // РќР° Р±СѓРґСѓС‰РµРµ
     }
 
     [System.Serializable]
@@ -128,6 +157,17 @@ public class EffectChanceManager
             return _modifiers.TryGetValue(source, out var val) ? val : 0f;
         }
 
+        /// <summary>
+        /// РџРѕР»СѓС‡РёС‚СЊ РІСЃРµ РјРѕРґРёС„РёРєР°С‚РѕСЂС‹ (РёСЃС‚РѕС‡РЅРёРєРё в†’ Р·РЅР°С‡РµРЅРёСЏ).
+        /// </summary>
+        public IReadOnlyDictionary<ChanceSource, float> GetAllModifiers()
+        {
+            return _modifiers;
+        }
+
+        /// <summary>
+        /// РС‚РѕРіРѕРІС‹Р№ С€Р°РЅСЃ (СЃСѓРјРјР° РІСЃРµС… РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРІ, РѕРіСЂР°РЅРёС‡РµРЅР° 0..1).
+        /// </summary>
         public float TotalChance
         {
             get
