@@ -98,16 +98,15 @@ public class MainMenuManager : MonoBehaviour
         levelDisplay.UpdateCurrentLevelState();
     }
 
-    [System.Obsolete]
     private void BindSounds()
     {
         AudioManager audioManager = AudioManager.Instance;
         UnityAction playSound = () => audioManager.PlaySFX(audioManager.buttonClickSound);
 
-        Button[] buttons = FindObjectsOfType<Button>(true);
+/*        Button[] buttons = FindObjectsOfType<Button>(true);
         foreach (Button button in buttons)
         {
             button.onClick.AddListener(playSound);
-        }
+        }*/
     }
 }
