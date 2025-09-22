@@ -6,6 +6,11 @@ public class GameplayInstaller : MonoInstaller
     [Header("Player")]
     [SerializeField] private PlayerManager playerManager;
 
+    [Header("UI")]
+    [SerializeField] private UIManager uiManager;
+    [SerializeField] private AbilityPanel abilityPanel;
+    [SerializeField] private PauseMenuPanel pauseMenuPanel;
+
     [Header("Board-Related Managers")]
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TileManager tileManager;
@@ -32,6 +37,11 @@ public class GameplayInstaller : MonoInstaller
     {
         //Player
         Container.Bind<PlayerManager>().FromInstance(playerManager).AsSingle();
+
+        //UI
+        Container.Bind<UIManager>().FromInstance(uiManager).AsSingle();
+        Container.Bind<AbilityPanel>().FromInstance(abilityPanel).AsSingle();
+        Container.Bind<PauseMenuPanel>().FromInstance(pauseMenuPanel).AsSingle();
 
         //Board-Related Managers
         Container.Bind<BoardManager>().FromInstance(boardManager).AsSingle();
