@@ -37,8 +37,7 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.6f;
 
     [Header("Segment Colors")]
-    [SerializeField] private Color lightColor;
-    [SerializeField] private Color darkColor;
+    [SerializeField] private List<Color> segmentColors = new List<Color>() { Color.white, Color.gray };
 
     [Header("Segments")]
     [SerializeField] private SegmentData[] segments;
@@ -94,7 +93,6 @@ public class WheelOfFortuneUI : MonoBehaviour
 
         float cutStartRadius = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(gapStartPercent));
 
-        // Генерация сегментов
         for (int i = 0; i < numberOfSegments; i++)
         {
             float startAngle = i * angleStep;
@@ -108,8 +106,11 @@ public class WheelOfFortuneUI : MonoBehaviour
 
             WheelSegmentUI segment = segGO.GetComponent<WheelSegmentUI>();
 
-            // чередование цветов
-            Color segColor = (i % 2 == 0) ? lightColor : darkColor;
+            // выбираем цвет из списка по индексу
+            Color segColor = (segmentColors != null && segmentColors.Count > 0)
+                ? segmentColors[i % segmentColors.Count]
+                : Color.white;
+
             segment.SetColor(segColor);
 
             segment.BuildSegmentMesh(
