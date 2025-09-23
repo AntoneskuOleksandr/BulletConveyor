@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Random = UnityEngine.Random;
 
 public class WheelOfFortuneUI : MonoBehaviour
 {
     [Header("Spin Settings")]
     [SerializeField] private RectTransform wheelTransform;
     [SerializeField] private float spinDuration = 4f;
-    [SerializeField] private AnimationCurve spinCurve;
+    [SerializeField] private AnimationCurve spinCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] private float minSpinCounts = 3f;
     [SerializeField] private float maxSpinCounts = 6f;
     [SerializeField] private Button spinButton;
@@ -19,7 +18,23 @@ public class WheelOfFortuneUI : MonoBehaviour
     [Header("Wheel Settings")]
     [SerializeField] private float wheelRadius = 300f;
     [SerializeField, Range(0f, 1f)] private float innerRadiusPercent = 0.2f;
-    [SerializeField] private int arcResolution = 20;
+
+    [Tooltip("Сколько точек на дуге. Чем больше — тем плавнее контуры.")]
+    [SerializeField, Min(3)] private int arcResolution = 24;
+
+    [Tooltip("Сколько радиальных слоёв. Нужно ≥ 2, иначе вырез не сформируется.")]
+    [SerializeField, Min(2)] private int radialResolution = 8;
+
+    [Header("Segment Cut (Gap)")]
+    [Tooltip("Угол выреза на внешнем крае (в градусах). 0 — без выреза.")]
+    [SerializeField, Range(0f, 20f)] private float gapAngle = 6f;
+
+    [Tooltip("Глубина старта выреза (0..1 по толщине кольца). 0.5 = старт с середины.")]
+    [SerializeField, Range(0f, 1f)] private float gapStartPercent = 0.5f;
+
+    [Header("Content Placement")]
+    [Tooltip("На какой доле толщины кольца размещать текст/иконку.")]
+    [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.6f;
 
     [Header("Segments")]
     [SerializeField] private SegmentData[] segments;
@@ -61,38 +76,45 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private void GenerateSegments()
     {
-        foreach (Transform child in wheelTransform)
-            Destroy(child.gameObject);
+        if (wheelTransform == null) return;
 
-        int numberOfSegments = segments.Length;
+        foreach (Transform child in wheelTransform)
+            DestroyImmediate(child.gameObject);
+
+        int numberOfSegments = segments != null ? segments.Length : 0;
         if (numberOfSegments == 0) return;
 
         float angleStep = 360f / numberOfSegments;
         float innerRadius = wheelRadius * innerRadiusPercent;
         float outerRadius = wheelRadius;
 
+        float cutStartRadius = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(gapStartPercent));
+
         for (int i = 0; i < numberOfSegments; i++)
         {
             float startAngle = i * angleStep;
             float endAngle = (i + 1) * angleStep;
 
-            // создаём объект сегмента
-            GameObject segGO = new GameObject("Segment " + i, typeof(RectTransform), typeof(CanvasRenderer), typeof(WheelSegmentUI));
+            GameObject segGO = new GameObject($"Segment {i}", typeof(RectTransform), typeof(CanvasRenderer), typeof(WheelSegmentUI));
             segGO.transform.SetParent(wheelTransform, false);
 
             RectTransform rt = segGO.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(wheelRadius * 2, wheelRadius * 2);
+            rt.sizeDelta = new Vector2(wheelRadius * 2f, wheelRadius * 2f);
 
             WheelSegmentUI segment = segGO.GetComponent<WheelSegmentUI>();
-            segment.BuildSegmentMesh(startAngle, endAngle, innerRadius, outerRadius, arcResolution);
             segment.SetColor(segments[i].color);
+            segment.BuildSegmentMesh(
+                startAngle, endAngle,
+                innerRadius, outerRadius,
+                arcResolution, radialResolution,
+                gapAngle, cutStartRadius
+            );
 
-            // вычисляем центр сегмента (для текста и иконки)
-            float midAngle = (startAngle + endAngle) / 2f;
+            float midAngle = (startAngle + endAngle) * 0.5f;
             float rad = Mathf.Deg2Rad * midAngle;
-            Vector2 pos = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * ((innerRadius + outerRadius) / 2);
+            float contentRadius = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(contentRadiusLerp));
+            Vector2 contentPos = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * contentRadius;
 
-            // добавляем текст
             if (!string.IsNullOrEmpty(segments[i].label))
             {
                 GameObject textGO = new GameObject("Text", typeof(TextMeshProUGUI));
@@ -105,12 +127,11 @@ public class WheelOfFortuneUI : MonoBehaviour
                 tmp.color = Color.black;
 
                 RectTransform textRT = tmp.GetComponent<RectTransform>();
-                textRT.sizeDelta = new Vector2(200, 60);
-                textRT.anchoredPosition = pos;
-                textRT.localRotation = Quaternion.identity; // текст всегда ровный
+                textRT.sizeDelta = new Vector2(220, 70);
+                textRT.anchoredPosition = contentPos;
+                textRT.localRotation = Quaternion.identity;
             }
 
-            // добавляем иконку
             if (segments[i].icon != null)
             {
                 GameObject iconGO = new GameObject("Icon", typeof(Image));
@@ -122,15 +143,12 @@ public class WheelOfFortuneUI : MonoBehaviour
 
                 RectTransform iconRT = img.GetComponent<RectTransform>();
                 iconRT.sizeDelta = new Vector2(80, 80);
-                iconRT.anchoredPosition = pos * 0.7f; // ближе к центру
+                iconRT.anchoredPosition = contentPos * 0.9f;
                 iconRT.localRotation = Quaternion.identity;
             }
         }
     }
 
-    /// <summary>
-    /// Данные для одного сегмента
-    /// </summary>
     [Serializable]
     public class SegmentData
     {
@@ -142,28 +160,52 @@ public class WheelOfFortuneUI : MonoBehaviour
 
 public class WheelSegmentUI : MaskableGraphic
 {
-    private List<Vector3> verts;
-    private Color segColor = Color.white;
+    private List<Vector3> _verts;
+    private int _cols;
+    private int _rows;
+    private Color _segColor = Color.white;
 
-    public void SetColor(Color c) => segColor = c;
+    public void SetColor(Color c) => _segColor = c;
 
-    public void BuildSegmentMesh(float startAngle, float endAngle, float innerRadius, float outerRadius, int arcResolution)
+    public void BuildSegmentMesh(
+        float startAngle, float endAngle,
+        float innerRadius, float outerRadius,
+        int arcResolution, int radialResolution,
+        float gapAngle, float cutStartRadius
+    )
     {
-        verts = new List<Vector3>();
-        float step = (endAngle - startAngle) / arcResolution;
+        _cols = Mathf.Max(3, arcResolution) + 1;
+        _rows = Mathf.Max(2, radialResolution) + 1;
 
-        // внутренняя дуга
-        for (int i = 0; i <= arcResolution; i++)
-        {
-            float angle = Mathf.Deg2Rad * (startAngle + step * i);
-            verts.Add(new Vector3(Mathf.Cos(angle) * innerRadius, Mathf.Sin(angle) * innerRadius));
-        }
+        _verts = new List<Vector3>(_cols * _rows);
 
-        // внешняя дуга
-        for (int i = 0; i <= arcResolution; i++)
+        float fullSpan = endAngle - startAngle;
+        float maxHalfGap = Mathf.Min(gapAngle * 0.5f, Mathf.Max(0.0001f, (fullSpan * 0.5f - 0.5f)));
+
+        for (int r = 0; r < _rows; r++)
         {
-            float angle = Mathf.Deg2Rad * (startAngle + step * i);
-            verts.Add(new Vector3(Mathf.Cos(angle) * outerRadius, Mathf.Sin(angle) * outerRadius));
+            float tR = (float)r / (_rows - 1);
+            float radius = Mathf.Lerp(innerRadius, outerRadius, tR);
+
+            float halfGap = 0f;
+            if (radius > cutStartRadius && gapAngle > 0f)
+            {
+                float t = Mathf.InverseLerp(cutStartRadius, outerRadius, radius);
+                halfGap = Mathf.Min(maxHalfGap, (gapAngle * 0.5f) * t);
+            }
+
+            float a0 = startAngle + halfGap;
+            float a1 = endAngle - halfGap;
+            if (a1 < a0) { float mid = (startAngle + endAngle) * 0.5f; a0 = mid; a1 = mid; }
+
+            float step = (a1 - a0) / (_cols - 1);
+
+            for (int c = 0; c < _cols; c++)
+            {
+                float angDeg = a0 + step * c;
+                float ang = Mathf.Deg2Rad * angDeg;
+                _verts.Add(new Vector3(Mathf.Cos(ang) * radius, Mathf.Sin(ang) * radius));
+            }
         }
 
         SetVerticesDirty();
@@ -172,22 +214,25 @@ public class WheelSegmentUI : MaskableGraphic
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
-        if (verts == null || verts.Count == 0) return;
+        if (_verts == null || _verts.Count == 0 || _cols < 2 || _rows < 2) return;
 
-        int innerCount = verts.Count / 2;
+        for (int i = 0; i < _verts.Count; i++)
+            vh.AddVert(_verts[i], _segColor, Vector2.zero);
 
-        for (int i = 0; i < verts.Count; i++)
-            vh.AddVert(verts[i], segColor, Vector2.zero);
+        int Index(int r, int c) => r * _cols + c;
 
-        for (int i = 0; i < innerCount - 1; i++)
+        for (int r = 0; r < _rows - 1; r++)
         {
-            int i0 = i;
-            int i1 = i + 1;
-            int i2 = innerCount + i;
-            int i3 = innerCount + i + 1;
+            for (int c = 0; c < _cols - 1; c++)
+            {
+                int v00 = Index(r, c);
+                int v01 = Index(r, c + 1);
+                int v10 = Index(r + 1, c);
+                int v11 = Index(r + 1, c + 1);
 
-            vh.AddTriangle(i0, i2, i1);
-            vh.AddTriangle(i1, i2, i3);
+                vh.AddTriangle(v00, v10, v01);
+                vh.AddTriangle(v01, v10, v11);
+            }
         }
     }
 }
