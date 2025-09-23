@@ -2107,18 +2107,6 @@ RectTransform:
   m_AnchoredPosition: {x: -5.5390625, y: -253.08}
   m_SizeDelta: {x: 11.078201, y: 1.7600098}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1131739978412686445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766740355951387141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1151601441293025577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3240,7 +3228,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3399931289574049220}
-  - component: {fileID: 1131739978412686445}
   m_Layer: 0
   m_Name: LevelDisplay
   m_TagString: Untagged
@@ -3708,6 +3695,7 @@ MonoBehaviour:
   status: {fileID: 6014288198388717243}
   dailyReward: {fileID: 4485295681300215384}
   claimButton: {fileID: 3514729504198301879}
+  openButton: {fileID: 8078318414851603765}
   rewardPrefab: {fileID: 6497416874260528768, guid: 8d6fffe764bb72549804c8f5b88ade55,
     type: 3}
   rewardsGrid: {fileID: 1287661044109957811}
@@ -4796,7 +4784,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -5084,19 +5072,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6501294316419738110}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2190271103476980400}
-        m_TargetAssemblyTypeName: DailyRewards, Assembly-CSharp
-        m_MethodName: ClaimReward
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &3548232788287447819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9532,19 +9508,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4573469940485818401}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: WheelOfFortune, Assembly-CSharp
-        m_MethodName: ChangeWheelScreenState
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!222 &7286296468749273757
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10396,7 +10360,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

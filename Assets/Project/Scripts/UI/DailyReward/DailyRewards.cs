@@ -10,6 +10,7 @@ public class DailyRewards : MonoBehaviour
     [SerializeField] private TextMeshProUGUI status;
     [SerializeField] private GameObject dailyReward;
     [SerializeField] private Button claimButton;
+    [SerializeField] private Button openButton;
     [SerializeField] private RewardPrefab rewardPrefab;
     [SerializeField] private Transform rewardsGrid;
     [SerializeField] private List<Reward> rewards;
@@ -44,6 +45,18 @@ public class DailyRewards : MonoBehaviour
     private int maxStpeakCount = 8;
 
     private List<RewardPrefab> rewardPrefabs;
+
+    private void OnEnable()
+    {
+        openButton.onClick.AddListener(OpenDailyRewardPanel);
+        claimButton.onClick.AddListener(ClaimReward);
+    }
+
+    private void OnDisable()
+    {
+        openButton.onClick.RemoveListener(OpenDailyRewardPanel);
+        claimButton.onClick.RemoveListener(ClaimReward);
+    }
 
     private void Start()
     {
