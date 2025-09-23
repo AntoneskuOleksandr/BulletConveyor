@@ -36,6 +36,10 @@ public class WheelOfFortuneUI : MonoBehaviour
     [Tooltip("На какой доле толщины кольца размещать текст/иконку.")]
     [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.6f;
 
+    [Header("Segment Colors")]
+    [SerializeField] private Color lightColor;
+    [SerializeField] private Color darkColor;
+
     [Header("Segments")]
     [SerializeField] private SegmentData[] segments;
 
@@ -90,6 +94,7 @@ public class WheelOfFortuneUI : MonoBehaviour
 
         float cutStartRadius = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(gapStartPercent));
 
+        // Генерация сегментов
         for (int i = 0; i < numberOfSegments; i++)
         {
             float startAngle = i * angleStep;
@@ -102,7 +107,11 @@ public class WheelOfFortuneUI : MonoBehaviour
             rt.sizeDelta = new Vector2(wheelRadius * 2f, wheelRadius * 2f);
 
             WheelSegmentUI segment = segGO.GetComponent<WheelSegmentUI>();
-            segment.SetColor(segments[i].color);
+
+            // чередование цветов
+            Color segColor = (i % 2 == 0) ? lightColor : darkColor;
+            segment.SetColor(segColor);
+
             segment.BuildSegmentMesh(
                 startAngle, endAngle,
                 innerRadius, outerRadius,
@@ -110,6 +119,7 @@ public class WheelOfFortuneUI : MonoBehaviour
                 gapAngle, cutStartRadius
             );
 
+            // позиция текста/иконки
             float midAngle = (startAngle + endAngle) * 0.5f;
             float rad = Mathf.Deg2Rad * midAngle;
             float contentRadius = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(contentRadiusLerp));
@@ -154,7 +164,6 @@ public class WheelOfFortuneUI : MonoBehaviour
     {
         public string label;
         public Sprite icon;
-        public Color color = Color.white;
     }
 }
 
