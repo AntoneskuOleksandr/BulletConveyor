@@ -1,23 +1,29 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class WheelSegmentUI : MaskableGraphic
 {
     private List<Vector3> _verts;
     private int _cols;
     private int _rows;
-    private Color _segColor = Color.white;
 
-    public void SetColor(Color c) => _segColor = c;
+    private Color _baseColor = Color.white;
+    private Tween _colorTween;
+    private Tween _scaleTween;
+
+    public void SetBaseColor(Color c)
+    {
+        _baseColor = c;
+        color = c;
+    }
 
     public void BuildSegmentMesh(
         float startAngle, float endAngle,
         float innerRadius, float outerRadius,
         int arcResolution, int radialResolution,
-        float gapAngle, float cutStartRadius
-    )
+        float gapAngle, float cutStartRadius)
     {
         _cols = Mathf.Max(3, arcResolution) + 1;
         _rows = Mathf.Max(2, radialResolution) + 1;
@@ -41,7 +47,11 @@ public class WheelSegmentUI : MaskableGraphic
 
             float a0 = startAngle + halfGap;
             float a1 = endAngle - halfGap;
-            if (a1 < a0) { float mid = (startAngle + endAngle) * 0.5f; a0 = mid; a1 = mid; }
+            if (a1 < a0)
+            {
+                float mid = (startAngle + endAngle) * 0.5f;
+                a0 = mid; a1 = mid;
+            }
 
             float step = (a1 - a0) / (_cols - 1);
 
@@ -62,7 +72,7 @@ public class WheelSegmentUI : MaskableGraphic
         if (_verts == null || _verts.Count == 0 || _cols < 2 || _rows < 2) return;
 
         for (int i = 0; i < _verts.Count; i++)
-            vh.AddVert(_verts[i], _segColor, Vector2.zero);
+            vh.AddVert(_verts[i], color, Vector2.zero);
 
         int Index(int r, int c) => r * _cols + c;
 
@@ -79,5 +89,35 @@ public class WheelSegmentUI : MaskableGraphic
                 vh.AddTriangle(v01, v10, v11);
             }
         }
+    }
+
+    public void SetHighlight(Color highlightColor, float intensity = 0.6f, float scaleFactor = 1.1f)
+    {
+        _colorTween?.Kill();
+        _scaleTween?.Kill();
+
+        _colorTween = DOTween.To(
+            () => color,
+            c => { color = c; SetVerticesDirty(); },
+            Color.Lerp(_baseColor, highlightColor, intensity),
+            0.4f
+        ).SetEase(Ease.OutQuad);
+
+        _scaleTween = transform.DOScale(scaleFactor, 0.4f).SetEase(Ease.OutBack);
+    }
+
+    public void ResetHighlight()
+    {
+        _colorTween?.Kill();
+        _scaleTween?.Kill();
+
+        _colorTween = DOTween.To(
+            () => color,
+            c => { color = c; SetVerticesDirty(); },
+            _baseColor,
+            0.4f
+        ).SetEase(Ease.OutQuad);
+
+        _scaleTween = transform.DOScale(1f, 0.4f).SetEase(Ease.OutBack);
     }
 }

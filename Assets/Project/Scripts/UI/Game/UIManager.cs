@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private ProgressBar progressBar;
 
     [Inject] private BlockManager _blockManager;
-    [Inject] private PlayerManager _playerManager;
+    [Inject] private PlayerRuntimeManager _playerManager;
     [Inject] private WaveManager _waveManager;
 
     private void OnEnable()

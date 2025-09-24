@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerRuntimeManager : MonoBehaviour
 {
     public Action OnMoneyChanged;
     public float Money { get; private set; }
