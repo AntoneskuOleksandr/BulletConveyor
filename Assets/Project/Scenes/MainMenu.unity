@@ -240,81 +240,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &429457627
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 429457628}
-  - component: {fileID: 429457630}
-  - component: {fileID: 429457629}
-  m_Layer: 5
-  m_Name: WheelImageTemplate
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &429457628
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 429457627}
-  m_LocalRotation: {x: 0, y: 0, z: 0.19509031, w: 0.98078537}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 5488660198314451663}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 22.5}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2918, y: 2916.5754}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &429457629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 429457627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: -1142893772, guid: 980062c4599c225488dc5ee310d6b833, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 1
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &429457630
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 429457627}
-  m_CullTransparentMesh: 1
 --- !u!1 &608542585
 GameObject:
   m_ObjectHideFlags: 0
@@ -6382,7 +6307,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5966308693209335614}
-  - {fileID: 429457628}
   - {fileID: 4851550245802381963}
   - {fileID: 1739402348574017506}
   - {fileID: 7557479331558766449}
@@ -6441,27 +6365,29 @@ MonoBehaviour:
   radialResolution: 50
   gapAngle: 3.5
   gapStartPercent: 0.92
-  contentRadiusLerp: 0
+  contentRadiusLerp: 0.45
   segmentColors:
   - {r: 0.078431375, g: 0.5411765, b: 0.8745098, a: 1}
   - {r: 0.07058824, g: 0.3529412, b: 0.63529414, a: 1}
   segments:
-  - label: 1
-    icon: {fileID: 0}
-  - label: 1
-    icon: {fileID: 0}
-  - label: 1
-    icon: {fileID: 0}
-  - label: 1
-    icon: {fileID: 0}
-  - label: 1
-    icon: {fileID: 0}
-  - label: 1
-    icon: {fileID: 0}
-  - label: 1
-    icon: {fileID: 0}
-  - label: 1
-    icon: {fileID: 0}
+  - label: 25
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  - label: 50
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  - label: 75
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  - label: 100
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  - label: 125
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  - label: 250
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  - label: 500
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  - label: 0
+    icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
+  segmentContentPrefab: {fileID: 6524165404128603024, guid: 02da4648ac840ad4f9761d5a022e8d71,
+    type: 3}
 --- !u!222 &5488660198314451665
 CanvasRenderer:
   m_ObjectHideFlags: 0

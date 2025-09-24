@@ -33,14 +33,18 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float gapStartPercent = 0.5f;
 
     [Header("Content Placement")]
-    [Tooltip("На какой доле толщины кольца размещать текст/иконку.")]
-    [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.6f;
+    [Tooltip("Где центрировать контейнер контента по толщине кольца (0..1).")]
+    [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.5f; // лучше по центру
 
     [Header("Segment Colors")]
     [SerializeField] private List<Color> segmentColors = new List<Color>() { Color.white, Color.gray };
 
     [Header("Segments")]
     [SerializeField] private SegmentData[] segments;
+
+    [Header("UI Prefab")]
+    [Tooltip("Префаб с TextMeshProUGUI и/или Image. Без фонового Mesh.")]
+    [SerializeField] private GameObject segmentContentPrefab;
 
     private float currentAngle;
 
@@ -84,7 +88,7 @@ public class WheelOfFortuneUI : MonoBehaviour
         foreach (Transform child in wheelTransform)
             DestroyImmediate(child.gameObject);
 
-        int numberOfSegments = segments != null ? segments.Length : 0;
+        int numberOfSegments = (segments != null) ? segments.Length : 0;
         if (numberOfSegments == 0) return;
 
         float angleStep = 360f / numberOfSegments;
@@ -97,22 +101,20 @@ public class WheelOfFortuneUI : MonoBehaviour
         {
             float startAngle = i * angleStep;
             float endAngle = (i + 1) * angleStep;
+            float midAngle = (startAngle + endAngle) * 0.5f;
 
+            // === фон (mesh) ===
             GameObject segGO = new GameObject($"Segment {i}", typeof(RectTransform), typeof(CanvasRenderer), typeof(WheelSegmentUI));
             segGO.transform.SetParent(wheelTransform, false);
 
-            RectTransform rt = segGO.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(wheelRadius * 2f, wheelRadius * 2f);
+            RectTransform segRT = segGO.GetComponent<RectTransform>();
+            segRT.sizeDelta = new Vector2(wheelRadius * 2f, wheelRadius * 2f);
 
             WheelSegmentUI segment = segGO.GetComponent<WheelSegmentUI>();
-
-            // выбираем цвет из списка по индексу
             Color segColor = (segmentColors != null && segmentColors.Count > 0)
                 ? segmentColors[i % segmentColors.Count]
                 : Color.white;
-
             segment.SetColor(segColor);
-
             segment.BuildSegmentMesh(
                 startAngle, endAngle,
                 innerRadius, outerRadius,
@@ -120,42 +122,55 @@ public class WheelOfFortuneUI : MonoBehaviour
                 gapAngle, cutStartRadius
             );
 
-            // позиция текста/иконки
-            float midAngle = (startAngle + endAngle) * 0.5f;
-            float rad = Mathf.Deg2Rad * midAngle;
-            float contentRadius = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(contentRadiusLerp));
-            Vector2 contentPos = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * contentRadius;
-
-            if (!string.IsNullOrEmpty(segments[i].label))
+            // === контент (прямоугольный контейнер, удобно работать анкорами) ===
+            if (segmentContentPrefab != null)
             {
-                GameObject textGO = new GameObject("Text", typeof(TextMeshProUGUI));
-                textGO.transform.SetParent(segGO.transform, false);
+                GameObject contentGO = Instantiate(segmentContentPrefab, segGO.transform, false);
+                contentGO.name = "Content";
+                RectTransform contentRT = contentGO.GetComponent<RectTransform>();
 
-                var tmp = textGO.GetComponent<TextMeshProUGUI>();
-                tmp.text = segments[i].label;
-                tmp.alignment = TextAlignmentOptions.Center;
-                tmp.fontSize = 32;
-                tmp.color = Color.black;
+                // сброс, чтобы настройки префаба не мешали
+                contentRT.anchorMin = contentRT.anchorMax = new Vector2(0.5f, 0.5f);
+                contentRT.pivot = new Vector2(0.5f, 0.5f);
+                contentRT.localScale = Vector3.one;
 
-                RectTransform textRT = tmp.GetComponent<RectTransform>();
-                textRT.sizeDelta = new Vector2(220, 70);
-                textRT.anchoredPosition = contentPos;
-                textRT.localRotation = Quaternion.identity;
-            }
+                // радиус центра контейнера
+                float rCenter = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(contentRadiusLerp));
 
-            if (segments[i].icon != null)
-            {
-                GameObject iconGO = new GameObject("Icon", typeof(Image));
-                iconGO.transform.SetParent(segGO.transform, false);
+                // высота — чтобы контейнер гарантированно помещался в кольцо
+                float halfHeight = Mathf.Min(rCenter - innerRadius, outerRadius - rCenter);
+                float height = Mathf.Max(0f, 2f * halfHeight);
 
-                var img = iconGO.GetComponent<Image>();
-                img.sprite = segments[i].icon;
-                img.preserveAspect = true;
+                // эффективный угол сектора на этом радиусе (с учётом gap)
+                float t = 0f;
+                if (gapAngle > 0f && rCenter > cutStartRadius)
+                    t = Mathf.Clamp01((rCenter - cutStartRadius) / (outerRadius - cutStartRadius));
+                float effectiveSpan = Mathf.Max(0f, (endAngle - startAngle) - (gapAngle * t));
 
-                RectTransform iconRT = img.GetComponent<RectTransform>();
-                iconRT.sizeDelta = new Vector2(80, 80);
-                iconRT.anchoredPosition = contentPos * 0.9f;
-                iconRT.localRotation = Quaternion.identity;
+                // ширина — хорда на rCenter
+                float width = 2f * rCenter * Mathf.Sin(0.5f * Mathf.Deg2Rad * effectiveSpan);
+
+                // позиция центра контейнера
+                float rad = Mathf.Deg2Rad * midAngle;
+                Vector2 pos = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * rCenter;
+
+                // поворот: чтобы локальная ось Y шла по радиусу наружу
+                float zRot = midAngle - 90f;
+
+                contentRT.sizeDelta = new Vector2(width, height);
+                contentRT.anchoredPosition = pos;
+                contentRT.localRotation = Quaternion.Euler(0, 0, zRot);
+
+                // заполнение данными
+                var tmp = contentGO.GetComponentInChildren<TextMeshProUGUI>();
+                if (tmp != null) tmp.text = segments[i].label;
+
+                var img = contentGO.GetComponentInChildren<Image>();
+                if (img != null)
+                {
+                    img.sprite = segments[i].icon;
+                    img.preserveAspect = true;
+                }
             }
         }
     }
