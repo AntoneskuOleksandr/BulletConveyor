@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Zenject;
 
 public class WheelOfFortuneUI : MonoBehaviour
 {
@@ -15,30 +16,25 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField] private float maxSpinCounts = 6f;
 
     [Header("UI Buttons")]
-    [SerializeField] private Button wheelButton; // open wheel panel
-    [SerializeField] private Button spinButton; // start spin
+    [SerializeField] private Button wheelButton; // toggle wheel panel
+    [SerializeField] private Button spinButton;  // start spin
     [SerializeField] private Button claimButton; // claim prize
+
+    [Header("Wheel Panel")]
+    [SerializeField] private GameObject wheelPanel;
 
     [Header("Wheel Settings")]
     [SerializeField] private float wheelRadius = 300f;
     [SerializeField, Range(0f, 1f)] private float innerRadiusPercent = 0.2f;
-
-    [Tooltip("Сколько точек на дуге. Чем больше — тем плавнее контуры.")]
     [SerializeField, Min(3)] private int arcResolution = 24;
-
-    [Tooltip("Сколько радиальных слоёв. Нужно ≥ 2, иначе вырез не сформируется.")]
     [SerializeField, Min(2)] private int radialResolution = 8;
 
     [Header("Segment Cut (Gap)")]
-    [Tooltip("Угол выреза на внешнем крае (в градусах). 0 — без выреза.")]
     [SerializeField, Range(0f, 20f)] private float gapAngle = 6f;
-
-    [Tooltip("Глубина старта выреза (0..1 по толщине кольца). 0.5 = старт с середины.")]
     [SerializeField, Range(0f, 1f)] private float gapStartPercent = 0.5f;
 
     [Header("Content Placement")]
-    [Tooltip("Где центрировать контейнер контента по толщине кольца (0..1).")]
-    [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.5f; // лучше по центру
+    [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.5f;
 
     [Header("Segment Colors")]
     [SerializeField] private List<Color> segmentColors = new List<Color>() { Color.white, Color.gray };
@@ -47,7 +43,6 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField] private SegmentData[] segments;
 
     [Header("UI Prefab")]
-    [Tooltip("Префаб с TextMeshProUGUI и/или Image. Без фонового Mesh.")]
     [SerializeField] private GameObject segmentContentPrefab;
 
     [Header("Highlight Settings")]
@@ -57,21 +52,49 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private float currentAngle;
     private WheelSegmentUI[] segmentUIs;
+    private int? currentWinningIndex;
+
+    [Inject] private EconomyManager _economy;
 
     private void Awake()
     {
-        if (spinButton != null)
-            spinButton.onClick.AddListener(Spin);
+        if (spinButton != null) spinButton.onClick.AddListener(Spin);
+        if (claimButton != null) claimButton.onClick.AddListener(ClaimPrize);
+        if (wheelButton != null) wheelButton.onClick.AddListener(ToggleWheel);
+
+        if (wheelPanel != null)
+            wheelPanel.SetActive(false);
 
         if (claimButton != null)
-            claimButton.onClick.AddListener(ClaimPrize);
+            claimButton.gameObject.SetActive(false); // изначально скрыта
 
         GenerateSegments();
     }
 
+    private void ToggleWheel()
+    {
+        if (wheelPanel == null) return;
+
+        bool newState = !wheelPanel.activeSelf;
+        wheelPanel.SetActive(newState);
+
+        if (newState) // открыли панель
+        {
+            if (currentWinningIndex != null)
+                HighlightWinningSegment(); // восстановить подсветку
+        }
+    }
+
+
     public void Spin()
     {
         StopAllCoroutines();
+
+        // состояния кнопок
+        spinButton.gameObject.SetActive(false);
+        claimButton.gameObject.SetActive(true);
+        claimButton.interactable = false;
+
         StartCoroutine(SpinWheel());
     }
 
@@ -94,23 +117,24 @@ public class WheelOfFortuneUI : MonoBehaviour
         wheelTransform.localEulerAngles = new Vector3(0, 0, currentAngle);
 
         HighlightWinningSegment();
+
+        // теперь можно забирать приз
+        claimButton.interactable = true;
     }
 
     private void HighlightWinningSegment()
     {
         if (segmentUIs == null || segmentUIs.Length == 0) return;
 
-        // угол в локальных координатах
         float normalizedAngle = (360f - (currentAngle % 360f)) % 360f;
-
-        // сдвигаем так, чтобы 0-й сегмент был сверху
-        float pointerOffset = 90f; // "указатель" на 12 часов
+        float pointerOffset = 90f; // верх
         float adjustedAngle = (normalizedAngle + pointerOffset) % 360f;
 
         float angleStep = 360f / segmentUIs.Length;
         int winningIndex = Mathf.FloorToInt(adjustedAngle / angleStep) % segmentUIs.Length;
 
-        // сброс + подсветка
+        currentWinningIndex = winningIndex;
+
         for (int i = 0; i < segmentUIs.Length; i++)
         {
             if (i == winningIndex)
@@ -118,8 +142,14 @@ public class WheelOfFortuneUI : MonoBehaviour
             else
                 segmentUIs[i].ResetHighlight();
         }
+    }
 
-        Debug.Log($"[WheelOfFortune] Победил сегмент {winningIndex}");
+    private void ResetHighlights()
+    {
+        if (segmentUIs == null) return;
+        foreach (var seg in segmentUIs)
+            seg.ResetHighlight();
+        currentWinningIndex = null;
     }
 
     private void GenerateSegments()
@@ -137,7 +167,6 @@ public class WheelOfFortuneUI : MonoBehaviour
         float angleStep = 360f / numberOfSegments;
         float innerRadius = wheelRadius * innerRadiusPercent;
         float outerRadius = wheelRadius;
-
         float cutStartRadius = Mathf.Lerp(innerRadius, outerRadius, Mathf.Clamp01(gapStartPercent));
 
         for (int i = 0; i < numberOfSegments; i++)
@@ -146,7 +175,7 @@ public class WheelOfFortuneUI : MonoBehaviour
             float endAngle = (i + 1) * angleStep;
             float midAngle = (startAngle + endAngle) * 0.5f;
 
-            // === фон (mesh) ===
+            // фон
             GameObject segGO = new GameObject($"Segment {i}", typeof(RectTransform), typeof(CanvasRenderer), typeof(WheelSegmentUI));
             segGO.transform.SetParent(wheelTransform, false);
 
@@ -158,15 +187,12 @@ public class WheelOfFortuneUI : MonoBehaviour
                 ? segmentColors[i % segmentColors.Count]
                 : Color.white;
             segment.SetBaseColor(segColor);
-            segment.BuildSegmentMesh(
-                startAngle, endAngle,
-                innerRadius, outerRadius,
-                arcResolution, radialResolution,
-                gapAngle, cutStartRadius
-            );
+            segment.BuildSegmentMesh(startAngle, endAngle, innerRadius, outerRadius,
+                arcResolution, radialResolution, gapAngle, cutStartRadius);
+
             segmentUIs[i] = segment;
 
-            // === контент ===
+            // контент
             if (segmentContentPrefab != null)
             {
                 GameObject contentGO = Instantiate(segmentContentPrefab, segGO.transform, false);
@@ -211,7 +237,26 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private void ClaimPrize()
     {
-        Debug.Log("[WheelOfFortune] Приз получен!");
+        if (currentWinningIndex == null)
+        {
+            Debug.Log("[WheelOfFortune] Приз не выбран!");
+            return;
+        }
+
+        int reward = segments[currentWinningIndex.Value].reward;
+        _economy.AddMoney(reward);
+
+        Debug.Log($"[WheelOfFortune] Получена награда {reward} из сегмента {currentWinningIndex}");
+
+        ResetHighlights();
+
+        // закрыть меню
+        if (wheelPanel != null)
+            wheelPanel.SetActive(false);
+
+        // восстановить кнопки
+        spinButton.gameObject.SetActive(true);
+        claimButton.gameObject.SetActive(false);
     }
 
     [Serializable]
@@ -219,5 +264,6 @@ public class WheelOfFortuneUI : MonoBehaviour
     {
         public string label;
         public Sprite icon;
+        public int reward;
     }
 }
