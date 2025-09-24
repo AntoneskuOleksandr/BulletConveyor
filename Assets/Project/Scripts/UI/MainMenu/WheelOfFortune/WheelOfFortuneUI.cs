@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -14,14 +13,14 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField] private AnimationCurve spinCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] private float minSpinCounts = 3f;
     [SerializeField] private float maxSpinCounts = 6f;
+    [SerializeField] private float spinCooldownHours = 1f / 2f; // 30 min
 
-    [Header("UI Buttons")]
-    [SerializeField] private Button wheelButton; // toggle wheel panel
-    [SerializeField] private Button spinButton;  // start spin
-    [SerializeField] private Button claimButton; // claim prize
-
-    [Header("Wheel Panel")]
+    [Header("UI References")]
+    [SerializeField] private Button wheelButton;
+    [SerializeField] private Button spinButton;
+    [SerializeField] private Button claimButton;
     [SerializeField] private GameObject wheelPanel;
+    [SerializeField] private TextMeshProUGUI cooldownText;
 
     [Header("Wheel Settings")]
     [SerializeField] private float wheelRadius = 300f;
@@ -37,60 +36,81 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float contentRadiusLerp = 0.5f;
 
     [Header("Segment Colors")]
-    [SerializeField] private List<Color> segmentColors = new List<Color>() { Color.white, Color.gray };
+    [SerializeField] private Color[] segmentColors = { Color.white, Color.gray };
+    [SerializeField] private Color highlightColor = Color.yellow;
+    [SerializeField, Range(0f, 1f)] private float highlightIntensity = 0.6f;
+    [SerializeField] private float highlightScaleFactor = 1.1f;
 
     [Header("Segments")]
     [SerializeField] private SegmentData[] segments;
-
-    [Header("UI Prefab")]
     [SerializeField] private GameObject segmentContentPrefab;
 
-    [Header("Highlight Settings")]
-    [SerializeField] private Color highlightColor = Color.yellow;
-    [Range(0f, 1f)][SerializeField] private float highlightIntensity = 0.6f;
-    [SerializeField] private float highlightScaleFactor = 1.1f;
+    private const string TIMER_KEY = "WheelSpin";
 
     private float currentAngle;
     private WheelSegmentUI[] segmentUIs;
     private int? currentWinningIndex;
 
     [Inject] private EconomyManager _economy;
+    [Inject] private TimerManager _timerManager;
 
     private void Awake()
     {
-        if (spinButton != null) spinButton.onClick.AddListener(Spin);
-        if (claimButton != null) claimButton.onClick.AddListener(ClaimPrize);
-        if (wheelButton != null) wheelButton.onClick.AddListener(ToggleWheel);
+        spinButton.onClick.AddListener(Spin);
+        claimButton.onClick.AddListener(ClaimPrize);
+        wheelButton.onClick.AddListener(ToggleWheel);
 
-        if (wheelPanel != null)
-            wheelPanel.SetActive(false);
+        wheelPanel.SetActive(false);
+        claimButton.gameObject.SetActive(false);
 
-        if (claimButton != null)
-            claimButton.gameObject.SetActive(false); // изначально скрыта
-
+        _timerManager.RegisterTimer(TIMER_KEY, spinCooldownHours);
         GenerateSegments();
+    }
+
+    private void Start()
+    {
+        StartCoroutine(UpdateCooldownRoutine());
+    }
+
+    private IEnumerator UpdateCooldownRoutine()
+    {
+        while (true)
+        {
+            UpdateCooldownUI();
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private void UpdateCooldownUI()
+    {
+        if (_timerManager.CanTrigger(TIMER_KEY))
+        {
+            wheelButton.interactable = true;
+            cooldownText.text = "Spin Available!";
+        }
+        else
+        {
+            wheelButton.interactable = false;
+            var remaining = _timerManager.GetRemaining(TIMER_KEY);
+            if (remaining.TotalSeconds < 0) remaining = TimeSpan.Zero;
+
+            cooldownText.text = $"{remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+        }
     }
 
     private void ToggleWheel()
     {
-        if (wheelPanel == null) return;
-
         bool newState = !wheelPanel.activeSelf;
         wheelPanel.SetActive(newState);
 
-        if (newState) // открыли панель
-        {
-            if (currentWinningIndex != null)
-                HighlightWinningSegment(); // восстановить подсветку
-        }
+        if (newState && currentWinningIndex != null)
+            HighlightWinningSegment();
     }
-
 
     public void Spin()
     {
-        StopAllCoroutines();
+        if (!_timerManager.CanTrigger(TIMER_KEY)) return;
 
-        // состояния кнопок
         spinButton.gameObject.SetActive(false);
         claimButton.gameObject.SetActive(true);
         claimButton.interactable = false;
@@ -117,17 +137,13 @@ public class WheelOfFortuneUI : MonoBehaviour
         wheelTransform.localEulerAngles = new Vector3(0, 0, currentAngle);
 
         HighlightWinningSegment();
-
-        // теперь можно забирать приз
         claimButton.interactable = true;
     }
 
     private void HighlightWinningSegment()
     {
-        if (segmentUIs == null || segmentUIs.Length == 0) return;
-
         float normalizedAngle = (360f - (currentAngle % 360f)) % 360f;
-        float pointerOffset = 90f; // верх
+        float pointerOffset = 90f;
         float adjustedAngle = (normalizedAngle + pointerOffset) % 360f;
 
         float angleStep = 360f / segmentUIs.Length;
@@ -146,7 +162,6 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private void ResetHighlights()
     {
-        if (segmentUIs == null) return;
         foreach (var seg in segmentUIs)
             seg.ResetHighlight();
         currentWinningIndex = null;
@@ -154,14 +169,10 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private void GenerateSegments()
     {
-        if (wheelTransform == null) return;
-
         foreach (Transform child in wheelTransform)
             DestroyImmediate(child.gameObject);
 
-        int numberOfSegments = (segments != null) ? segments.Length : 0;
-        if (numberOfSegments == 0) return;
-
+        int numberOfSegments = segments.Length;
         segmentUIs = new WheelSegmentUI[numberOfSegments];
 
         float angleStep = 360f / numberOfSegments;
@@ -175,7 +186,6 @@ public class WheelOfFortuneUI : MonoBehaviour
             float endAngle = (i + 1) * angleStep;
             float midAngle = (startAngle + endAngle) * 0.5f;
 
-            // фон
             GameObject segGO = new GameObject($"Segment {i}", typeof(RectTransform), typeof(CanvasRenderer), typeof(WheelSegmentUI));
             segGO.transform.SetParent(wheelTransform, false);
 
@@ -183,22 +193,18 @@ public class WheelOfFortuneUI : MonoBehaviour
             segRT.sizeDelta = new Vector2(wheelRadius * 2f, wheelRadius * 2f);
 
             WheelSegmentUI segment = segGO.GetComponent<WheelSegmentUI>();
-            Color segColor = (segmentColors != null && segmentColors.Count > 0)
-                ? segmentColors[i % segmentColors.Count]
-                : Color.white;
-            segment.SetBaseColor(segColor);
+            segment.SetBaseColor(segmentColors[i % segmentColors.Length]);
             segment.BuildSegmentMesh(startAngle, endAngle, innerRadius, outerRadius,
                 arcResolution, radialResolution, gapAngle, cutStartRadius);
 
             segmentUIs[i] = segment;
 
-            // контент
             if (segmentContentPrefab != null)
             {
                 GameObject contentGO = Instantiate(segmentContentPrefab, segGO.transform, false);
                 contentGO.name = "Content";
-                RectTransform contentRT = contentGO.GetComponent<RectTransform>();
 
+                RectTransform contentRT = contentGO.GetComponent<RectTransform>();
                 contentRT.anchorMin = contentRT.anchorMax = new Vector2(0.5f, 0.5f);
                 contentRT.pivot = new Vector2(0.5f, 0.5f);
                 contentRT.localScale = Vector3.one;
@@ -207,15 +213,10 @@ public class WheelOfFortuneUI : MonoBehaviour
                 float halfHeight = Mathf.Min(rCenter - innerRadius, outerRadius - rCenter);
                 float height = Mathf.Max(0f, 2f * halfHeight);
 
-                float t = 0f;
-                if (gapAngle > 0f && rCenter > cutStartRadius)
-                    t = Mathf.Clamp01((rCenter - cutStartRadius) / (outerRadius - cutStartRadius));
-                float effectiveSpan = Mathf.Max(0f, (endAngle - startAngle) - (gapAngle * t));
-
+                float effectiveSpan = (endAngle - startAngle) - gapAngle;
                 float width = 2f * rCenter * Mathf.Sin(0.5f * Mathf.Deg2Rad * effectiveSpan);
 
-                float rad = Mathf.Deg2Rad * midAngle;
-                Vector2 pos = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * rCenter;
+                Vector2 pos = new Vector2(Mathf.Cos(Mathf.Deg2Rad * midAngle), Mathf.Sin(Mathf.Deg2Rad * midAngle)) * rCenter;
                 float zRot = midAngle - 90f;
 
                 contentRT.sizeDelta = new Vector2(width, height);
@@ -237,26 +238,22 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private void ClaimPrize()
     {
-        if (currentWinningIndex == null)
-        {
-            Debug.Log("[WheelOfFortune] Приз не выбран!");
-            return;
-        }
+        if (currentWinningIndex == null) return;
 
         int reward = segments[currentWinningIndex.Value].reward;
         _economy.AddMoney(reward);
 
-        Debug.Log($"[WheelOfFortune] Получена награда {reward} из сегмента {currentWinningIndex}");
+        Debug.Log($"[WheelOfFortune] Получена награда {reward}");
 
         ResetHighlights();
+        wheelPanel.SetActive(false);
 
-        // закрыть меню
-        if (wheelPanel != null)
-            wheelPanel.SetActive(false);
-
-        // восстановить кнопки
         spinButton.gameObject.SetActive(true);
         claimButton.gameObject.SetActive(false);
+
+        _timerManager.Trigger(TIMER_KEY);
+
+        UpdateCooldownUI();
     }
 
     [Serializable]

@@ -3438,7 +3438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   status: {fileID: 6014288198388717243}
-  dailyReward: {fileID: 4485295681300215384}
+  dailyRewardPanel: {fileID: 4485295681300215384}
   claimButton: {fileID: 3514729504198301879}
   openButton: {fileID: 8078318414851603765}
   rewardPrefab: {fileID: 6497416874260528768, guid: 8d6fffe764bb72549804c8f5b88ade55,
@@ -6543,10 +6543,12 @@ MonoBehaviour:
     m_RotationOrder: 4
   minSpinCounts: 3
   maxSpinCounts: 6
+  spinCooldownHours: 0.25
   wheelButton: {fileID: 7272553774958132740}
   spinButton: {fileID: 691693129660624628}
   claimButton: {fileID: 5973476444288277330}
   wheelPanel: {fileID: 1561658411}
+  cooldownText: {fileID: 6910067354056406758}
   wheelRadius: 268
   innerRadiusPercent: 0.315
   arcResolution: 20
@@ -6557,6 +6559,9 @@ MonoBehaviour:
   segmentColors:
   - {r: 0.078431375, g: 0.5411765, b: 0.8745098, a: 1}
   - {r: 0.07058824, g: 0.3529412, b: 0.63529414, a: 1}
+  highlightColor: {r: 0, g: 0.92156863, b: 0.015686275, a: 1}
+  highlightIntensity: 0.6
+  highlightScaleFactor: 1.1
   segments:
   - label: 25
     icon: {fileID: 21300000, guid: c3a0fc9ee6d28014191a796a0501f5e3, type: 3}
@@ -6584,9 +6589,6 @@ MonoBehaviour:
     reward: 0
   segmentContentPrefab: {fileID: 6524165404128603024, guid: 02da4648ac840ad4f9761d5a022e8d71,
     type: 3}
-  highlightColor: {r: 0, g: 0.92156863, b: 0.015686275, a: 1}
-  highlightIntensity: 0.6
-  highlightScaleFactor: 1.1
 --- !u!222 &5488660198314451665
 CanvasRenderer:
   m_ObjectHideFlags: 0

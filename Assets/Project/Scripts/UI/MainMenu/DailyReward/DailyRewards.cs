@@ -4,47 +4,37 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class DailyRewards : MonoBehaviour
 {
+    [Header("UI References")]
     [SerializeField] private TextMeshProUGUI status;
-    [SerializeField] private GameObject dailyReward;
+    [SerializeField] private GameObject dailyRewardPanel;
     [SerializeField] private Button claimButton;
     [SerializeField] private Button openButton;
     [SerializeField] private RewardPrefab rewardPrefab;
     [SerializeField] private Transform rewardsGrid;
+
+    [Header("Rewards Settings")]
     [SerializeField] private List<Reward> rewards;
-    [SerializeField] private float claimCooldown = 24f;
-    [SerializeField] private float claimDeadline = 48f;
+    [SerializeField] private float claimCooldown = 24f; // кулдаун (часы)
+    [SerializeField] private float claimDeadline = 48f; // дедлайн (часы)
+
+    private const string TIMER_KEY = "DailyReward";
+    private int maxStreakCount = 8;
+    private bool canClaimReward;
+
+    private List<RewardPrefab> rewardPrefabs;
+
+    [Inject] private TimerManager _timerManager;
+    [Inject] private EconomyManager _economyManager;
 
     private int CurrentStreak
     {
-        get => PlayerPrefs.GetInt("currentSteak", 0);
-        set => PlayerPrefs.SetInt("currentSteak", value);
+        get => PlayerPrefs.GetInt("currentStreak", 0);
+        set => PlayerPrefs.SetInt("currentStreak", value);
     }
-
-    private DateTime? LastClaimTime
-    {
-        get
-        {
-            string data = PlayerPrefs.GetString("lastClaimedTime", null);
-            if (!string.IsNullOrEmpty(data))
-                return DateTime.Parse(data);
-            return null;
-        }
-        set
-        {
-            if (value != null)
-                PlayerPrefs.SetString("lastClaimedTime", value.ToString());
-            else
-                PlayerPrefs.DeleteKey("lastClaimedTime");
-        }
-    }
-
-    private bool canClaimReward;
-    private int maxStpeakCount = 8;
-
-    private List<RewardPrefab> rewardPrefabs;
 
     private void OnEnable()
     {
@@ -60,6 +50,8 @@ public class DailyRewards : MonoBehaviour
 
     private void Start()
     {
+        _timerManager.RegisterTimer(TIMER_KEY, claimCooldown);
+
         InitPrefabs();
         StartCoroutine(RewardsStateUpdater());
     }
@@ -68,7 +60,7 @@ public class DailyRewards : MonoBehaviour
     {
         rewardPrefabs = new List<RewardPrefab>();
 
-        for (int i = 0; i < maxStpeakCount; i++)
+        for (int i = 0; i < maxStreakCount; i++)
             rewardPrefabs.Add(Instantiate(rewardPrefab, rewardsGrid, false));
     }
 
@@ -83,37 +75,39 @@ public class DailyRewards : MonoBehaviour
 
     private void UpdateRewardState()
     {
-        canClaimReward = true;
+        var lastTrigger = _timerManager.GetRemaining(TIMER_KEY);
+        DateTime? lastClaimTime = LoadLastClaimTime();
 
-        if (LastClaimTime.HasValue)
+        if (lastClaimTime.HasValue)
         {
-            var timeSpan = DateTime.Now - LastClaimTime.Value;
-
-            if (timeSpan.TotalHours > claimDeadline)
+            var span = DateTime.Now - lastClaimTime.Value;
+            if (span.TotalHours > claimDeadline)
             {
-                LastClaimTime = null;
+                _timerManager.ResetTimer(TIMER_KEY);
                 CurrentStreak = 0;
+                lastClaimTime = null;
             }
-            else if (timeSpan.TotalHours < claimCooldown)
-                canClaimReward = false;
         }
 
-        UpdateRewardsUI();
+        canClaimReward = _timerManager.CanTrigger(TIMER_KEY);
+
+        UpdateRewardsUI(lastClaimTime);
     }
 
-    private void UpdateRewardsUI()
+    private void UpdateRewardsUI(DateTime? lastClaimTime)
     {
         claimButton.interactable = canClaimReward;
 
         if (canClaimReward)
-            status.text = "Claim your reward!";
-        else
         {
-            var nextClaimTime = LastClaimTime.Value.AddHours(claimCooldown);
+            status.text = "Claim your reward!";
+        }
+        else if (lastClaimTime.HasValue)
+        {
+            var nextClaimTime = lastClaimTime.Value.AddHours(claimCooldown);
             var currentClaimCooldown = nextClaimTime - DateTime.Now;
 
             string cd = $"{currentClaimCooldown.Hours:D2}:{currentClaimCooldown.Minutes:D2}:{currentClaimCooldown.Seconds:D2}";
-
             status.text = $"Come back in {cd} for your next reward";
         }
 
@@ -126,26 +120,44 @@ public class DailyRewards : MonoBehaviour
 
     public void ClaimReward()
     {
-        if (!canClaimReward)
-            return;
+        if (!canClaimReward) return;
 
         var reward = rewards[CurrentStreak];
 
-        LastClaimTime = DateTime.Now;
-        CurrentStreak = (CurrentStreak + 1) % maxStpeakCount;
+        if (reward.type == Reward.RewardType.COIN)
+        {
+            _economyManager.AddMoney(reward.value);
+        }
+
+        _timerManager.Trigger(TIMER_KEY);
+        SaveLastClaimTime(DateTime.Now);
+
+        CurrentStreak = (CurrentStreak + 1) % maxStreakCount;
 
         UpdateRewardState();
-
         CloseDailyRewardPanel();
     }
 
     public void OpenDailyRewardPanel()
     {
-        dailyReward.SetActive(true);
+        dailyRewardPanel.SetActive(true);
     }
 
     public void CloseDailyRewardPanel()
     {
-        dailyReward.SetActive(false);
+        dailyRewardPanel.SetActive(false);
+    }
+
+    private void SaveLastClaimTime(DateTime time)
+    {
+        PlayerPrefs.SetString("DailyReward_LastClaimTime", time.ToString());
+    }
+
+    private DateTime? LoadLastClaimTime()
+    {
+        string data = PlayerPrefs.GetString("DailyReward_LastClaimTime", "");
+        if (!string.IsNullOrEmpty(data))
+            return DateTime.Parse(data);
+        return null;
     }
 }
