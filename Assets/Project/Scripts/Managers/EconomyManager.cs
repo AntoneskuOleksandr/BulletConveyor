@@ -11,14 +11,13 @@ public class EconomyManager
 
     public void AddMoney(int amount, RectTransform fromUI = null, bool useAnimation = true)
     {
-        if (useAnimation && fromUI != null)
+        if (useAnimation && fromUI != null && amount > 0)
         {
             _animator.AnimateCurrencyGain(amount, fromUI);
         }
         else
         {
-            Money += amount;
-            OnMoneyChanged?.Invoke();
+            AddMoneyDirect(amount);
         }
     }
 

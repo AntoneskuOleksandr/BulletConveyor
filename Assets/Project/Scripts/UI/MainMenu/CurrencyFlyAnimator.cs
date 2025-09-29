@@ -47,7 +47,9 @@ public class CurrencyFlyAnimator : MonoBehaviour
             target.parent == spawnParent;
 
         int visualCoins = Mathf.Min(amount, maxIcons);
-        int valuePerCoin = Mathf.Max(1, amount / visualCoins);
+
+        int baseValue = amount / visualCoins;
+        int remainder = amount % visualCoins;
 
         Vector2 startLocal, targetLocal;
 
@@ -76,17 +78,20 @@ public class CurrencyFlyAnimator : MonoBehaviour
             Vector2 start = startLocal + jitter;
             icon.anchoredPosition = start;
 
+            int reward = baseValue + (i < remainder ? 1 : 0);
+
             icon.DOAnchorPos(targetLocal, flyDuration)
                 .SetEase(Ease.InQuad)
                 .OnComplete(() =>
                 {
                     Destroy(icon.gameObject);
-                    _economyManager?.AddMoneyDirect(valuePerCoin);
+                    _economyManager?.AddMoneyDirect(reward);
                 });
 
             yield return new WaitForSeconds(totalAnimationTime / visualCoins);
         }
     }
+
 
     private Vector2 ToLocalOn(RectTransform onto, RectTransform rt)
     {

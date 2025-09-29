@@ -124,9 +124,11 @@ public class DailyRewards : MonoBehaviour
 
         var reward = rewards[CurrentStreak];
 
+        int rewardIndex = rewards.IndexOf(reward);
+
         if (reward.type == Reward.RewardType.COIN)
         {
-            _economyManager.AddMoney(reward.value);
+            _economyManager.AddMoney(reward.value, rewardPrefabs[rewardIndex].GetComponent<RectTransform>(), true);
         }
 
         _timerManager.Trigger(TIMER_KEY);

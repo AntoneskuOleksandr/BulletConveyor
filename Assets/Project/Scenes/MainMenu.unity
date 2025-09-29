@@ -683,7 +683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6032196c2217c774ba6f93ac4058326d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardCoins: 10000
+  rewardCoins: 100
   cooldownHours: 0.0013888889
   claimButton: {fileID: 8852336481423144200}
   cooldownText: {fileID: 9047949822768700442}
