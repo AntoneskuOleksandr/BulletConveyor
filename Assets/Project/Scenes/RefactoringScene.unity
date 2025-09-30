@@ -1052,12 +1052,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3834888537518743479}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &774441091 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6450309541370084910, guid: 901cce198903abd4d9ce739298f5c55e,
-    type: 3}
-  m_PrefabInstance: {fileID: 1783934299}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2095,34 +2089,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1540644352 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7805296867101043242, guid: 901cce198903abd4d9ce739298f5c55e,
+--- !u!114 &1540644353 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5027926273442109451, guid: 901cce198903abd4d9ce739298f5c55e,
     type: 3}
   m_PrefabInstance: {fileID: 1783934299}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1540644353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540644352}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f21252779e3092428603b17d849be8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletType: 0
-  damage: 10
-  firePoint: {fileID: 774441091}
-  partToRotate: {fileID: 1540644355}
-  turnSpeed: 5
-  fireRate: 3
-  aimThreshold: 5
-  attackRadius: 25
-  idleReturnDelay: 1
-  effectChances: []
 --- !u!4 &1540644355 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7429299505993265296, guid: 901cce198903abd4d9ce739298f5c55e,
@@ -2305,15 +2283,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MachineGun
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8102843480848509713, guid: 901cce198903abd4d9ce739298f5c55e, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7805296867101043242, guid: 901cce198903abd4d9ce739298f5c55e,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1540644353}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 901cce198903abd4d9ce739298f5c55e, type: 3}
 --- !u!1 &1820944512
 GameObject:

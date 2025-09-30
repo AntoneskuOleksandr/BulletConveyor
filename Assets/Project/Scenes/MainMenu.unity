@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &177928206
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 177928207}
+  m_Layer: 0
+  m_Name: Weapons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &177928207
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177928206}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -540, y: -960, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3782793439761793104}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &203844586
 GameObject:
   m_ObjectHideFlags: 0
@@ -2027,7 +2058,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3271000254707449497}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GunCarousel, Assembly-CSharp
         m_MethodName: ToggleGun
         m_Mode: 1
@@ -2586,7 +2617,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3271000254707449497}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GunCarousel, Assembly-CSharp
         m_MethodName: TryToOpenUpgradePanel
         m_Mode: 1
@@ -4680,18 +4711,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3705734811459078622}
   m_CullTransparentMesh: 1
---- !u!114 &3271000254707449497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8285199966934206572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!222 &3308304212550989690
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5115,7 +5134,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3782793439761793104
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5125,22 +5144,23 @@ RectTransform:
   m_GameObject: {fileID: 4938701331492661746}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4160673618972775304}
   - {fileID: 3628611635784329266}
   - {fileID: 7693365279730681921}
-  - {fileID: 4160673618972775304}
   - {fileID: 7787367248984796856}
   - {fileID: 2404073884949406076}
   - {fileID: 6595062353460635721}
+  - {fileID: 177928207}
   m_Father: {fileID: 751123262738795063}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &3792208983932161684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6235,13 +6255,14 @@ GameObject:
   - component: {fileID: 6664821531187055629}
   - component: {fileID: 686709041316024203}
   - component: {fileID: 1151601441293025577}
+  - component: {fileID: 6664821531187055631}
   m_Layer: 5
   m_Name: Weapons Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &4987466338530394115
 GameObject:
   m_ObjectHideFlags: 0
@@ -7539,7 +7560,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3271000254707449497}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GunSelector, Assembly-CSharp
         m_MethodName: ChangeGun
         m_Mode: 3
@@ -8245,6 +8266,21 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &6664821531187055631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938701331492661746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ef1eb5986cec64c882f2cb7b8df5fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponsCarousel: {fileID: 8285199966934206573}
+  nextWeaponButton: {fileID: 8285970797995662720}
+  previousWeaponButton: {fileID: 5977647289751700446}
 --- !u!1 &6695821495782855297
 GameObject:
   m_ObjectHideFlags: 0
@@ -10051,15 +10087,42 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4160673618972775304}
-  - component: {fileID: 3271000254707449497}
   - component: {fileID: 6023439167276986876}
+  - component: {fileID: 8285199966934206573}
   m_Layer: 5
-  m_Name: GunsCarousel
+  m_Name: WeaponsCarousel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8285199966934206573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8285199966934206572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3177b8484de073418477f434aef7233, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weapons:
+  - {fileID: 11400000, guid: d241f259f23d9b042997cb0644b38141, type: 2}
+  - {fileID: 11400000, guid: 656e82b8947ac5847a9376a768587c28, type: 2}
+  - {fileID: 11400000, guid: 8ad446669e6403246a170d6482f240a9, type: 2}
+  - {fileID: 11400000, guid: c5f38e753c67dc540b61af89537b3f81, type: 2}
+  - {fileID: 11400000, guid: 7885008bb9a8aa641b001334c9121e8b, type: 2}
+  - {fileID: 11400000, guid: d9d8d380dc3c2f046b7c1eb384e39c3d, type: 2}
+  - {fileID: 11400000, guid: 863331665a6b0fd4ba01d13698dbfe5f, type: 2}
+  - {fileID: 11400000, guid: 820ebdd78e4f37d4faba0a3799cd37cb, type: 2}
+  weaponSpawnPoint: {fileID: 177928207}
+  startRotationY: 150
+  moveDistance: 10
+  animDuration: 0.5
+  moveEase: 6
+  rotateEase: 6
 --- !u!114 &8285970797995662720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10104,7 +10167,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3271000254707449497}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GunSelector, Assembly-CSharp
         m_MethodName: ChangeGun
         m_Mode: 3
