@@ -16,9 +16,9 @@ public class BackgroundGenerator : MonoBehaviour
         _backgroundTexture.filterMode = FilterMode.Bilinear;
     }
 
-    public void SetColor(Color color1, Color color2)
+    public void SetColor(Color topColor, Color bottomColor)
     {
-        _backgroundTexture.SetPixels(new Color[] { color1, color2 });
+        _backgroundTexture.SetPixels(new Color[] { topColor, bottomColor });
         _backgroundTexture.Apply();
         _image.texture = _backgroundTexture;
     }

@@ -4803,9 +4803,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d6a59c60ae57d46beb43596fa5db1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  miniLevelPrefabs:
-  - {fileID: 7608597789408355191, guid: 6f4c47338b2e5264dac48617b5763297, type: 3}
+  levels:
+  - {fileID: 11400000, guid: 33401be6f4288b241a0e4c2b900f3bd0, type: 2}
+  - {fileID: 11400000, guid: e182124b33a97764ebb9e59851582362, type: 2}
+  - {fileID: 11400000, guid: 950bce5f54168ae4fa684a4d6bba5e82, type: 2}
+  - {fileID: 11400000, guid: 5af106695d400b148b77fad35e887053, type: 2}
+  - {fileID: 11400000, guid: b47335ae4d6f0564fb2acbbbf0727196, type: 2}
   miniLevelSpawnPoint: {fileID: 1127849026}
+  nextLevelButton: {fileID: 8971764798731646930}
+  previousLevelButton: {fileID: 5695740565754990249}
   backgroundGenerator: {fileID: 8236574627812582660}
 --- !u!1 &3409784411501448725
 GameObject:
