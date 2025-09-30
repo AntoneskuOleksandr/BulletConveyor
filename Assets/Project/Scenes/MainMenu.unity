@@ -385,7 +385,7 @@ GameObject:
   - component: {fileID: 984083665}
   - component: {fileID: 984083664}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: BackGroundCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -499,12 +499,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1127849025}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -540, y: -960, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 9108246689381878079}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1127849027
 MonoBehaviour:
@@ -1091,7 +1091,7 @@ GameObject:
   - component: {fileID: 2980914072223390420}
   - component: {fileID: 2481424449270395978}
   m_Layer: 5
-  m_Name: BottomButtonsBackGround
+  m_Name: BottomButtonsBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1454,7 +1454,7 @@ GameObject:
   - component: {fileID: 3121057505398675317}
   - component: {fileID: 1336589539651453953}
   m_Layer: 5
-  m_Name: MainCanvas
+  m_Name: GeneralCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1589,8 +1589,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3782793439761793104}
   - {fileID: 9108246689381878079}
+  - {fileID: 3782793439761793104}
   - {fileID: 4451737226665424941}
   m_Father: {fileID: 7497639412101259997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5110,7 +5110,7 @@ GameObject:
   - component: {fileID: 8386652895021475402}
   - component: {fileID: 1505917302188341360}
   m_Layer: 5
-  m_Name: MainCanvas
+  m_Name: Home Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6236,7 +6236,7 @@ GameObject:
   - component: {fileID: 686709041316024203}
   - component: {fileID: 1151601441293025577}
   m_Layer: 5
-  m_Name: GunsCanvas
+  m_Name: Weapons Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7083,6 +7083,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 751123262738795063}
+  - component: {fileID: 5682280792269053889}
   m_Layer: 5
   m_Name: MenuController
   m_TagString: Untagged
@@ -7090,6 +7091,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &5682280792269053889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5682280792269053888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d70aa6840043e394d93640d1ff0b1fc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  homePanel: {fileID: 3780419501243884184}
+  weaponsPanel: {fileID: 4938701331492661746}
+  homeButton: {fileID: 7861381494309501695}
+  weaponsButton: {fileID: 1438502833608466015}
 --- !u!224 &5691663756624014579
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8614,7 +8631,7 @@ GameObject:
   - component: {fileID: 1438502833608466015}
   - component: {fileID: 6335399792294109119}
   m_Layer: 5
-  m_Name: GunsButton
+  m_Name: WeaponsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10958,6 +10975,7 @@ RectTransform:
   - {fileID: 3063410325049139187}
   - {fileID: 1029813995025383457}
   - {fileID: 5488660198314451663}
+  - {fileID: 1127849026}
   m_Father: {fileID: 751123262738795063}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -10998,7 +11016,7 @@ GameObject:
   - component: {fileID: 7861381494309501695}
   - component: {fileID: 7616571451188816579}
   m_Layer: 5
-  m_Name: MainButton
+  m_Name: HomeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11048,4 +11066,3 @@ SceneRoots:
   - {fileID: 7497639412101259997}
   - {fileID: 1628677836}
   - {fileID: 549171882}
-  - {fileID: 1127849026}
