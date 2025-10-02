@@ -23,6 +23,8 @@ public class UpgradeWeaponPanel : MonoBehaviour
             var capturedType = panel.upgradeType;
             panel.button.onClick.AddListener(() => Upgrade(capturedType));
         }
+
+        _economyManager.OnCurrencyChanged += RefreshUI;
     }
 
     private void OnDisable()
@@ -31,6 +33,8 @@ public class UpgradeWeaponPanel : MonoBehaviour
         {
             panel.button.onClick.RemoveAllListeners();
         }
+
+        _economyManager.OnCurrencyChanged -= RefreshUI;
 
         ClosePanel();
     }
@@ -82,8 +86,6 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     private void RefreshUI()
     {
-        Debug.Log("[UpgradeWeaponPanel] Refreshing UI");
-
         foreach (var panel in upgradeParametrPanels)
             UpdatePanelState(panel);
     }
