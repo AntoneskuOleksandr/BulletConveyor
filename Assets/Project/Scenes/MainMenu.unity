@@ -772,6 +772,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currencyFlyAnimator: {fileID: 8397157842996898635}
+  upgradeWeaponPanel: {fileID: 7636716125183121862}
+  weaponsCarousel: {fileID: 8285199966934206573}
 --- !u!1 &2006239379
 GameObject:
   m_ObjectHideFlags: 0
@@ -1905,7 +1907,6 @@ GameObject:
   - component: {fileID: 969821269115541308}
   - component: {fileID: 4205908325304692690}
   - component: {fileID: 1444492675035930226}
-  - component: {fileID: 3792208983932161684}
   - component: {fileID: 7378763710118110360}
   m_Layer: 5
   m_Name: HealthUpgradeButton
@@ -2785,19 +2786,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4205908325304692690}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3792208983932161684}
-        m_TargetAssemblyTypeName: Upgrade, Assembly-CSharp
-        m_MethodName: ProductUpgrade
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1455024399280120627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3078,19 +3067,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2708649427885614908}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7904464123648875751}
-        m_TargetAssemblyTypeName: Upgrade, Assembly-CSharp
-        m_MethodName: ProductUpgrade
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!224 &1631922034339865433
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3209,7 +3186,6 @@ GameObject:
   - component: {fileID: 626648107769357901}
   - component: {fileID: 2708649427885614908}
   - component: {fileID: 1578748125693896359}
-  - component: {fileID: 7904464123648875751}
   - component: {fileID: 4858362534051949880}
   m_Layer: 5
   m_Name: DamageUpgradeButton
@@ -3567,18 +3543,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2147217429625786451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5829674343658238499}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!222 &2180010988883531992
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4752,6 +4716,7 @@ GameObject:
   - component: {fileID: 7615800728218086005}
   - component: {fileID: 6343475656913952327}
   - component: {fileID: 7636716125183121861}
+  - component: {fileID: 7636716125183121862}
   m_Layer: 5
   m_Name: UpgradePanel
   m_TagString: Untagged
@@ -5161,18 +5126,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &3792208983932161684
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 831637160659966274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3793323725009868870
 GameObject:
   m_ObjectHideFlags: 0
@@ -5224,6 +5177,7 @@ RectTransform:
   m_Children:
   - {fileID: 6216832542816459144}
   - {fileID: 2576918572341281387}
+  - {fileID: 6418126365445600369}
   m_Father: {fileID: 5424982313528089569}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.68700004, y: 0}
@@ -6654,7 +6608,6 @@ RectTransform:
   m_Children:
   - {fileID: 5204390958351745727}
   - {fileID: 151199326370090754}
-  - {fileID: 6418126365445600369}
   - {fileID: 3849571721803377415}
   m_Father: {fileID: 2404073884949406076}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7307,7 +7260,6 @@ GameObject:
   - component: {fileID: 7930706295679846596}
   - component: {fileID: 293466276249680543}
   - component: {fileID: 6542303359705588828}
-  - component: {fileID: 2147217429625786451}
   - component: {fileID: 932054840725500194}
   m_Layer: 5
   m_Name: FireRateUpgradeButton
@@ -7884,12 +7836,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5424982313528089569}
+  m_Father: {fileID: 3849571721803377415}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.163, y: 0.5}
   m_AnchorMax: {x: 0.42537218, y: 1}
-  m_AnchoredPosition: {x: -0.5999756, y: 0.5599518}
-  m_SizeDelta: {x: 0.23039246, y: -2.4640007}
+  m_AnchoredPosition: {x: -448.47144, y: 9.026199}
+  m_SizeDelta: {x: 187.02336, y: 2.8686714}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6470982812766834569
 MonoBehaviour:
@@ -8031,19 +7983,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 293466276249680543}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2147217429625786451}
-        m_TargetAssemblyTypeName: Upgrade, Assembly-CSharp
-        m_MethodName: ProductUpgrade
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &6550273760543139648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8278,7 +8218,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ef1eb5986cec64c882f2cb7b8df5fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponsCarousel: {fileID: 8285199966934206573}
+  upgradeButton: {fileID: 1355954140334862165}
+  selectButton: {fileID: 995352049903692747}
   nextWeaponButton: {fileID: 8285970797995662720}
   previousWeaponButton: {fileID: 5977647289751700446}
 --- !u!1 &6695821495782855297
@@ -9388,6 +9329,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationDuration: 0.3
+--- !u!114 &7636716125183121862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3361020093529283536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4179763d103072b439ae0c25e7c84202, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageUpgradeButton: {fileID: 1578748125693896359}
+  fireRateUpgradeButton: {fileID: 6542303359705588828}
+  healthUpgradeButton: {fileID: 1444492675035930226}
 --- !u!114 &7688144890772171136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9540,7 +9496,7 @@ GameObject:
   - component: {fileID: 995352049903692747}
   - component: {fileID: 8908097815962841001}
   m_Layer: 5
-  m_Name: SelectGunButton
+  m_Name: SelectButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9638,18 +9594,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &7904464123648875751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1706199233182125298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!222 &7930706295679846596
 CanvasRenderer:
   m_ObjectHideFlags: 0

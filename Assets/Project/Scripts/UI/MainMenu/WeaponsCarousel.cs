@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using System;
 
 public class WeaponsCarousel : MonoBehaviour
 {
@@ -16,11 +17,13 @@ public class WeaponsCarousel : MonoBehaviour
     [SerializeField] private Ease moveEase = Ease.OutQuad;
     [SerializeField] private Ease rotateEase = Ease.OutQuad;
 
-    private int currentIndex;
+    public event Action<WeaponSO> OnWeaponChanged;
+
+    private int currentIndex = -1;
     private GameObject currentWeapon;
     private bool isAnimating;
 
-    private void OnEnable() => ShowWeapon(0, instant: true);
+    private void OnEnable() => ShowGun(0);
 
     private void OnDisable()
     {
@@ -54,19 +57,8 @@ public class WeaponsCarousel : MonoBehaviour
         AnimateIn(currentWeapon, toRight);
 
         currentIndex = newIndex;
-    }
 
-    private void ShowWeapon(int index, bool instant = false, bool toRight = true)
-    {
-        KillTweens();
-        if (currentWeapon != null) Destroy(currentWeapon);
-
-        currentWeapon = CreateWeapon(index);
-
-        if (!instant)
-            AnimateIn(currentWeapon, toRight, true);
-
-        currentIndex = index;
+        OnWeaponChanged?.Invoke(weapons[currentIndex]);
     }
 
     private GameObject CreateWeapon(int index)

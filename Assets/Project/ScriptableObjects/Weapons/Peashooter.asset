@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: Peashooter
   m_EditorClassIdentifier: 
+  WeaponId: 3
+  WeaponName: Peashooter
   WeaponGO: {fileID: 2243424952249528788, guid: f5ee27f5b57cf5f4dae08ce42cce9b17,
     type: 3}
-  WeaponName: Peashooter
+  baseDamage: 0
+  baseFireRate: 0
+  baseHealth: 0
+  upgradeLevels: []

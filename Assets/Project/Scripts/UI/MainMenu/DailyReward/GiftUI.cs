@@ -61,7 +61,7 @@ public class GiftUI : MonoBehaviour
     {
         if (!_timerManager.CanTrigger(TIMER_KEY)) return;
 
-        _economyManager.AddMoney(rewardCoins, claimButton.GetComponent<RectTransform>(), true);
+        _economyManager.AddCurrency(rewardCoins, true, claimButton.GetComponent<RectTransform>());
 
         _timerManager.Trigger(TIMER_KEY);
         UpdateUI();

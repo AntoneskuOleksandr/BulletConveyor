@@ -12,5 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: Artillery
   m_EditorClassIdentifier: 
-  WeaponGO: {fileID: 537084489268377665, guid: 7a8bf8822dfee0743ad74eea85eb9d51, type: 3}
+  WeaponId: 0
   WeaponName: Artillery
+  WeaponGO: {fileID: 537084489268377665, guid: 7a8bf8822dfee0743ad74eea85eb9d51, type: 3}
+  baseDamage: 0
+  baseFireRate: 0
+  baseHealth: 0
+  upgradeLevels: []

@@ -241,7 +241,7 @@ public class WheelOfFortuneUI : MonoBehaviour
         if (currentWinningIndex == null) return;
 
         int reward = segments[currentWinningIndex.Value].reward;
-        _economy.AddMoney(reward, this.GetComponent<RectTransform>(), true);
+        _economy.AddCurrency(reward, true, this.GetComponent<RectTransform>());
 
         ResetHighlights();
         wheelPanel.SetActive(false);

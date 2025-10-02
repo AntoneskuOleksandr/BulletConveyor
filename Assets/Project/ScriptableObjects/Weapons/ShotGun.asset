@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: ShotGun
   m_EditorClassIdentifier: 
+  WeaponId: 5
+  WeaponName: ShotGun
   WeaponGO: {fileID: 4828056898913149767, guid: 2e7e4dd9444a0bd4b880337ea7a9bbf6,
     type: 3}
-  WeaponName: ShotGun
+  baseDamage: 0
+  baseFireRate: 0
+  baseHealth: 0
+  upgradeLevels: []

@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: RailGun
   m_EditorClassIdentifier: 
+  WeaponId: 4
+  WeaponName: RailGun
   WeaponGO: {fileID: 9119458496086393018, guid: 8651b846820e0da469d7eac898b86e4a,
     type: 3}
-  WeaponName: RailGun
+  baseDamage: 0
+  baseFireRate: 0
+  baseHealth: 0
+  upgradeLevels: []

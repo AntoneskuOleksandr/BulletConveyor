@@ -10,13 +10,13 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void Awake()
     {
-        _economy.OnMoneyChanged += UpdateMoneyDisplay;
+        _economy.OnCurrencyChanged += UpdateMoneyDisplay;
 
         UpdateMoneyDisplay();
     }
 
     private void UpdateMoneyDisplay()
     {
-        moneyText.text = _economy.Money.ToString();
+        moneyText.text = _economy.Currency.ToString();
     }
 }

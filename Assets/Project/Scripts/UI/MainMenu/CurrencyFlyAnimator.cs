@@ -85,7 +85,7 @@ public class CurrencyFlyAnimator : MonoBehaviour
                 .OnComplete(() =>
                 {
                     Destroy(icon.gameObject);
-                    _economyManager?.AddMoneyDirect(reward);
+                    _economyManager?.AddCurrencyDirect(reward);
                 });
 
             yield return new WaitForSeconds(totalAnimationTime / visualCoins);

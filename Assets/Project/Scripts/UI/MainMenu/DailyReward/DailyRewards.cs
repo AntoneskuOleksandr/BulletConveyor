@@ -128,7 +128,7 @@ public class DailyRewards : MonoBehaviour
 
         if (reward.type == Reward.RewardType.COIN)
         {
-            _economyManager.AddMoney(reward.value, rewardPrefabs[rewardIndex].GetComponent<RectTransform>(), true);
+            _economyManager.AddCurrency(reward.value, true, rewardPrefabs[rewardIndex].GetComponent<RectTransform>());
         }
 
         _timerManager.Trigger(TIMER_KEY);

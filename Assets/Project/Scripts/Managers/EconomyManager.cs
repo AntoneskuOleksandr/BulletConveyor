@@ -4,34 +4,52 @@ using Zenject;
 
 public class EconomyManager
 {
-    public event Action OnMoneyChanged;
-    public int Money { get; private set; }
+    public event Action OnCurrencyChanged;
 
-    [Inject] private CurrencyFlyAnimator _animator;
+    [Inject] private DataManager _dataManager;
+    [Inject] private ICurrencyWriter _writer;
 
-    public void AddMoney(int amount, RectTransform fromUI = null, bool useAnimation = true)
+    private CurrencyFlyAnimator _animator;
+
+    private PlayerData PlayerData => _dataManager.PlayerData;
+    public int Currency => PlayerData.Currency;
+
+    public void SetAnimator(CurrencyFlyAnimator animator)
     {
-        if (useAnimation && fromUI != null && amount > 0)
+        _animator = animator;
+    }
+
+    public void AddCurrency(int amount, bool useAnimation = false, RectTransform fromUI = null)
+    {
+        if (amount <= 0) return;
+
+        if (useAnimation && fromUI != null && _animator != null)
         {
             _animator.AnimateCurrencyGain(amount, fromUI);
         }
         else
-        {
-            AddMoneyDirect(amount);
-        }
+            AddCurrencyDirect(amount);
     }
 
-    public void AddMoneyDirect(int amount)
+    public void AddCurrencyDirect(int amount)
     {
-        Money += amount;
-        OnMoneyChanged?.Invoke();
+        if (amount <= 0) return;
+
+        _writer.SetCurrency(PlayerData.Currency + amount);
+
+        OnCurrencyChanged?.Invoke();
+        _dataManager.Save();
     }
 
-    public bool SpendMoney(int amount)
+    public bool SpendCurrency(int amount)
     {
-        if (Money < amount) return false;
-        Money -= amount;
-        OnMoneyChanged?.Invoke();
+        if (PlayerData.Currency < amount)
+            return false;
+
+        _writer.SetCurrency(PlayerData.Currency - amount);
+
+        OnCurrencyChanged?.Invoke();
+        _dataManager.Save();
         return true;
     }
 }
