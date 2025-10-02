@@ -23,12 +23,22 @@ public class WeaponsCarousel : MonoBehaviour
     private GameObject currentWeapon;
     private bool isAnimating;
 
-    private void OnEnable() => ShowGun(0);
+    private void OnEnable()
+    {
+        if (weapons == null || weapons.Length == 0)
+        {
+            Debug.LogWarning("[WeaponsCarousel] No weapons assigned!");
+            return;
+        }
+
+        ShowGun(0);
+    }
 
     private void OnDisable()
     {
         KillTweens();
         if (currentWeapon != null) Destroy(currentWeapon);
+        currentIndex = -1;
         foreach (Transform child in weaponSpawnPoint) Destroy(child.gameObject);
     }
 

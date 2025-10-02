@@ -59,6 +59,5 @@ public class DataManager
         }
     }
 
-    private string GetPath() =>
-        Path.Combine(Application.persistentDataPath, "playerdata.json");
+    private string GetPath() => Path.Combine(Application.persistentDataPath, "playerdata.json");
 }

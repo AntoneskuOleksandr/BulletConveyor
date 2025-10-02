@@ -18,4 +18,24 @@ MonoBehaviour:
   baseDamage: 0
   baseFireRate: 0
   baseHealth: 0
-  upgradeLevels: []
+  upgradeLevels:
+  - cost: 1
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 2
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 3
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 4
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 5
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3

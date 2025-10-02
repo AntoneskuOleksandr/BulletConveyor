@@ -15,7 +15,7 @@ public class WeaponsPanel : MonoBehaviour
     [SerializeField] private Button nextWeaponButton;
     [SerializeField] private Button previousWeaponButton;
 
-    private void OnEnable()
+    private void Awake()
     {
         nextWeaponButton.onClick.AddListener(() => weaponsCarousel.Next());
         previousWeaponButton.onClick.AddListener(() => weaponsCarousel.Prev());
@@ -24,7 +24,7 @@ public class WeaponsPanel : MonoBehaviour
         weaponsCarousel.OnWeaponChanged += upgradeWeaponPanel.SetWeapon;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         nextWeaponButton.onClick.RemoveAllListeners();
         previousWeaponButton.onClick.RemoveAllListeners();

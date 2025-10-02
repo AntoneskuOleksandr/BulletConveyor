@@ -823,7 +823,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6032196c2217c774ba6f93ac4058326d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardCoins: 100
+  rewardCoins: 1000
   cooldownHours: 0.0013888889
   claimButton: {fileID: 8852336481423144200}
   cooldownText: {fileID: 9047949822768700442}
@@ -1732,7 +1732,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -4090,7 +4090,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -4267,7 +4267,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -5549,7 +5549,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -5798,7 +5798,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -8085,7 +8085,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -8388,7 +8388,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -8805,7 +8805,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -9341,9 +9341,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4179763d103072b439ae0c25e7c84202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageUpgradeButton: {fileID: 1578748125693896359}
-  fireRateUpgradeButton: {fileID: 6542303359705588828}
-  healthUpgradeButton: {fileID: 1444492675035930226}
+  upgradeParametrPanels:
+  - upgradeType: 0
+    button: {fileID: 1578748125693896359}
+    priceText: {fileID: 6824649529165007462}
+    progressBar: {fileID: 3548232788287447819}
+  - upgradeType: 1
+    button: {fileID: 6542303359705588828}
+    priceText: {fileID: 6576948028064458108}
+    progressBar: {fileID: 8689332120551496819}
+  - upgradeType: 2
+    button: {fileID: 1444492675035930226}
+    priceText: {fileID: 8240053635053479558}
+    progressBar: {fileID: 1871386965807405872}
 --- !u!114 &7688144890772171136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10002,7 +10012,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

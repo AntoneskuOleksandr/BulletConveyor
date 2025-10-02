@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -7,40 +10,37 @@ public class UpgradeWeaponPanel : MonoBehaviour
     [Inject] private DataManager _dataManager;
     [Inject] private EconomyManager _economyManager;
 
-    [Header("Buttons")]
-    [SerializeField] private Button damageUpgradeButton;
-    [SerializeField] private Button fireRateUpgradeButton;
-    [SerializeField] private Button healthUpgradeButton;
+    [Header("Upgrade Panels")]
+    [SerializeField] private List<UpgradeParametrPanel> upgradeParametrPanels;
 
     private WeaponSO currentWeapon;
     private bool isOpen = false;
 
-    private void Awake()
+    private void OnEnable()
     {
-        damageUpgradeButton.onClick.AddListener(() =>
+        foreach (var panel in upgradeParametrPanels)
         {
-            Upgrade(UpgradeType.Damage);
-        });
-        fireRateUpgradeButton.onClick.AddListener(() =>
+            var capturedType = panel.upgradeType;
+            panel.button.onClick.AddListener(() => Upgrade(capturedType));
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var panel in upgradeParametrPanels)
         {
-            Upgrade(UpgradeType.FireRate);
-        });
-        healthUpgradeButton.onClick.AddListener(() =>
-        {
-            Upgrade(UpgradeType.Health);
-        });
+            panel.button.onClick.RemoveAllListeners();
+        }
+
+        ClosePanel();
     }
 
     public void OnUpgradeButtonClick()
     {
         if (isOpen)
-        {
             ClosePanel();
-        }
         else
-        {
             OpenPanel();
-        }
     }
 
     public void SetWeapon(WeaponSO weapon)
@@ -52,14 +52,8 @@ public class UpgradeWeaponPanel : MonoBehaviour
     private void Upgrade(UpgradeType upgradeType)
     {
         var progress = _dataManager.PlayerData.GetWeaponProgress(currentWeapon.WeaponId);
-        int level = upgradeType switch
-        {
-            UpgradeType.Damage => progress.damageLevel,
-            UpgradeType.FireRate => progress.fireRateLevel,
-            UpgradeType.Health => progress.healthLevel,
-            _ => 0
-        };
 
+        int level = GetLevel(progress, upgradeType);
         if (level >= currentWeapon.upgradeLevels.Length)
             return;
 
@@ -74,13 +68,12 @@ public class UpgradeWeaponPanel : MonoBehaviour
         RefreshUI();
     }
 
-
-
     private void OpenPanel()
     {
         gameObject.SetActive(true);
         isOpen = true;
     }
+
     private void ClosePanel()
     {
         gameObject.SetActive(false);
@@ -89,30 +82,55 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     private void RefreshUI()
     {
-        UpdateButtonState(damageUpgradeButton, UpgradeType.Damage);
-        UpdateButtonState(fireRateUpgradeButton, UpgradeType.FireRate);
-        UpdateButtonState(healthUpgradeButton, UpgradeType.Health);
+        Debug.Log("[UpgradeWeaponPanel] Refreshing UI");
+
+        foreach (var panel in upgradeParametrPanels)
+            UpdatePanelState(panel);
     }
 
-    private void UpdateButtonState(Button button, UpgradeType type)
+    private void UpdatePanelState(UpgradeParametrPanel panel)
     {
         var progress = _dataManager.PlayerData.GetWeaponProgress(currentWeapon.WeaponId);
-        int level = type switch
+        int level = GetLevel(progress, panel.upgradeType);
+
+        if (level >= currentWeapon.upgradeLevels.Length)
+        {
+            panel.button.interactable = false;
+            panel.priceText.text = "MAX";
+            if (panel.progressBar != null)
+                panel.progressBar.fillAmount = 1f;
+            return;
+        }
+
+        int cost = currentWeapon.upgradeLevels[level].cost;
+
+        panel.button.interactable = _dataManager.PlayerData.Currency >= cost;
+        panel.priceText.text = cost.ToString();
+
+        if (panel.progressBar != null)
+        {
+            float fill = (float)level / currentWeapon.upgradeLevels.Length;
+            panel.progressBar.fillAmount = fill;
+        }
+    }
+
+    private int GetLevel(WeaponProgress progress, UpgradeType type)
+    {
+        return type switch
         {
             UpgradeType.Damage => progress.damageLevel,
             UpgradeType.FireRate => progress.fireRateLevel,
             UpgradeType.Health => progress.healthLevel,
             _ => 0
         };
-
-        if (level >= currentWeapon.upgradeLevels.Length)
-        {
-            button.interactable = false;
-            return;
-        }
-
-        int cost = currentWeapon.upgradeLevels[level].cost;
-        button.interactable = _dataManager.PlayerData.Currency >= cost;
     }
+}
 
+[Serializable]
+public class UpgradeParametrPanel
+{
+    public UpgradeType upgradeType;
+    public Button button;
+    public TMP_Text priceText;
+    public Image progressBar;
 }
