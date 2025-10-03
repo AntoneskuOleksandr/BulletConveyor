@@ -7,8 +7,8 @@ using Zenject;
 
 public class UpgradeWeaponPanel : MonoBehaviour
 {
-    [Inject] private DataManager _dataManager;
-    [Inject] private EconomyManager _economyManager;
+    [Inject] private WeaponsService _weaponsService;
+    [Inject] private EconomyService _economyService;
 
     [Header("Upgrade Panels")]
     [SerializeField] private List<UpgradeParametrPanel> upgradeParametrPanels;
@@ -24,27 +24,25 @@ public class UpgradeWeaponPanel : MonoBehaviour
             panel.button.onClick.AddListener(() => Upgrade(capturedType));
         }
 
-        _economyManager.OnCurrencyChanged += RefreshUI;
+        _economyService.OnCurrencyChanged += RefreshUI;
+        _weaponsService.OnWeaponsChanged += RefreshUI;
     }
 
     private void OnDisable()
     {
         foreach (var panel in upgradeParametrPanels)
-        {
             panel.button.onClick.RemoveAllListeners();
-        }
 
-        _economyManager.OnCurrencyChanged -= RefreshUI;
+        _economyService.OnCurrencyChanged -= RefreshUI;
+        _weaponsService.OnWeaponsChanged -= RefreshUI;
 
         ClosePanel();
     }
 
     public void OnUpgradeButtonClick()
     {
-        if (isOpen)
-            ClosePanel();
-        else
-            OpenPanel();
+        if (isOpen) ClosePanel();
+        else OpenPanel();
     }
 
     public void SetWeapon(WeaponSO weapon)
@@ -55,21 +53,11 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     private void Upgrade(UpgradeType upgradeType)
     {
-        var progress = _dataManager.PlayerData.GetWeaponProgress(currentWeapon.WeaponId);
+        if (currentWeapon == null) return;
 
-        int level = GetLevel(progress, upgradeType);
-        if (level >= currentWeapon.upgradeLevels.Length)
-            return;
-
-        int cost = currentWeapon.upgradeLevels[level].cost;
-
-        if (!_economyManager.SpendCurrency(cost))
-            return;
-
-        progress.Upgrade(upgradeType);
-        _dataManager.Save();
-
-        RefreshUI();
+        bool success = _weaponsService.UpgradeWeapon(currentWeapon, upgradeType);
+        if (success)
+            RefreshUI();
     }
 
     private void OpenPanel()
@@ -86,13 +74,16 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     private void RefreshUI()
     {
+        if (currentWeapon == null) return;
+
+        var progress = _weaponsService.GetWeaponProgress(currentWeapon.WeaponId);
+
         foreach (var panel in upgradeParametrPanels)
-            UpdatePanelState(panel);
+            UpdatePanelState(panel, progress);
     }
 
-    private void UpdatePanelState(UpgradeParametrPanel panel)
+    private void UpdatePanelState(UpgradeParametrPanel panel, WeaponProgress progress)
     {
-        var progress = _dataManager.PlayerData.GetWeaponProgress(currentWeapon.WeaponId);
         int level = GetLevel(progress, panel.upgradeType);
 
         if (level >= currentWeapon.upgradeLevels.Length)
@@ -106,7 +97,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
         int cost = currentWeapon.upgradeLevels[level].cost;
 
-        panel.button.interactable = _dataManager.PlayerData.Currency >= cost;
+        panel.button.interactable = _economyService.Currency >= cost;
         panel.priceText.text = cost.ToString();
 
         if (panel.progressBar != null)
@@ -118,6 +109,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     private int GetLevel(WeaponProgress progress, UpgradeType type)
     {
+        Debug.Log($"Getting level for upgrade type: {type}, progress: {progress}");
         return type switch
         {
             UpgradeType.Damage => progress.damageLevel,

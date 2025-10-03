@@ -19,9 +19,9 @@ public class DataManager
 
     public ICurrencyWriter CurrencyWriter => PlayerData;
 
-    public void UpgradeWeapon(string weaponId, UpgradeType type)
+    public void UpgradeWeapon(int weaponId, UpgradeType type)
     {
-        var weapon = PlayerData.GetWeaponProgress(weaponId);
+        var weapon = PlayerData.Weapons.GetProgress(weaponId);
         weapon.Upgrade(type);
         Save();
     }
@@ -34,27 +34,24 @@ public class DataManager
 
     public void Load()
     {
-        var path = GetPath();
+        string path = GetPath();
         if (File.Exists(path))
         {
+            Debug.Log($"Loading player data from {path}");
             string json = File.ReadAllText(path);
             _playerData = JsonUtility.FromJson<PlayerData>(json);
         }
         else
         {
+            Debug.Log("No save file found, creating new player data");
             _playerData = new PlayerData();
 
             // создаём прогресс под все оружия из базы
-            foreach (var w in _weaponDb.weapons)
+            foreach (WeaponSO weapon in _weaponDb.weapons)
             {
-                _playerData.weapons.Add(new WeaponProgress
-                {
-                    weaponId = w.WeaponId,
-                    damageLevel = 0,
-                    fireRateLevel = 0,
-                    healthLevel = 0
-                });
+                _playerData.Weapons.AddWeapon(weapon.WeaponId);
             }
+
             Save();
         }
     }

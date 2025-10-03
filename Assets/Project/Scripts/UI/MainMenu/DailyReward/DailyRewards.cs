@@ -28,7 +28,7 @@ public class DailyRewards : MonoBehaviour
     private List<RewardPrefab> rewardPrefabs;
 
     [Inject] private TimerManager _timerManager;
-    [Inject] private EconomyManager _economyManager;
+    [Inject] private EconomyService _economy;
 
     private int CurrentStreak
     {
@@ -128,7 +128,7 @@ public class DailyRewards : MonoBehaviour
 
         if (reward.type == Reward.RewardType.COIN)
         {
-            _economyManager.AddCurrency(reward.value, true, rewardPrefabs[rewardIndex].GetComponent<RectTransform>());
+            _economy.AddCurrency(reward.value, true, rewardPrefabs[rewardIndex].GetComponent<RectTransform>());
         }
 
         _timerManager.Trigger(TIMER_KEY);

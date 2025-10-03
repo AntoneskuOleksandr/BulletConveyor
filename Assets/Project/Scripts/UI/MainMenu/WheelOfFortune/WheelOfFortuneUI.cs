@@ -51,7 +51,7 @@ public class WheelOfFortuneUI : MonoBehaviour
     private WheelSegmentUI[] segmentUIs;
     private int? currentWinningIndex;
 
-    [Inject] private EconomyManager _economy;
+    [Inject] private EconomyService _economy;
     [Inject] private TimerManager _timerManager;
 
     private void Awake()

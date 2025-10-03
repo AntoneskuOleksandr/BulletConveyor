@@ -6,13 +6,18 @@ public class MainMenuUIManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text moneyText;
 
-    [Inject] private EconomyManager _economy;
+    [Inject] private EconomyService _economy;
 
     private void Awake()
     {
         _economy.OnCurrencyChanged += UpdateMoneyDisplay;
 
         UpdateMoneyDisplay();
+    }
+
+    private void OnDestroy()
+    {
+        _economy.OnCurrencyChanged -= UpdateMoneyDisplay;
     }
 
     private void UpdateMoneyDisplay()

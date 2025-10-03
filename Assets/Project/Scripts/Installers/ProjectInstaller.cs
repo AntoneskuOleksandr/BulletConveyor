@@ -13,6 +13,6 @@ public class ProjectInstaller : MonoInstaller
 
         Container.Bind<ICurrencyWriter>().FromResolveGetter<DataManager>(dm => dm.CurrencyWriter);
 
-        Container.Bind<EconomyManager>().AsSingle();
+        Container.Bind<EconomyService>().AsSingle();
     }
 }

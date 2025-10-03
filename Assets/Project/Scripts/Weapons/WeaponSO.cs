@@ -12,7 +12,7 @@ public class UpgradeLevel
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Scriptable Objects/Weapon")]
 public class WeaponSO : ScriptableObject
 {
-    public string WeaponId;
+    public int WeaponId;
     public string WeaponName;
     public GameObject WeaponGO;
 
