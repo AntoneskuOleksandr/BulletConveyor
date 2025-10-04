@@ -1,23 +1,43 @@
+using UnityEngine;
 using Zenject;
 
-public class DataManager
+public class DataManager : IInitializable
 {
-    private readonly DataRepository _repo;
-    private readonly WeaponDatabaseSO _weaponDb;
+    private readonly DataRepository _repository;
+    private readonly WeaponDatabaseSO _db;
 
-    public PlayerData Data { get; private set; }
-    public PlayerStateView ReadOnly { get; private set; }
+    public PlayerData PlayerData { get; private set; }
 
-    [Inject]
-    public DataManager(DataRepository repo, WeaponDatabaseSO weaponDb)
+    public DataManager(DataRepository repository, WeaponDatabaseSO db)
     {
-        _repo = repo;
-        _weaponDb = weaponDb;
+        _repository = repository;
+        _db = db;
     }
 
     public void Initialize()
     {
-        Data = _repo.Load();
-        ReadOnly = new PlayerStateView(Data);
+        PlayerData = _repository.Load();
+        if (PlayerData == null)
+        {
+            PlayerData = new PlayerData();
+            _repository.Save(PlayerData);
+            Debug.Log("[DataManager] Новый PlayerData создан");
+        }
+        else
+        {
+            Debug.Log("[DataManager] PlayerData успешно загружен");
+        }
+
+        // Убедимся, что оружие синхронизировано с базой
+        EnsureAllWeaponsExist();
+    }
+
+    private void EnsureAllWeaponsExist()
+    {
+        foreach (var weapon in _db.weapons)
+        {
+            if (PlayerData.weapons.FindIndex(w => w.id == weapon.WeaponId) < 0)
+                PlayerData.weapons.Add(new WeaponEntry { id = weapon.WeaponId });
+        }
     }
 }

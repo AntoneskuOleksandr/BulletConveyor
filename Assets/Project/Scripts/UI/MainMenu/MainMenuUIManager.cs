@@ -8,7 +8,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     [Inject] private EconomyService _economy;
 
-    private void Awake()
+    private void Start()
     {
         _economy.OnCurrencyChanged += UpdateMoneyDisplay;
 

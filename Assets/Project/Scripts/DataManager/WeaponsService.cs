@@ -8,38 +8,38 @@ public class WeaponsService
     public event Action OnWeaponsChanged;
     public event Action OnSelectionChanged;
 
-    private readonly PlayerData _data;
+    private readonly DataManager _dataManager;
     private readonly WeaponDatabaseSO _db;
     private readonly EconomyService _economy;
 
+    private PlayerData Data => _dataManager.PlayerData;
+
     [Inject]
-    public WeaponsService(PlayerData data, WeaponDatabaseSO db, EconomyService economy)
+    public WeaponsService(DataManager dataManager, WeaponDatabaseSO db, EconomyService economy)
     {
-        _data = data;
+        _dataManager = dataManager;
         _db = db;
         _economy = economy;
     }
 
-    // ----------- Чтение прогресса -----------
     public WeaponProgressRO GetProgressRO(int id)
     {
-        var e = _data.weapons.Find(w => w.id == id);
-        return e.id == 0 && id != 0
+        var entry = Data.weapons.Find(w => w.id == id);
+        return entry.id == 0 && id != 0
             ? new WeaponProgressRO(id, 0, 0, 0)
-            : new WeaponProgressRO(e.id, e.dmgLvl, e.fireRateLvl, e.healthLvl);
+            : new WeaponProgressRO(entry.id, entry.dmgLvl, entry.fireRateLvl, entry.healthLvl);
     }
 
-    // ----------- Апгрейд -----------
     public bool TryUpgrade(WeaponSO weapon, UpgradeType type)
     {
-        int idx = _data.weapons.FindIndex(w => w.id == weapon.WeaponId);
+        int idx = Data.weapons.FindIndex(w => w.id == weapon.WeaponId);
         if (idx < 0)
         {
-            _data.weapons.Add(new WeaponEntry { id = weapon.WeaponId });
-            idx = _data.weapons.Count - 1;
+            Data.weapons.Add(new WeaponEntry { id = weapon.WeaponId });
+            idx = Data.weapons.Count - 1;
         }
 
-        var entry = _data.weapons[idx];
+        var entry = Data.weapons[idx];
         int level = type switch
         {
             UpgradeType.Damage => entry.dmgLvl,
@@ -48,12 +48,8 @@ public class WeaponsService
             _ => 0
         };
 
-        if (weapon.upgradeLevels == null || level >= weapon.upgradeLevels.Length)
-            return false;
-
-        int cost = weapon.upgradeLevels[level].cost;
-        if (!_economy.TrySpend(cost))
-            return false;
+        if (level >= weapon.upgradeLevels.Length) return false;
+        if (!_economy.TrySpend(weapon.upgradeLevels[level].cost)) return false;
 
         switch (type)
         {
@@ -62,58 +58,37 @@ public class WeaponsService
             case UpgradeType.Health: entry.healthLvl++; break;
         }
 
-        _data.weapons[idx] = entry;
+        Data.weapons[idx] = entry;
         OnWeaponsChanged?.Invoke();
         return true;
     }
 
-    // ----------- Выбор оружия -----------
-    public IReadOnlyList<int> GetSelectedWeaponIds() => _data.selectedWeaponIds.AsReadOnly();
-
     public List<WeaponSO> GetSelectedWeapons()
     {
-        var res = new List<WeaponSO>();
-        foreach (var id in _data.selectedWeaponIds)
+        var result = new List<WeaponSO>();
+        foreach (var id in Data.selectedWeaponIds)
         {
             var so = _db.weapons.Find(w => w.WeaponId == id);
             if (so != null)
-                res.Add(so);
+                result.Add(so);
         }
-        return res;
+        return result;
     }
-
-    public bool IsSelected(int id) => _data.selectedWeaponIds.Contains(id);
 
     public bool SelectWeapon(int id, int maxSlots = 3)
     {
-        if (_data.selectedWeaponIds.Contains(id)) return false;
-        if (_data.selectedWeaponIds.Count >= maxSlots) return false;
-        _data.selectedWeaponIds.Add(id);
+        if (Data.selectedWeaponIds.Contains(id) || Data.selectedWeaponIds.Count >= maxSlots)
+            return false;
+
+        Data.selectedWeaponIds.Add(id);
         OnSelectionChanged?.Invoke();
         return true;
     }
 
     public bool DeselectWeapon(int id)
     {
-        if (!_data.selectedWeaponIds.Remove(id)) return false;
+        if (!Data.selectedWeaponIds.Remove(id)) return false;
         OnSelectionChanged?.Invoke();
         return true;
-    }
-
-    public void ClearSelection()
-    {
-        if (_data.selectedWeaponIds.Count == 0) return;
-        _data.selectedWeaponIds.Clear();
-        OnSelectionChanged?.Invoke();
-    }
-
-    // ----------- Инициализация при старте -----------
-    public void EnsureAllWeaponsExist()
-    {
-        foreach (var w in _db.weapons)
-        {
-            if (_data.weapons.FindIndex(e => e.id == w.WeaponId) < 0)
-                _data.weapons.Add(new WeaponEntry { id = w.WeaponId });
-        }
     }
 }

@@ -7,8 +7,9 @@ public class DataRepository
 
     public PlayerData Load()
     {
+        Debug.Log($"[DataRepository] Loading PlayerData from {_path}");
         if (!File.Exists(_path))
-            return new PlayerData();
+            return null;
 
         string json = File.ReadAllText(_path);
         return JsonUtility.FromJson<PlayerData>(json);
@@ -16,6 +17,7 @@ public class DataRepository
 
     public void Save(PlayerData data)
     {
+        Debug.Log($"[DataRepository] Saving PlayerData to {_path}");
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(_path, json);
     }

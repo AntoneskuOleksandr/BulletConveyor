@@ -10,36 +10,28 @@ public class MainMenuInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        // ---------- UI Singletons ----------
-        Container.Bind<CurrencyFlyAnimator>().FromInstance(currencyFlyAnimator).AsSingle();
-        Container.Bind<UpgradeWeaponPanel>().FromInstance(upgradeWeaponPanel).AsSingle();
-        Container.Bind<WeaponsCarousel>().FromInstance(weaponsCarousel).AsSingle();
+        Debug.Log("[MainMenuInstaller] Installing main menu bindings...");
+        Container.BindInstance(currencyFlyAnimator).AsSingle();
+        Container.BindInstance(upgradeWeaponPanel).AsSingle();
+        Container.BindInstance(weaponsCarousel).AsSingle();
 
-        // ---------- Managers ----------
-        Container.Bind<TimerManager>().AsSingle();
-
-        // ---------- Post-Inject связывание EconomyService → CurrencyFlyAnimator ----------
         Container.BindInterfacesAndSelfTo<EconomyAnimatorLinker>().AsSingle()
             .WithArguments(currencyFlyAnimator);
+
+        Debug.Log("[MainMenuInstaller] Main menu bindings installed.");
     }
 }
 
-/// <summary>
-/// После инициализации связывает EconomyService с CurrencyFlyAnimator
-/// </summary>
 public class EconomyAnimatorLinker : IInitializable
 {
-    private readonly EconomyService _economyService;
+    private readonly EconomyService _economy;
     private readonly CurrencyFlyAnimator _animator;
 
-    public EconomyAnimatorLinker(EconomyService economyService, CurrencyFlyAnimator animator)
+    public EconomyAnimatorLinker(EconomyService economy, CurrencyFlyAnimator animator)
     {
-        _economyService = economyService;
+        _economy = economy;
         _animator = animator;
     }
 
-    public void Initialize()
-    {
-        _economyService.SetAnimator(_animator);
-    }
+    public void Initialize() => _economy.SetAnimator(_animator);
 }

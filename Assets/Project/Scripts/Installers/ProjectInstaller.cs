@@ -7,57 +7,21 @@ public class ProjectInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        // ---------- Core Scriptable Objects ----------
-        Container.Bind<WeaponDatabaseSO>().FromInstance(weaponDatabase).AsSingle();
-
-        // ---------- Data Layer ----------
+        Debug.Log("[ProjectInstaller] Installing project-wide bindings...");
+        // --- Core data ---
+        Container.BindInstance(weaponDatabase).AsSingle();
         Container.Bind<DataRepository>().AsSingle();
-        Container.Bind<DataManager>().AsSingle();
+        Container.BindInterfacesAndSelfTo<DataManager>().AsSingle().NonLazy();
 
-        // ---------- Services ----------
+        // --- Services ---
         Container.Bind<EconomyService>().AsSingle();
-        Container.Bind<WeaponsService>().AsSingle();
-        Container.Bind<SaveManager>().AsSingle();
+        Container.Bind<WeaponsService>().AsSingle(); 
+        Container.BindInterfacesAndSelfTo<SaveManager>().AsSingle();
 
-        // ---------- Инициализация данных ----------
-        Container.QueueForInject(this); // чтобы OnInstallerLoaded вызывался после всех Bind
 
-        // ---------- Запускаем начальную инициализацию ----------
-        Container.BindInterfacesAndSelfTo<ProjectInitializer>().AsSingle();
-    }
-}
+        // --- Optional UI-independent systems ---
+        Container.Bind<TimerManager>().AsSingle();
 
-/// <summary>
-/// Выполняет стартовую инициализацию данных и сервисов
-/// </summary>
-public class ProjectInitializer : IInitializable
-{
-    private readonly DataManager _dataManager;
-    private readonly WeaponsService _weaponsService;
-    private readonly EconomyService _economyService;
-    private readonly SaveManager _saveManager;
-
-    public ProjectInitializer(
-        DataManager dataManager,
-        WeaponsService weaponsService,
-        EconomyService economyService,
-        SaveManager saveManager)
-    {
-        _dataManager = dataManager;
-        _weaponsService = weaponsService;
-        _economyService = economyService;
-        _saveManager = saveManager;
-    }
-
-    public void Initialize()
-    {
-        // Загружаем данные игрока
-        _dataManager.Initialize();
-
-        // Создаём оружие под базу (если первый запуск)
-        _weaponsService.EnsureAllWeaponsExist();
-
-        // Подписываем SaveManager на изменения
-        _saveManager.Register(_economyService, _weaponsService);
+        Debug.Log("[ProjectInstaller] All bindings installed.");
     }
 }

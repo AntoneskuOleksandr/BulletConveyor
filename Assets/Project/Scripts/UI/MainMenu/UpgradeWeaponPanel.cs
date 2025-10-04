@@ -47,7 +47,6 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     public void SetWeapon(WeaponSO weapon)
     {
-        Debug.Log($"[UpgradeWeaponPanel] SetWeapon {weapon.WeaponId}");
         currentWeapon = weapon;
         RefreshUI();
     }
@@ -77,8 +76,6 @@ public class UpgradeWeaponPanel : MonoBehaviour
     {
         if (currentWeapon == null) return;
 
-        Debug.Log($"[UpgradeWeaponPanel] RefreshUI for weapon {currentWeapon.WeaponId}");
-
         var progress = _weaponsService.GetProgressRO(currentWeapon.WeaponId);
 
         foreach (var panel in upgradeParametrPanels)
@@ -87,7 +84,6 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     private void UpdatePanelState(UpgradeParametrPanel panel, WeaponProgressRO progress)
     {
-        Debug.Log($"[UpgradeWeaponPanel] UpdatePanelState for {panel.upgradeType}");
         int level = GetLevel(progress, panel.upgradeType);
 
         if (level >= currentWeapon.upgradeLevels.Length)
@@ -100,8 +96,6 @@ public class UpgradeWeaponPanel : MonoBehaviour
         }
 
         int cost = currentWeapon.upgradeLevels[level].cost;
-
-        Debug.Log($"[UpgradeWeaponPanel] Level: {level}, Cost: {cost}, Player Currency: {_economyService.Currency}");
 
         panel.button.interactable = _economyService.Currency >= cost;
         panel.priceText.text = cost.ToString();
