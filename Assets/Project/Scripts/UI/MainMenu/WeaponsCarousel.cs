@@ -23,7 +23,7 @@ public class WeaponsCarousel : MonoBehaviour
     private GameObject currentWeapon;
     private bool isAnimating;
 
-    private void OnEnable()
+    private void Start()
     {
         if (weapons == null || weapons.Length == 0)
         {
@@ -58,6 +58,7 @@ public class WeaponsCarousel : MonoBehaviour
 
     private void AnimateSwitch(int newIndex, bool toRight)
     {
+        Debug.Log($"[WeaponsCarousel] AnimateSwitch from {currentIndex} to {newIndex}, toRight={toRight}");
         isAnimating = true;
 
         if (currentWeapon != null)

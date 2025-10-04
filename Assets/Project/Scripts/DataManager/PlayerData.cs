@@ -1,26 +1,19 @@
 using System;
-using UnityEngine;
+using System.Collections.Generic;
 
-public interface ICurrencyWriter
+[Serializable]
+public class PlayerData
 {
-    void SetCurrency(int newValue);
+    public int currency;
+    public List<WeaponEntry> weapons = new();         // Прогресс оружия
+    public List<int> selectedWeaponIds = new();       // Выбранные пушки
 }
 
 [Serializable]
-public class PlayerData : ICurrencyWriter
+public struct WeaponEntry
 {
-    public int Currency;
-    public WeaponsData Weapons;
-
-    public PlayerData()
-    {
-        Weapons = new WeaponsData();
-    }
-
-    void ICurrencyWriter.SetCurrency(int newValue)
-    {
-        Currency = Mathf.Max(0, newValue);
-        Debug.Log($"[PlayerData] Currency set to {Currency}");
-    }
+    public int id;
+    public int dmgLvl;
+    public int fireRateLvl;
+    public int healthLvl;
 }
-

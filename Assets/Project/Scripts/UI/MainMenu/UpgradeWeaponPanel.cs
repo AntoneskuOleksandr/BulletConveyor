@@ -47,6 +47,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     public void SetWeapon(WeaponSO weapon)
     {
+        Debug.Log($"[UpgradeWeaponPanel] SetWeapon {weapon.WeaponId}");
         currentWeapon = weapon;
         RefreshUI();
     }
@@ -55,7 +56,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
     {
         if (currentWeapon == null) return;
 
-        bool success = _weaponsService.UpgradeWeapon(currentWeapon, upgradeType);
+        bool success = _weaponsService.TryUpgrade(currentWeapon, upgradeType);
         if (success)
             RefreshUI();
     }
@@ -76,14 +77,17 @@ public class UpgradeWeaponPanel : MonoBehaviour
     {
         if (currentWeapon == null) return;
 
-        var progress = _weaponsService.GetWeaponProgress(currentWeapon.WeaponId);
+        Debug.Log($"[UpgradeWeaponPanel] RefreshUI for weapon {currentWeapon.WeaponId}");
+
+        var progress = _weaponsService.GetProgressRO(currentWeapon.WeaponId);
 
         foreach (var panel in upgradeParametrPanels)
             UpdatePanelState(panel, progress);
     }
 
-    private void UpdatePanelState(UpgradeParametrPanel panel, WeaponProgress progress)
+    private void UpdatePanelState(UpgradeParametrPanel panel, WeaponProgressRO progress)
     {
+        Debug.Log($"[UpgradeWeaponPanel] UpdatePanelState for {panel.upgradeType}");
         int level = GetLevel(progress, panel.upgradeType);
 
         if (level >= currentWeapon.upgradeLevels.Length)
@@ -97,6 +101,8 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
         int cost = currentWeapon.upgradeLevels[level].cost;
 
+        Debug.Log($"[UpgradeWeaponPanel] Level: {level}, Cost: {cost}, Player Currency: {_economyService.Currency}");
+
         panel.button.interactable = _economyService.Currency >= cost;
         panel.priceText.text = cost.ToString();
 
@@ -107,14 +113,13 @@ public class UpgradeWeaponPanel : MonoBehaviour
         }
     }
 
-    private int GetLevel(WeaponProgress progress, UpgradeType type)
+    private int GetLevel(WeaponProgressRO progress, UpgradeType type)
     {
-        Debug.Log($"Getting level for upgrade type: {type}, progress: {progress}");
         return type switch
         {
-            UpgradeType.Damage => progress.damageLevel,
-            UpgradeType.FireRate => progress.fireRateLevel,
-            UpgradeType.Health => progress.healthLevel,
+            UpgradeType.Damage => progress.DamageLevel,
+            UpgradeType.FireRate => progress.FireRateLevel,
+            UpgradeType.Health => progress.HealthLevel,
             _ => 0
         };
     }

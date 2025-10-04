@@ -7,15 +7,15 @@ public class EconomyService
     public event Action OnCurrencyChanged;
 
     [Inject] private DataManager _dataManager;
-    [Inject] private ICurrencyWriter _writer;
 
     private CurrencyFlyAnimator _animator;
 
-    private PlayerData PlayerData => _dataManager.PlayerData;
-    public int Currency => PlayerData.Currency;
+    private PlayerData Data => _dataManager.Data;
+    public int Currency => Data.currency;
+
 
     /// <summary>
-    /// Связываем UI-аниматор валюты с сервисом
+    /// Привязывает UI-аниматор валюты (CurrencyFlyAnimator) к сервису.
     /// </summary>
     public void SetAnimator(CurrencyFlyAnimator animator)
     {
@@ -23,7 +23,7 @@ public class EconomyService
     }
 
     /// <summary>
-    /// Добавляем валюту с анимацией (если нужно)
+    /// Добавляет валюту (с анимацией, если нужно).
     /// </summary>
     public void AddCurrency(int amount, bool useAnimation = false, RectTransform fromUI = null)
     {
@@ -39,31 +39,26 @@ public class EconomyService
         }
     }
 
-
     /// <summary>
-    /// Добавляем валюту напрямую без анимации
+    /// Добавляет валюту напрямую без анимации.
     /// </summary>
     public void AddCurrencyDirect(int amount)
     {
         if (amount <= 0) return;
 
-        _writer.SetCurrency(PlayerData.Currency + amount);
-
-        _dataManager.Save();
+        Data.currency += amount;
         OnCurrencyChanged?.Invoke();
     }
 
     /// <summary>
-    /// Тратим валюту. Вернёт true, если успешно.
+    /// Пробует потратить валюту. Возвращает true, если успешно.
     /// </summary>
-    public bool SpendCurrency(int amount)
+    public bool TrySpend(int amount)
     {
-        if (PlayerData.Currency < amount)
-            return false;
+        if (amount <= 0) return true; // 0 не тратим
+        if (Data.currency < amount) return false;
 
-        _writer.SetCurrency(PlayerData.Currency - amount);
-
-        _dataManager.Save();
+        Data.currency -= amount;
         OnCurrencyChanged?.Invoke();
         return true;
     }
