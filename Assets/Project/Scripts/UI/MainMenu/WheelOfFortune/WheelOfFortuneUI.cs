@@ -23,7 +23,6 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI cooldownText;
 
     [Header("Wheel Settings")]
-    [SerializeField] private float wheelRadius = 300f;
     [SerializeField, Range(0f, 1f)] private float innerRadiusPercent = 0.2f;
     [SerializeField, Min(3)] private int arcResolution = 24;
     [SerializeField, Min(2)] private int radialResolution = 8;
@@ -48,8 +47,10 @@ public class WheelOfFortuneUI : MonoBehaviour
     private const string TIMER_KEY = "WheelSpin";
 
     private float currentAngle;
+    private float wheelRadius;
     private WheelSegmentUI[] segmentUIs;
     private int? currentWinningIndex;
+    private Vector2 _lastWheelSize;
 
     [Inject] private EconomyService _economy;
     [Inject] private TimerManager _timerManager;
@@ -64,12 +65,50 @@ public class WheelOfFortuneUI : MonoBehaviour
         claimButton.gameObject.SetActive(false);
 
         _timerManager.RegisterTimer(TIMER_KEY, spinCooldownHours);
+        UpdateWheelRadius();
         GenerateSegments();
     }
 
     private void Start()
     {
         StartCoroutine(UpdateCooldownRoutine());
+    }
+
+    private void OnRectTransformDimensionsChange()
+    {
+        if (wheelTransform == null)
+            return;
+
+        Vector2 currentSize = wheelTransform.rect.size;
+
+        if (Mathf.Approximately(currentSize.x, _lastWheelSize.x) &&
+            Mathf.Approximately(currentSize.y, _lastWheelSize.y))
+            return;
+
+        _lastWheelSize = currentSize;
+        UpdateWheelRadius();
+        RegenerateSegments();
+    }
+
+    private void UpdateWheelRadius()
+    {
+        wheelRadius = Mathf.Min(wheelTransform.rect.width, wheelTransform.rect.height) * 0.5f;
+    }
+
+    private void RegenerateSegments()
+    {
+        if (!Application.isPlaying)
+            return;
+
+        foreach (Transform child in wheelTransform)
+            Destroy(child.gameObject);
+
+        GenerateSegments();
+
+        wheelTransform.localEulerAngles = new Vector3(0, 0, currentAngle);
+
+        if (currentWinningIndex != null)
+            HighlightWinningSegment();
     }
 
     private IEnumerator UpdateCooldownRoutine()
@@ -93,7 +132,6 @@ public class WheelOfFortuneUI : MonoBehaviour
             wheelButton.interactable = false;
             var remaining = _timerManager.GetRemaining(TIMER_KEY);
             if (remaining.TotalSeconds < 0) remaining = TimeSpan.Zero;
-
             cooldownText.text = $"{remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
         }
     }
@@ -162,6 +200,8 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private void ResetHighlights()
     {
+        if (segmentUIs == null) return;
+
         foreach (var seg in segmentUIs)
             seg.ResetHighlight();
         currentWinningIndex = null;
@@ -250,7 +290,6 @@ public class WheelOfFortuneUI : MonoBehaviour
         claimButton.gameObject.SetActive(false);
 
         _timerManager.Trigger(TIMER_KEY);
-
         UpdateCooldownUI();
     }
 
