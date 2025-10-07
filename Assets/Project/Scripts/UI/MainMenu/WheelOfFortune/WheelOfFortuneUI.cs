@@ -37,6 +37,7 @@ public class WheelOfFortuneUI : MonoBehaviour
     [Header("Segment Colors")]
     [SerializeField] private Color[] segmentColors = { Color.white, Color.gray };
     [SerializeField] private Color highlightColor = Color.yellow;
+    [SerializeField, Range(0f, 1f)] private float segmentRadiusPercent = 0.9f;
     [SerializeField, Range(0f, 1f)] private float highlightIntensity = 0.6f;
     [SerializeField] private float highlightScaleFactor = 1.1f;
 
@@ -92,7 +93,7 @@ public class WheelOfFortuneUI : MonoBehaviour
 
     private void UpdateWheelRadius()
     {
-        wheelRadius = Mathf.Min(wheelTransform.rect.width, wheelTransform.rect.height) * 0.5f;
+        wheelRadius = Mathf.Min(wheelTransform.rect.width, wheelTransform.rect.height) * 0.5f * segmentRadiusPercent;
     }
 
     private void RegenerateSegments()

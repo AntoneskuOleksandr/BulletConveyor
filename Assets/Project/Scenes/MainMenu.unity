@@ -6927,17 +6927,17 @@ MonoBehaviour:
   claimButton: {fileID: 5973476444288277330}
   wheelPanel: {fileID: 1561658411}
   cooldownText: {fileID: 6910067354056406758}
-  wheelRadius: 268
   innerRadiusPercent: 0.31
   arcResolution: 20
   radialResolution: 50
   gapAngle: 3.5
   gapStartPercent: 0.92
-  contentRadiusLerp: 1
+  contentRadiusLerp: 0.5
   segmentColors:
   - {r: 0.078431375, g: 0.5411765, b: 0.8745098, a: 1}
   - {r: 0.07058824, g: 0.3529412, b: 0.63529414, a: 1}
   highlightColor: {r: 0, g: 0.92156863, b: 0.015686275, a: 1}
+  segmentRadiusPercent: 0.9
   highlightIntensity: 0.6
   highlightScaleFactor: 1.1
   segments:
@@ -8695,7 +8695,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
+  m_fontSize: 20.9
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10934,7 +10934,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 70.45
+  m_fontSize: 30.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11063,7 +11063,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
+  m_fontSize: 21.05
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
