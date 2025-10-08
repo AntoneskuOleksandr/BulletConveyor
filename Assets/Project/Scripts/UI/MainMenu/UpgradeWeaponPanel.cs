@@ -26,6 +26,8 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
         _economyService.OnCurrencyChanged += RefreshUI;
         _weaponsService.OnWeaponsChanged += RefreshUI;
+
+        RefreshUI();
     }
 
     private void OnDisable()
