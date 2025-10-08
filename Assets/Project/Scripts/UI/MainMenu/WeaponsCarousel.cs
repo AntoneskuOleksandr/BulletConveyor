@@ -23,7 +23,7 @@ public class WeaponsCarousel : MonoBehaviour
     private GameObject currentWeapon;
     private bool isAnimating;
 
-    private void Start()
+    private void OnEnable()
     {
         if (weapons == null || weapons.Length == 0)
         {
@@ -40,6 +40,9 @@ public class WeaponsCarousel : MonoBehaviour
         if (currentWeapon != null) Destroy(currentWeapon);
         currentIndex = -1;
         foreach (Transform child in weaponSpawnPoint) Destroy(child.gameObject);
+
+
+        weaponSpawnPoint.gameObject.SetActive(false);
     }
 
     public void Next() => ShowGun(WrapIndex(currentIndex + 1), true);
@@ -52,6 +55,7 @@ public class WeaponsCarousel : MonoBehaviour
         newIndex = WrapIndex(newIndex);
         if (newIndex == currentIndex || isAnimating) return;
 
+        weaponSpawnPoint.gameObject.SetActive(true);
         bool toRight = forceDir ?? IsToRight(currentIndex, newIndex);
         AnimateSwitch(newIndex, toRight);
     }
