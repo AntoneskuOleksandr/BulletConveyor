@@ -9,6 +9,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
 {
     [Inject] private WeaponsService _weaponsService;
     [Inject] private EconomyService _economyService;
+    [Inject] private WeaponsCarousel _weaponsCarousel;
 
     [Header("Upgrade Panels")]
     [SerializeField] private List<UpgradeParametrPanel> upgradeParametrPanels;
@@ -26,6 +27,9 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
         _economyService.OnCurrencyChanged += RefreshUI;
         _weaponsService.OnWeaponsChanged += RefreshUI;
+
+        _weaponsCarousel.OnWeaponChanged += SetWeapon;
+        SetWeapon(_weaponsCarousel.CurrentWeapon);
 
         RefreshUI();
     }

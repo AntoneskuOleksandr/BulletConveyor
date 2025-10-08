@@ -18,6 +18,7 @@ public class WeaponsCarousel : MonoBehaviour
     [SerializeField] private Ease rotateEase = Ease.OutQuad;
 
     public event Action<WeaponSO> OnWeaponChanged;
+    public WeaponSO CurrentWeapon => weapons != null && currentIndex >= 0 && currentIndex < weapons.Length ? weapons[currentIndex] : null;
 
     private int currentIndex = -1;
     private GameObject currentWeapon;

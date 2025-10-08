@@ -21,8 +21,6 @@ public class WeaponsPanel : MonoBehaviour
         previousWeaponButton.onClick.AddListener(() => weaponsCarousel.Prev());
         upgradeButton.onClick.AddListener(() => upgradeWeaponPanel.OnUpgradeButtonClick());
         selectButton.onClick.AddListener(SelectWeapon);
-
-        weaponsCarousel.OnWeaponChanged += upgradeWeaponPanel.SetWeapon;
     }
 
     private void OnDestroy()
@@ -30,8 +28,6 @@ public class WeaponsPanel : MonoBehaviour
         nextWeaponButton.onClick.RemoveAllListeners();
         previousWeaponButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.RemoveAllListeners();
-
-        weaponsCarousel.OnWeaponChanged -= upgradeWeaponPanel.SetWeapon;
     }
 
     private void SelectWeapon()
