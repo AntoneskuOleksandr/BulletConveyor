@@ -40,8 +40,13 @@ public class WeaponsCarousel : MonoBehaviour
         KillTweens();
         if (currentWeapon != null) Destroy(currentWeapon);
         currentIndex = -1;
-        foreach (Transform child in weaponSpawnPoint) Destroy(child.gameObject);
 
+        if (weaponSpawnPoint == null) return;
+        foreach (Transform child in weaponSpawnPoint)
+        {
+            if (child != null)
+                Destroy(child.gameObject);
+        }
 
         weaponSpawnPoint.gameObject.SetActive(false);
     }
