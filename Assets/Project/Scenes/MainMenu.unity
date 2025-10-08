@@ -9273,6 +9273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeButton: {fileID: 1355954140334862165}
   selectButton: {fileID: 995352049903692747}
+  selectButtonText: {fileID: 8068717971927660670}
   nextWeaponButton: {fileID: 1814846962}
   previousWeaponButton: {fileID: 1703537217}
 --- !u!1 &6695821495782855297

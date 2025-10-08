@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
 public class WeaponsService
@@ -13,6 +12,8 @@ public class WeaponsService
     private readonly EconomyService _economy;
 
     private PlayerData Data => _dataManager.PlayerData;
+
+    private readonly int _maxSlots = 3;
 
     [Inject]
     public WeaponsService(DataManager dataManager, WeaponDatabaseSO db, EconomyService economy)
@@ -59,6 +60,7 @@ public class WeaponsService
         }
 
         Data.weapons[idx] = entry;
+        _dataManager.Save();
         OnWeaponsChanged?.Invoke();
         return true;
     }
@@ -75,12 +77,20 @@ public class WeaponsService
         return result;
     }
 
-    public bool SelectWeapon(int id, int maxSlots = 3)
+    public bool IsSelected(int id) => Data.selectedWeaponIds.Contains(id);
+
+    public int GetSelectedCount() => Data.selectedWeaponIds.Count;
+
+    public int GetMaxSlots() => _maxSlots;
+
+    public bool SelectWeapon(int id, int maxSlots = -1)
     {
-        if (Data.selectedWeaponIds.Contains(id) || Data.selectedWeaponIds.Count >= maxSlots)
+        int limit = maxSlots <= 0 ? _maxSlots : maxSlots;
+        if (Data.selectedWeaponIds.Contains(id) || Data.selectedWeaponIds.Count >= limit)
             return false;
 
         Data.selectedWeaponIds.Add(id);
+        _dataManager.Save();
         OnSelectionChanged?.Invoke();
         return true;
     }
@@ -88,6 +98,7 @@ public class WeaponsService
     public bool DeselectWeapon(int id)
     {
         if (!Data.selectedWeaponIds.Remove(id)) return false;
+        _dataManager.Save();
         OnSelectionChanged?.Invoke();
         return true;
     }

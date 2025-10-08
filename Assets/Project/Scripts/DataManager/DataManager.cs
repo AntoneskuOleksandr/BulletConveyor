@@ -21,15 +21,21 @@ public class DataManager : IInitializable
         {
             PlayerData = new PlayerData();
             _repository.Save(PlayerData);
-            Debug.Log("[DataManager] Новый PlayerData создан");
+            //Debug.Log("[DataManager] Новый PlayerData создан");
         }
         else
         {
-            Debug.Log("[DataManager] PlayerData успешно загружен");
+            //Debug.Log("[DataManager] PlayerData успешно загружен");
         }
 
         // Убедимся, что оружие синхронизировано с базой
         EnsureAllWeaponsExist();
+    }
+
+    public void Save()
+    {
+        _repository.Save(PlayerData);
+        //Debug.Log("[DataManager] PlayerData сохранён");
     }
 
     private void EnsureAllWeaponsExist()
