@@ -11,21 +11,25 @@ public class BackgroundGenerator : MonoBehaviour
     private RawImage _image;
     private Texture2D _backgroundTexture;
 
-    private void Awake()
+    public void SetColor(Color topColor, Color bottomColor)
     {
-        _image = GetComponent<RawImage>();
+        if (_backgroundTexture == null)
+            CreateTexture();
+
+        _backgroundTexture.SetPixels(new Color[] { bottomColor, topColor });
+        _backgroundTexture.Apply();
+        _image.texture = _backgroundTexture;
+    }
+
+    private void CreateTexture()
+    {
+        if (_backgroundTexture != null)
+            Destroy(_backgroundTexture);
 
         _backgroundTexture = new Texture2D(1, 2);
         _backgroundTexture.wrapMode = TextureWrapMode.Clamp;
         _backgroundTexture.filterMode = FilterMode.Bilinear;
 
-        SetColor(topColor, bottomColor);
-    }
-
-    public void SetColor(Color topColor, Color bottomColor)
-    {
-        _backgroundTexture.SetPixels(new Color[] { bottomColor, topColor });
-        _backgroundTexture.Apply();
-        _image.texture = _backgroundTexture;
+        _image = GetComponent<RawImage>();
     }
 }

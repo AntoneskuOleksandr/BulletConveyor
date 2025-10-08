@@ -6619,7 +6619,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 950bce5f54168ae4fa684a4d6bba5e82, type: 2}
   - {fileID: 11400000, guid: 5af106695d400b148b77fad35e887053, type: 2}
   - {fileID: 11400000, guid: b47335ae4d6f0564fb2acbbbf0727196, type: 2}
-  miniLevelSpawnPoint: {fileID: 1127849026}
+  miniLevels: {fileID: 1127849026}
   nextLevelButton: {fileID: 1200139852}
   previousLevelButton: {fileID: 5695740565754990249}
   backgroundGenerator: {fileID: 8236574627812582660}

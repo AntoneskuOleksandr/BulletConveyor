@@ -6,7 +6,7 @@ public class LevelDisplay : MonoBehaviour
 {
     [Header("MiniLevels")]
     [SerializeField] private List<LevelSO> levels;
-    [SerializeField] private Transform miniLevelSpawnPoint;
+    [SerializeField] private Transform miniLevels;
 
     [Header("UI Elements")]
     [SerializeField] private Button nextLevelButton;
@@ -34,9 +34,21 @@ public class LevelDisplay : MonoBehaviour
         });
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        ShowLevel(0);
+        if (levels.Count > 0)
+            ShowLevel(0);
+
+        miniLevels.gameObject.SetActive(true);
+    }
+
+    private void OnDisable()
+    {
+        nextLevelButton.onClick.RemoveAllListeners();
+        previousLevelButton.onClick.RemoveAllListeners();
+
+        if (miniLevels != null)
+            miniLevels.gameObject.SetActive(false);
     }
 
     private void ShowLevel(int index)
@@ -46,7 +58,8 @@ public class LevelDisplay : MonoBehaviour
             Destroy(currentMiniLevel);
         }
 
-        currentMiniLevel = Instantiate(levels[index].MiniLevelGO, miniLevelSpawnPoint);
+        currentMiniLevel = Instantiate(levels[index].MiniLevelGO, miniLevels);
+
         backgroundGenerator.SetColor(levels[index].GradientColorTop, levels[index].GradientColorBottom);
 
         currentLevel = levels[index];
