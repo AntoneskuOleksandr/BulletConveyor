@@ -18,16 +18,13 @@ public class WeaponsPanel : MonoBehaviour
     [SerializeField] private Button nextWeaponButton;
     [SerializeField] private Button previousWeaponButton;
 
-    private void Awake()
+    private void OnEnable()
     {
         nextWeaponButton.onClick.AddListener(() => weaponsCarousel.Next());
         previousWeaponButton.onClick.AddListener(() => weaponsCarousel.Prev());
         upgradeButton.onClick.AddListener(() => upgradeWeaponPanel.OnUpgradeButtonClick());
         selectButton.onClick.AddListener(SelectWeapon);
-    }
 
-    private void OnEnable()
-    {
         weaponsCarousel.OnWeaponChanged += OnWeaponChanged;
         _weaponsService.OnSelectionChanged += RefreshSelectButton;
         _weaponsService.OnWeaponsChanged += RefreshSelectButton;
