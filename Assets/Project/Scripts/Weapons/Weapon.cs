@@ -23,6 +23,7 @@ public abstract class Weapon : MonoBehaviour
 
     [Header("Weapon Settings")]
     public float damage = 10f;
+    public float health = 100f;
     public Transform firePoint;
     public Transform partToRotate;
     public float turnSpeed = 3f;
@@ -57,23 +58,45 @@ public abstract class Weapon : MonoBehaviour
         _enemyManager = enemyManager;
         _effectChanceManager = effectChanceManager;
     }
-    public virtual void InitializeFromSO(WeaponSO so)
+    public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
     {
         Data = so;
+
+        // Базовые статы
         damage = so.baseDamage;
         fireRate = so.baseFireRate;
+
+        // ---- Применяем апгрейды ----
+        if (progress.DamageLevel > 0)
+        {
+            for (int i = 0; i < progress.DamageLevel; i++)
+                damage += so.upgradeLevels[i].damageBonus;
+        }
+
+        if (progress.FireRateLevel > 0)
+        {
+            for (int i = 0; i < progress.FireRateLevel; i++)
+                fireRate += so.upgradeLevels[i].fireRateBonus;
+        }
+
+        if (progress.HealthLevel > 0)
+        {
+            for (int i = 0; i < progress.HealthLevel; i++)
+                health += so.upgradeLevels[i].healthBonus;
+        }
 
         var attachment = GetComponent<WeaponAttachmentPoints>();
         if (attachment != null)
         {
-            firePoint = attachment?.firePoint;
-            partToRotate = attachment?.partToRotate;
+            firePoint = attachment.firePoint;
+            partToRotate = attachment.partToRotate;
         }
         else
         {
             Debug.LogWarning($"[Weapon] На объекте {gameObject.name} нет WeaponAttachmentPoints");
         }
     }
+
 
 
     protected virtual void Start()
