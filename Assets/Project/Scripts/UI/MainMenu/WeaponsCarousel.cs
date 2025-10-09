@@ -56,7 +56,11 @@ public class WeaponsCarousel : MonoBehaviour
 
     public void ShowGun(int newIndex, bool? forceDir = null)
     {
-        if (weapons == null || weapons.Length == 0) return;
+        if (weapons == null || weapons.Length == 0)
+        {
+            Debug.LogError("[WeaponsCarousel] No weapons assigned!");
+            return;
+        }
 
         newIndex = WrapIndex(newIndex);
         if (newIndex == currentIndex || isAnimating) return;
