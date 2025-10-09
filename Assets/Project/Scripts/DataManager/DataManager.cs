@@ -26,11 +26,11 @@ public class DataManager : IInitializable
 
     public void Initialize()
     {
-        PlayerData = _repository.Load();
-        if (PlayerData == null)
+        _playerData = _repository.Load();
+        if (_playerData == null)
         {
-            PlayerData = new PlayerData();
-            _repository.Save(PlayerData);
+            _playerData = new PlayerData();
+            _repository.Save(_playerData);
             Debug.Log("[DataManager] Новый PlayerData создан");
         }
         else
