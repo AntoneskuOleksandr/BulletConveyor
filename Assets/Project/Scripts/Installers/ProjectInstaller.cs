@@ -7,7 +7,6 @@ public class ProjectInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        Debug.Log("[ProjectInstaller] Installing project-wide bindings...");
         // --- Core data ---
         Container.BindInstance(weaponDatabase).AsSingle();
         Container.Bind<DataRepository>().AsSingle();
@@ -21,7 +20,5 @@ public class ProjectInstaller : MonoInstaller
 
         // --- Optional UI-independent systems ---
         Container.Bind<TimerManager>().AsSingle();
-
-        Debug.Log("[ProjectInstaller] All bindings installed.");
     }
 }

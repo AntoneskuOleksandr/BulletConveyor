@@ -10,7 +10,6 @@ public class SaveManager : IInitializable
 
     public SaveManager(DataRepository repo, DataManager data, EconomyService economy, WeaponsService weapons)
     {
-        Debug.Log("[SaveManager] Constructor called.");
         _repo = repo;
         _data = data;
         _economy = economy;
@@ -19,7 +18,6 @@ public class SaveManager : IInitializable
 
     public void Initialize()
     {
-        Debug.Log("[SaveManager] Initializing and subscribing to events...");
         _economy.OnCurrencyChanged += Save;
         _weapons.OnWeaponsChanged += Save;
         _weapons.OnSelectionChanged += Save;
@@ -27,7 +25,6 @@ public class SaveManager : IInitializable
 
     private void Save()
     {
-        Debug.Log("[SaveManager] Saving PlayerData...");
         _repo.Save(_data.PlayerData);
     }
 }

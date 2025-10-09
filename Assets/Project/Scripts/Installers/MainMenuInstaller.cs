@@ -10,15 +10,12 @@ public class MainMenuInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        Debug.Log("[MainMenuInstaller] Installing main menu bindings...");
         Container.BindInstance(currencyFlyAnimator).AsSingle();
         Container.BindInstance(upgradeWeaponPanel).AsSingle();
         Container.BindInstance(weaponsCarousel).AsSingle();
 
         Container.BindInterfacesAndSelfTo<EconomyAnimatorLinker>().AsSingle()
             .WithArguments(currencyFlyAnimator);
-
-        Debug.Log("[MainMenuInstaller] Main menu bindings installed.");
     }
 }
 
