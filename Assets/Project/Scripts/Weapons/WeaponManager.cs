@@ -4,8 +4,7 @@ using Zenject;
 
 public class WeaponManager : MonoBehaviour
 {
-    [SerializeField] private Transform weaponSpawnRoot;
-    [SerializeField] private float spawnOffset = 2f;
+    [SerializeField] private List<Transform> weaponSpawnPoints;
 
     private readonly List<Weapon> _weapons = new();
     private WeaponsService _weaponsService;
@@ -21,13 +20,12 @@ public class WeaponManager : MonoBehaviour
     public void InitializeWeapons()
     {
         var selectedWeapons = _weaponsService.GetSelectedWeapons();
-        float angleStep = 360f / selectedWeapons.Count;
 
         for (int i = 0; i < selectedWeapons.Count; i++)
         {
             var so = selectedWeapons[i];
-            Vector3 pos = weaponSpawnRoot.position + Quaternion.Euler(0, angleStep * i, 0) * Vector3.forward * spawnOffset;
-            var go = Instantiate(so.WeaponGO, pos, Quaternion.identity, weaponSpawnRoot);
+            Vector3 pos = weaponSpawnPoints[i].position;
+            var go = Instantiate(so.WeaponGO, pos, Quaternion.identity, weaponSpawnPoints[i]);
 
             var weapon = _weaponFactory.AddWeaponComponent(go, so);
             _weapons.Add(weapon);
