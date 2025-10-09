@@ -30,6 +30,7 @@ public abstract class Weapon : MonoBehaviour
     public float aimThreshold = 2f;
     public float attackRadius = 50f;
     public float idleReturnDelay = 2f;
+    public WeaponSO Data { get; private set; }
 
     [Header("Effect Chances from Weapon")]
     [Tooltip("Задайте стартовые шансы на разные дебаффы от этой пушки.")]
@@ -56,6 +57,24 @@ public abstract class Weapon : MonoBehaviour
         _enemyManager = enemyManager;
         _effectChanceManager = effectChanceManager;
     }
+    public virtual void InitializeFromSO(WeaponSO so)
+    {
+        Data = so;
+        damage = so.baseDamage;
+        fireRate = so.baseFireRate;
+
+        var attachment = GetComponent<WeaponAttachmentPoints>();
+        if (attachment != null)
+        {
+            firePoint = attachment?.firePoint;
+            partToRotate = attachment?.partToRotate;
+        }
+        else
+        {
+            Debug.LogWarning($"[Weapon] На объекте {gameObject.name} нет WeaponAttachmentPoints");
+        }
+    }
+
 
     protected virtual void Start()
     {

@@ -5,9 +5,19 @@ public class DataManager : IInitializable
 {
     private readonly DataRepository _repository;
     private readonly WeaponDatabaseSO _db;
+    private PlayerData _playerData;
 
-    public PlayerData PlayerData { get; private set; }
+    public PlayerData PlayerData
+    {
+        get
+        {
+            if (_playerData == null)
+                Initialize();
 
+            return _playerData;
+        }
+        private set => _playerData = value;
+    }
     public DataManager(DataRepository repository, WeaponDatabaseSO db)
     {
         _repository = repository;
@@ -21,11 +31,11 @@ public class DataManager : IInitializable
         {
             PlayerData = new PlayerData();
             _repository.Save(PlayerData);
-            //Debug.Log("[DataManager] Новый PlayerData создан");
+            Debug.Log("[DataManager] Новый PlayerData создан");
         }
         else
         {
-            //Debug.Log("[DataManager] PlayerData успешно загружен");
+            Debug.Log("[DataManager] PlayerData успешно загружен");
         }
 
         // Убедимся, что оружие синхронизировано с базой

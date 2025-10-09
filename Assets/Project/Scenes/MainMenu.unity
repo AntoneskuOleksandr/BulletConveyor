@@ -7593,7 +7593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4615531866299948406
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8089,7 +8089,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100.07
+  m_fontSize: 98.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -9867,7 +9867,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.23454165}
   m_AnchorMax: {x: 0.5, y: 0.23454165}
   m_AnchoredPosition: {x: -1.1599998, y: 9.999756}
-  m_SizeDelta: {x: 378, y: 186}
+  m_SizeDelta: {x: 275.33334, y: 108.666664}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7369858530334196466
 GameObject:
@@ -9984,6 +9984,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moneyText: {fileID: 9019229570463177238}
+  startGameButton: {fileID: 1867840113616226951}
+  gameSceneName: RefactoringScene
 --- !u!222 &7508070439745928775
 CanvasRenderer:
   m_ObjectHideFlags: 0

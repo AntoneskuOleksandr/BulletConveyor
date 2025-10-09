@@ -16,9 +16,10 @@ MonoBehaviour:
   WeaponName: MachineGun
   WeaponGO: {fileID: 7805296867101043242, guid: 901cce198903abd4d9ce739298f5c55e,
     type: 3}
-  baseDamage: 0
-  baseFireRate: 0
-  baseHealth: 0
+  WeaponType: 0
+  baseDamage: 10
+  baseFireRate: 1
+  baseHealth: 10
   upgradeLevels:
   - cost: 1
     damageBonus: 1
@@ -40,3 +41,4 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
+  Parameters: []
