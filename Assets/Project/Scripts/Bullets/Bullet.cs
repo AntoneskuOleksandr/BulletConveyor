@@ -1,91 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IBulletMoveStrategy
-{
-    void Launch(Bullet bullet, Transform target);
-}
-
-public interface IBulletHitStrategy
-{
-    void Hit(Bullet bullet, Collider other);
-}
-
-public class StraightMoveStrategy : IBulletMoveStrategy
-{
-    public void Launch(Bullet bullet, Transform target)
-    {
-        Vector3 dir = (target.position - bullet.transform.position).normalized;
-        bullet.Rigidbody.useGravity = false;
-        bullet.Rigidbody.linearVelocity = dir * bullet.Speed;
-    }
-}
-
-public class DirectHitStrategy : IBulletHitStrategy
-{
-    public void Hit(Bullet bullet, Collider other)
-    {
-        if (!other.CompareTag("Enemy")) return;
-
-        Enemy enemy = other.GetComponent<Enemy>();
-        if (enemy != null)
-        {
-            enemy.TakeDamage(bullet.Damage);
-            bullet.ApplyEffects(enemy);
-        }
-    }
-}
-
-public class ArcMoveStrategy : IBulletMoveStrategy
-{
-    public void Launch(Bullet bullet, Transform target)
-    {
-        Vector3 dir = target.position - bullet.transform.position;
-
-        bullet.Rigidbody.useGravity = true;
-
-        float distance = dir.magnitude;
-        float angle = 45f * Mathf.Deg2Rad;
-        float v = Mathf.Sqrt(distance * Physics.gravity.magnitude / Mathf.Sin(2 * angle));
-
-        Vector3 velocity = dir.normalized * v * Mathf.Cos(angle) + Vector3.up * v * Mathf.Sin(angle);
-        bullet.Rigidbody.linearVelocity = velocity;
-    }
-}
-
-public class AoEHitStrategy : IBulletHitStrategy
-{
-    private readonly float _radius;
-
-    public AoEHitStrategy(float radius = 5f)
-    {
-        _radius = radius;
-    }
-
-    public void Hit(Bullet bullet, Collider other)
-    {
-        Collider[] hits = Physics.OverlapSphere(bullet.transform.position, _radius);
-        foreach (var hit in hits)
-        {
-            if (!hit.CompareTag("Enemy")) continue;
-            var enemy = hit.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(bullet.Damage);
-                bullet.ApplyEffects(enemy);
-            }
-        }
-    }
-}
-
-
-
-public enum BulletType
-{
-    Standard,
-    Artillery
-}
-
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class Bullet : MonoBehaviour
 {
@@ -121,7 +36,7 @@ public class Bullet : MonoBehaviour
 
     public void AddEffect(IOnHitEffect effect) => _effects.Add(effect);
 
-    public virtual void Init(float damage, Transform spawnPoint, Transform target)
+    public void Init(float damage, Transform spawnPoint, Transform target)
     {
         _damage = damage;
         _target = target;
@@ -134,12 +49,12 @@ public class Bullet : MonoBehaviour
         _collider.enabled = true;
         _collider.isTrigger = true;
 
-        _moveStrategy.Launch(this, target);
+        _moveStrategy?.Launch(this, target);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        _hitStrategy.Hit(this, other);
+        _hitStrategy?.Hit(this, other);
         Destroy(gameObject);
     }
 

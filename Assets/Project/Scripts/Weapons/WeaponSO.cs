@@ -10,11 +10,6 @@ public class UpgradeLevel
     public int healthBonus;
 }
 
-public enum WeaponType
-{
-    MachineGun,
-    Artillery
-}
 public enum WeaponParameterType
 {
     AoERadius,
@@ -49,6 +44,8 @@ public class WeaponSO : ScriptableObject
     public ShootStrategyType shootStrategy;
     public AimStrategyType aimStrategy;
     public TargetStrategyType targetStrategy;
+    public BulletMoveType bulletMoveType;
+    public BulletHitType bulletHitType;
 
     [Header("Upgrade Levels")]
     public UpgradeLevel[] upgradeLevels;

@@ -61,6 +61,15 @@ public class Weapon : MonoBehaviour
     [SerializeField] private ShootStrategyType shootStrategyType;
     [SerializeField] private AimStrategyType aimStrategyType;
     [SerializeField] private TargetStrategyType targetStrategyType;
+    [SerializeField] private BulletMoveType bulletMoveType;
+    [SerializeField] private BulletHitType bulletHitType;
+
+    public IBulletMoveStrategy BulletMoveStrategy => _bulletMoveStrategy;
+    public IBulletHitStrategy BulletHitStrategy => _bulletHitStrategy;
+
+
+    private IBulletMoveStrategy _bulletMoveStrategy;
+    private IBulletHitStrategy _bulletHitStrategy;
 
     private IShootStrategy _shootStrategy;
     private IAimStrategy _aimStrategy;
@@ -75,7 +84,7 @@ public class Weapon : MonoBehaviour
     /// <summary>
     /// Назначение стратегий поведения
     /// </summary>
-    public void SetStrategies(IShootStrategy shoot, ShootStrategyType shootType,
+    public void SetWeaponStrategy(IShootStrategy shoot, ShootStrategyType shootType,
         IAimStrategy aim, AimStrategyType aimType,
         ITargetStrategy target, TargetStrategyType targetType)
     {
@@ -86,6 +95,15 @@ public class Weapon : MonoBehaviour
         shootStrategyType = shootType;
         aimStrategyType = aimType;
         targetStrategyType = targetType;
+    }
+
+    public void SetBulletStrategy(IBulletMoveStrategy move, BulletMoveType moveType,
+        IBulletHitStrategy hit, BulletHitType hitType)
+    {
+        _bulletMoveStrategy = move;
+        _bulletHitStrategy = hit;
+        bulletMoveType = moveType;
+        bulletHitType = hitType;
     }
 
     /// <summary>
