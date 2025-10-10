@@ -12,7 +12,8 @@ public class UpgradeLevel
 
 public enum WeaponType
 {
-    MachineGun
+    MachineGun,
+    Artillery
 }
 
 [Serializable]
@@ -27,7 +28,6 @@ public class WeaponSO : ScriptableObject
 {
     [Header("General Info")]
     public int WeaponId;
-    public string WeaponName;
     public GameObject WeaponGO;
     public WeaponType WeaponType;
 
@@ -35,12 +35,19 @@ public class WeaponSO : ScriptableObject
     public int baseDamage;
     public float baseFireRate;
     public int baseHealth;
+    public float baseAttackRadius;
+
+    [Header("Strategies")]
+    public ShootStrategyType shootStrategy;
+    public AimStrategyType aimStrategy;
+    public TargetStrategyType targetStrategy;
 
     [Header("Upgrade Levels")]
     public UpgradeLevel[] upgradeLevels;
 
     [Header("Custom Parameters")]
     public WeaponParameter[] Parameters;
+
 
     public float GetParameter(string name, float defaultValue = 0f)
     {

@@ -20,6 +20,7 @@ MonoBehaviour:
   baseDamage: 10
   baseFireRate: 1
   baseHealth: 10
+  baseAttackRadius: 50
   upgradeLevels:
   - cost: 1
     damageBonus: 1

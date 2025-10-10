@@ -16,74 +16,102 @@ public class WeaponEffectChance
     [Range(0f, 1f)] public float chance;
 }
 
-public abstract class Weapon : MonoBehaviour
+public class Weapon : MonoBehaviour
 {
     [SerializeField] private BulletType bulletType;
     public BulletType BulletType => bulletType;
 
     [Header("Weapon Settings")]
-    public float damage = 10f;
-    public float health = 100f;
-    public Transform firePoint;
-    public Transform partToRotate;
-    public float turnSpeed = 3f;
-    public float fireRate = 1f;
-    public float aimThreshold = 2f;
-    public float attackRadius = 50f;
-    public float idleReturnDelay = 2f;
+    [SerializeField] private float turnSpeed = 3f;
+    [SerializeField] private float aimThreshold = 2f;
+    [SerializeField] private float idleReturnDelay = 2f;
+
+    private float damage;
+    private float health;
+    private float fireRate;
+    private float attackRadius;
+
+    private Transform firePoint;
+    private Transform partToRotate;
+
+    public float Damage => damage;
+    public float Health => health;
+    public float FireRate => fireRate;
+    public float AttackRadius => attackRadius;
+    public Transform FirePoint => firePoint;
+    public Transform PartToRotate => partToRotate;
+    public float TurnSpeed => turnSpeed;
+    public float AimThreshold => aimThreshold;
+
     public WeaponSO Data { get; private set; }
 
     [Header("Effect Chances from Weapon")]
     [Tooltip("Задайте стартовые шансы на разные дебаффы от этой пушки.")]
-    public List<WeaponEffectChance> effectChances = new List<WeaponEffectChance>();
+    public List<WeaponEffectChance> effectChances = new();
 
-    protected Bullet _bulletInAmmo;
-    protected BulletManager _bulletManager;
-    protected EnemyManager _enemyManager;
-    protected EffectChanceManager _effectChanceManager;
+    private EffectChanceManager _effectChanceManager;
 
-    protected Enemy target;
-    protected float _fireCountdown = 0f;
+    private Enemy target;
+    public Enemy Target => target;
 
-    protected float _targetRefreshRate = 1f;
-    protected float _targetRefreshTimer = 0f;
+    private float _fireCountdown;
+    public float FireCountdown => _fireCountdown;
+
+    private float _targetRefreshRate = 1f;
+    private float _targetRefreshTimer = 0f;
 
     private Quaternion _initialRotation;
     private float _idleTimer = 0f;
 
+    [Header("Strategy Info (Read Only)")]
+    [SerializeField] private ShootStrategyType shootStrategyType;
+    [SerializeField] private AimStrategyType aimStrategyType;
+    [SerializeField] private TargetStrategyType targetStrategyType;
+
+    private IShootStrategy _shootStrategy;
+    private IAimStrategy _aimStrategy;
+    private ITargetStrategy _targetStrategy;
+
     [Inject]
-    public void Construct(BulletManager bulletManager, EnemyManager enemyManager, EffectChanceManager effectChanceManager)
+    public void Construct(EffectChanceManager effectChanceManager)
     {
-        _bulletManager = bulletManager;
-        _enemyManager = enemyManager;
         _effectChanceManager = effectChanceManager;
     }
+
+    /// <summary>
+    /// Назначение стратегий поведения
+    /// </summary>
+    public void SetStrategies(IShootStrategy shoot, ShootStrategyType shootType,
+        IAimStrategy aim, AimStrategyType aimType,
+        ITargetStrategy target, TargetStrategyType targetType)
+    {
+        _shootStrategy = shoot;
+        _aimStrategy = aim;
+        _targetStrategy = target;
+
+        shootStrategyType = shootType;
+        aimStrategyType = aimType;
+        targetStrategyType = targetType;
+    }
+
+    /// <summary>
+    /// Инициализация параметров пушки из ScriptableObject
+    /// </summary>
     public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
     {
         Data = so;
-
-        // Базовые статы
         damage = so.baseDamage;
         fireRate = so.baseFireRate;
+        health = so.baseHealth;
+        attackRadius = so.baseAttackRadius;
 
-        // ---- Применяем апгрейды ----
-        if (progress.DamageLevel > 0)
-        {
-            for (int i = 0; i < progress.DamageLevel; i++)
-                damage += so.upgradeLevels[i].damageBonus;
-        }
-
-        if (progress.FireRateLevel > 0)
-        {
-            for (int i = 0; i < progress.FireRateLevel; i++)
-                fireRate += so.upgradeLevels[i].fireRateBonus;
-        }
-
-        if (progress.HealthLevel > 0)
-        {
-            for (int i = 0; i < progress.HealthLevel; i++)
-                health += so.upgradeLevels[i].healthBonus;
-        }
+        // --- Применение апгрейдов ---
+        for (int i = 0; i < progress.DamageLevel; i++)
+            damage += so.upgradeLevels[i].damageBonus;
+        for (int i = 0; i < progress.FireRateLevel; i++)
+            fireRate += so.upgradeLevels[i].fireRateBonus;
+        for (int i = 0; i < progress.HealthLevel; i++)
+            health += so.upgradeLevels[i].healthBonus;
 
         var attachment = GetComponent<WeaponAttachmentPoints>();
         if (attachment != null)
@@ -96,8 +124,6 @@ public abstract class Weapon : MonoBehaviour
             Debug.LogWarning($"[Weapon] На объекте {gameObject.name} нет WeaponAttachmentPoints");
         }
     }
-
-
 
     protected virtual void Start()
     {
@@ -122,76 +148,35 @@ public abstract class Weapon : MonoBehaviour
 
     protected void Update()
     {
+        // --- обновляем цель ---
         _targetRefreshTimer -= Time.deltaTime;
         if (_targetRefreshTimer <= 0f)
         {
             _targetRefreshTimer = _targetRefreshRate;
-            UpdateTarget();
+            target = _targetStrategy?.FindTarget(this);
         }
 
+        // --- логика поведения ---
         if (target != null)
         {
             _idleTimer = 0f;
-            LockOnTarget();
-
-            if (_bulletInAmmo == null && IsAimedAtTarget() && _fireCountdown <= 0f)
-            {
-                _bulletInAmmo = _bulletManager.GetBullet(this);
-                TryToShoot();
-            }
+            _aimStrategy?.Aim(this);
+            _shootStrategy?.Shoot(this);
         }
         else
         {
             HandleIdleRotation();
         }
 
+        // --- таймер перезарядки ---
         if (_fireCountdown > 0f)
             _fireCountdown -= Time.deltaTime;
-    }
-
-    protected void UpdateTarget()
-    {
-        if (target != null)
-            target.OnDeath.RemoveListener(OnTargetDeath);
-
-        target = _enemyManager.GetNearestEnemy(this, attackRadius);
-
-        if (target != null)
-            target.OnDeath.AddListener(OnTargetDeath);
-    }
-
-    protected virtual void TryToShoot()
-    {
-        if (_bulletInAmmo == null || target == null)
-            return;
-
-        _bulletInAmmo.Init(damage, firePoint, target.HitTransform);
-
-        _fireCountdown = 1f / fireRate;
-        _bulletInAmmo = null;
-    }
-
-    protected void LockOnTarget()
-    {
-        if (target == null)
-            return;
-
-        Vector3 dir = target.HitTransform.position - partToRotate.position;
-        dir.y = 0f;
-        if (dir == Vector3.zero) return;
-
-        Quaternion lookRotation = Quaternion.LookRotation(dir);
-        partToRotate.rotation = Quaternion.Lerp(
-            partToRotate.rotation,
-            lookRotation,
-            Time.deltaTime * turnSpeed
-        );
     }
 
     private void HandleIdleRotation()
     {
         _idleTimer += Time.deltaTime;
-        if (_idleTimer >= idleReturnDelay)
+        if (_idleTimer >= idleReturnDelay && partToRotate != null)
         {
             partToRotate.rotation = Quaternion.Lerp(
                 partToRotate.rotation,
@@ -201,25 +186,14 @@ public abstract class Weapon : MonoBehaviour
         }
     }
 
-    protected bool IsAimedAtTarget()
+    public void ResetFireCountdown()
     {
-        if (target == null) return false;
-
-        Vector3 dirToTarget = target.HitTransform.position - partToRotate.position;
-        dirToTarget.y = 0f;
-        dirToTarget.Normalize();
-
-        Vector3 forward = partToRotate.forward;
-        forward.y = 0f;
-        forward.Normalize();
-
-        float angle = Vector3.Angle(forward, dirToTarget);
-        return angle < aimThreshold;
+        _fireCountdown = 1f / fireRate;
     }
 
-    protected void OnTargetDeath()
+    public void OnTargetDeath()
     {
-        UpdateTarget();
+        target = null;
     }
 
     protected virtual void OnDrawGizmosSelected()

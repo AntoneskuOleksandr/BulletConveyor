@@ -13,11 +13,15 @@ MonoBehaviour:
   m_Name: Artillery
   m_EditorClassIdentifier: 
   WeaponId: 0
-  WeaponName: Artillery
   WeaponGO: {fileID: 537084489268377665, guid: 7a8bf8822dfee0743ad74eea85eb9d51, type: 3}
-  baseDamage: 0
-  baseFireRate: 0
-  baseHealth: 0
+  WeaponType: 1
+  baseDamage: 30
+  baseFireRate: 0.33333334
+  baseHealth: 150
+  baseAttackRadius: 100
+  shootStrategy: 0
+  aimStrategy: 0
+  targetStrategy: 0
   upgradeLevels:
   - cost: 1
     damageBonus: 1
@@ -39,3 +43,4 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
+  Parameters: []

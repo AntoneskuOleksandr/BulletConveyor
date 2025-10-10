@@ -8,7 +8,7 @@ public class BulletManager
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
 
-    public Bullet GetBullet(Weapon weapon)
+    public Bullet TryGetBullet(Weapon weapon)
     {
         if (!_bulletsStack.HaveBullet) return null;
 

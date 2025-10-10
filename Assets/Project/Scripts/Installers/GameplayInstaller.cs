@@ -70,5 +70,13 @@ public class GameplayInstaller : MonoInstaller
 
         //Main Camera
         Container.Bind<Camera>().FromInstance(Camera.main).AsSingle();
+
+        //Strategies
+        Container.Bind<IShootStrategy>().To<BasicShootStrategy>().AsSingle();
+        Container.Bind<IAimStrategy>().To<BasicAimStrategy>().AsSingle();
+        Container.Bind<ITargetStrategy>().To<NearestTargetStrategy>().AsSingle();
+
+        //Resolver
+        Container.Bind<StrategyResolver>().AsSingle();
     }
 }
