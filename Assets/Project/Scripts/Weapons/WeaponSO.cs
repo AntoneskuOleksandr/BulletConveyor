@@ -15,11 +15,18 @@ public enum WeaponType
     MachineGun,
     Artillery
 }
+public enum WeaponParameterType
+{
+    AoERadius,
+    LaserLength,
+    LaserWidth,
+    HomingSpeed
+}
 
 [Serializable]
 public class WeaponParameter
 {
-    public string Name;
+    public WeaponParameterType Type;
     public float Value;
 }
 
@@ -30,6 +37,7 @@ public class WeaponSO : ScriptableObject
     public int WeaponId;
     public GameObject WeaponGO;
     public WeaponType WeaponType;
+    public BulletType BulletType;
 
     [Header("Base Stats")]
     public int baseDamage;
@@ -49,14 +57,15 @@ public class WeaponSO : ScriptableObject
     public WeaponParameter[] Parameters;
 
 
-    public float GetParameter(string name, float defaultValue = 0f)
+    public float GetParameter(WeaponParameterType type, float defaultValue = 0f)
     {
         foreach (var p in Parameters)
         {
-            if (p.Name == name)
+            if (p.Type == type)
                 return p.Value;
         }
         return defaultValue;
     }
+
 }
 

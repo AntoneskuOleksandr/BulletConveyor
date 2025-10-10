@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public enum BulletType
-{
-    Standard,
-    Missile
-}
-
 [Serializable]
 public class WeaponEffectChance
 {
@@ -100,6 +94,8 @@ public class Weapon : MonoBehaviour
     public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
     {
         Data = so;
+        bulletType = so.BulletType;
+
         damage = so.baseDamage;
         fireRate = so.baseFireRate;
         health = so.baseHealth;

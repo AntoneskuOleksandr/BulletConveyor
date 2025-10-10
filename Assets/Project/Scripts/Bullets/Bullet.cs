@@ -1,80 +1,151 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Bullet : MonoBehaviour
+public interface IBulletMoveStrategy
 {
-    protected Transform _target;
-    protected Vector3 _direction;
-    protected Rigidbody _rigidbody;
-    protected Collider _collider;
+    void Launch(Bullet bullet, Transform target);
+}
 
-    protected float _speed = 20f;
-    protected float _damage = 10f;
+public interface IBulletHitStrategy
+{
+    void Hit(Bullet bullet, Collider other);
+}
 
-    protected List<IOnHitEffect> _effects = new List<IOnHitEffect>();
+public class StraightMoveStrategy : IBulletMoveStrategy
+{
+    public void Launch(Bullet bullet, Transform target)
+    {
+        Vector3 dir = (target.position - bullet.transform.position).normalized;
+        bullet.Rigidbody.useGravity = false;
+        bullet.Rigidbody.linearVelocity = dir * bullet.Speed;
+    }
+}
+
+public class DirectHitStrategy : IBulletHitStrategy
+{
+    public void Hit(Bullet bullet, Collider other)
+    {
+        if (!other.CompareTag("Enemy")) return;
+
+        Enemy enemy = other.GetComponent<Enemy>();
+        if (enemy != null)
+        {
+            enemy.TakeDamage(bullet.Damage);
+            bullet.ApplyEffects(enemy);
+        }
+    }
+}
+
+public class ArcMoveStrategy : IBulletMoveStrategy
+{
+    public void Launch(Bullet bullet, Transform target)
+    {
+        Vector3 dir = target.position - bullet.transform.position;
+
+        bullet.Rigidbody.useGravity = true;
+
+        float distance = dir.magnitude;
+        float angle = 45f * Mathf.Deg2Rad;
+        float v = Mathf.Sqrt(distance * Physics.gravity.magnitude / Mathf.Sin(2 * angle));
+
+        Vector3 velocity = dir.normalized * v * Mathf.Cos(angle) + Vector3.up * v * Mathf.Sin(angle);
+        bullet.Rigidbody.linearVelocity = velocity;
+    }
+}
+
+public class AoEHitStrategy : IBulletHitStrategy
+{
+    private readonly float _radius;
+
+    public AoEHitStrategy(float radius = 5f)
+    {
+        _radius = radius;
+    }
+
+    public void Hit(Bullet bullet, Collider other)
+    {
+        Collider[] hits = Physics.OverlapSphere(bullet.transform.position, _radius);
+        foreach (var hit in hits)
+        {
+            if (!hit.CompareTag("Enemy")) continue;
+            var enemy = hit.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(bullet.Damage);
+                bullet.ApplyEffects(enemy);
+            }
+        }
+    }
+}
+
+
+
+public enum BulletType
+{
+    Standard,
+    Artillery
+}
+
+[RequireComponent(typeof(Rigidbody), typeof(Collider))]
+public class Bullet : MonoBehaviour
+{
+    [SerializeField] private float _speed = 20f;
+    [SerializeField] private float _damage = 10f;
+
+    private Transform _target;
+    private Rigidbody _rigidbody;
+    private Collider _collider;
+
+    private IBulletMoveStrategy _moveStrategy;
+    private IBulletHitStrategy _hitStrategy;
+
+    private readonly List<IOnHitEffect> _effects = new();
 
     public float Damage => _damage;
     public float Speed => _speed;
+    public Transform Target => _target;
+    public Rigidbody Rigidbody => _rigidbody;
+    public Collider Collider => _collider;
+
+    private void Awake()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
+        _collider = GetComponent<Collider>();
+    }
+
+    public void SetStrategies(IBulletMoveStrategy move, IBulletHitStrategy hit)
+    {
+        _moveStrategy = move;
+        _hitStrategy = hit;
+    }
 
     public void AddEffect(IOnHitEffect effect) => _effects.Add(effect);
 
     public virtual void Init(float damage, Transform spawnPoint, Transform target)
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _collider = GetComponent<Collider>();
+        _damage = damage;
+        _target = target;
 
-        if (_rigidbody == null)
-        {
-            Debug.LogError("Rigidbody component is missing on the bullet.");
-            return;
-        }
-        if (_collider == null)
-        {
-            Debug.LogError("Collider component is missing on the bullet.");
-            return;
-        }
+        transform.position = spawnPoint.position;
+        transform.rotation = spawnPoint.rotation;
 
-        this._damage = damage;
-        this._target = target;
-
-        this.transform.position = spawnPoint.position;
-        this.transform.rotation = spawnPoint.rotation;
-
-        Launch();
-    }
-
-    protected void Launch()
-    {
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
         _collider.enabled = true;
         _collider.isTrigger = true;
 
-        _direction = _target.position - this.transform.position;
-        _rigidbody.linearVelocity = _direction.normalized * Speed;
+        _moveStrategy.Launch(this, target);
     }
 
-    protected void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.CompareTag("Enemy"))
-        {
-            HitTarget(other.transform);
-        }
-
-        Destroy(this.gameObject);
+        _hitStrategy.Hit(this, other);
+        Destroy(gameObject);
     }
 
-    protected void HitTarget(Transform target)
+    public void ApplyEffects(Enemy enemy)
     {
-        Enemy enemy = target.GetComponent<Enemy>();
-
-        if (enemy != null)
-        {
-            enemy.TakeDamage(Damage); //Base damage
-            foreach (var effect in _effects)
-            {
-                effect.Apply(this, enemy);
-            }
-        }
+        foreach (var effect in _effects)
+            effect.Apply(this, enemy);
     }
 }

@@ -15,24 +15,22 @@ public class BulletManager
         GameObject bulletGO = _bulletsStack.GetBulletGOFromStack();
         if (bulletGO == null) return null;
 
-        Bullet bullet = CreateBullet(bulletGO, weapon);
-        AddEffectsToBullet(bullet, weapon);
+        Bullet bullet = bulletGO.GetComponent<Bullet>();
+        if (bullet == null) bullet = bulletGO.AddComponent<Bullet>();
 
-        return bullet;
-    }
-
-    private Bullet CreateBullet(GameObject bulletGO, Weapon weapon)
-    {
         switch (weapon.BulletType)
         {
             case BulletType.Standard:
-                bulletGO.AddComponent<StandardBullet>();
+                bullet.SetStrategies(new StraightMoveStrategy(), new DirectHitStrategy());
                 break;
-            case BulletType.Missile:
-                bulletGO.AddComponent<Missile>();
+            case BulletType.Artillery:
+                float aoeRadius = weapon.Data.GetParameter(WeaponParameterType.AoERadius, 5f);
+                bullet.SetStrategies(new ArcMoveStrategy(), new AoEHitStrategy(aoeRadius));
                 break;
         }
-        return bulletGO.GetComponent<Bullet>();
+
+        AddEffectsToBullet(bullet, weapon);
+        return bullet;
     }
 
     private void AddEffectsToBullet(Bullet bullet, Weapon sourceWeapon)
@@ -42,9 +40,6 @@ public class BulletManager
         foreach (var type in effectTypes)
         {
             IOnHitEffect effect = _effectFactory.CreateEffect(type);
-
-            Debug.Log("Add Effect To Bullet: " + effect);
-
             if (effect != null)
                 bullet.AddEffect(effect);
         }

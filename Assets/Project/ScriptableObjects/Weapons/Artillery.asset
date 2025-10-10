@@ -15,6 +15,7 @@ MonoBehaviour:
   WeaponId: 0
   WeaponGO: {fileID: 537084489268377665, guid: 7a8bf8822dfee0743ad74eea85eb9d51, type: 3}
   WeaponType: 1
+  BulletType: 1
   baseDamage: 30
   baseFireRate: 0.33333334
   baseHealth: 150
@@ -43,4 +44,6 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
-  Parameters: []
+  Parameters:
+  - Type: 0
+    Value: 5
