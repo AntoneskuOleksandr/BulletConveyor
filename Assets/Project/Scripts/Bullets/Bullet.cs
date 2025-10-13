@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
+[DisallowMultipleComponent]
 public class Bullet : MonoBehaviour
 {
+    [Header("Base Stats")]
     [SerializeField] private float _speed = 20f;
     [SerializeField] private float _damage = 10f;
 
@@ -15,6 +17,7 @@ public class Bullet : MonoBehaviour
     private IBulletHitStrategy _hitStrategy;
 
     private readonly List<IOnHitEffect> _effects = new();
+    private BulletVisual _visual;
 
     public float Damage => _damage;
     public float Speed => _speed;
@@ -26,6 +29,7 @@ public class Bullet : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
+        _visual = GetComponent<BulletVisual>();
     }
 
     public void SetStrategies(IBulletMoveStrategy move, IBulletHitStrategy hit)
@@ -35,6 +39,12 @@ public class Bullet : MonoBehaviour
     }
 
     public void AddEffect(IOnHitEffect effect) => _effects.Add(effect);
+
+    public void ApplyEffects(Enemy enemy)
+    {
+        foreach (var effect in _effects)
+            effect.Apply(this, enemy);
+    }
 
     public void Init(float damage, Transform spawnPoint, Transform target)
     {
@@ -49,18 +59,26 @@ public class Bullet : MonoBehaviour
         _collider.enabled = true;
         _collider.isTrigger = true;
 
+        _visual?.OnSpawn();
+        SetVisual(Color.green);
+
         _moveStrategy?.Launch(this, target);
     }
 
     private void OnTriggerEnter(Collider other)
     {
         _hitStrategy?.Hit(this, other);
+        _visual?.OnDespawn();
         Destroy(gameObject);
     }
 
-    public void ApplyEffects(Enemy enemy)
+    private void OnDisable()
     {
-        foreach (var effect in _effects)
-            effect.Apply(this, enemy);
+        _visual?.OnDespawn();
+    }
+
+    public void SetVisual(Color baseColor)
+    {
+        _visual?.SetBaseColor(baseColor);
     }
 }
