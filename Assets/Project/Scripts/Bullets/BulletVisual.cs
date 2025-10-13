@@ -15,7 +15,7 @@ public class BulletVisual : MonoBehaviour
     }
 
     /// <summary>
-    /// Очищает трейл при спавне из пула.
+    /// Очищает трейл при спавне
     /// </summary>
     public void OnSpawn()
     {
