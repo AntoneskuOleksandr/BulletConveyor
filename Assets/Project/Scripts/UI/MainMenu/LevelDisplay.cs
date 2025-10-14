@@ -18,7 +18,7 @@ public class LevelDisplay : MonoBehaviour
     private LevelSO currentLevel;
     private GameObject currentMiniLevel;
 
-    private void Awake()
+    private void OnEnable()
     {
         nextLevelButton.onClick.AddListener(() =>
         {
@@ -32,10 +32,7 @@ public class LevelDisplay : MonoBehaviour
             int previousIndex = (currentIndex - 1 + levels.Count) % levels.Count;
             ShowLevel(previousIndex);
         });
-    }
 
-    private void OnEnable()
-    {
         if (levels.Count > 0)
             ShowLevel(0);
 
