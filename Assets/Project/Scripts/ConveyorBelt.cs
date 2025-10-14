@@ -30,7 +30,6 @@ public class ConveyorBelt : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         onBelt.Add(other.transform);
-        other.GetComponent<Rigidbody>().isKinematic = true;
     }
 
     private void OnTriggerExit(Collider other)
