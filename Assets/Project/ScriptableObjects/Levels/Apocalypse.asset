@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b1d5901d999c624b851e32479d09f8b, type: 3}
+  m_Script: {fileID: 11500000, guid: dfe648d32d025e74fb0dd4d816a7555f, type: 3}
   m_Name: Apocalypse
   m_EditorClassIdentifier: 
-  MiniLevelGO: {fileID: 2631047205215738121, guid: e2bcc11e225a0734f9c20ae6edf11c39,
-    type: 3}
-  LevelIndex: 4
-  LevelName: Apocalypse
-  SceneToLoad: Level 5
-  GradientColorTop: {r: 0.37254903, g: 0.39607844, b: 0.4392157, a: 1}
-  GradientColorBottom: {r: 0.60784316, g: 0.627451, b: 0.654902, a: 1}
+  levelIndex: 4
+  levelName: Apocalypse
+  sceneToLoad: Level 5
+  gradientColorTop: {r: 0.37254903, g: 0.39607847, b: 0.43921572, a: 1}
+  gradientColorBottom: {r: 0.60784316, g: 0.627451, b: 0.654902, a: 1}

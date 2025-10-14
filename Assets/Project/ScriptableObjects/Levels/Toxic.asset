@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b1d5901d999c624b851e32479d09f8b, type: 3}
+  m_Script: {fileID: 11500000, guid: dfe648d32d025e74fb0dd4d816a7555f, type: 3}
   m_Name: Toxic
   m_EditorClassIdentifier: 
-  MiniLevelGO: {fileID: 2099978949732791593, guid: d0ca6e321dfda64428c7479bc4a01386,
-    type: 3}
-  LevelIndex: 3
-  LevelName: Toxic
-  SceneToLoad: Level 4
-  GradientColorTop: {r: 0.60784316, g: 1, b: 0.36862746, a: 1}
-  GradientColorBottom: {r: 0.9882353, g: 1, b: 0.49803922, a: 1}
+  levelIndex: 3
+  levelName: Toxic
+  sceneToLoad: Level 4
+  gradientColorTop: {r: 0.60784316, g: 1, b: 0.36862746, a: 1}
+  gradientColorBottom: {r: 0.9882353, g: 1, b: 0.49803922, a: 1}

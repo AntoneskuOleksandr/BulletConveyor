@@ -29,8 +29,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Project/Scenes/Level 5.unity
     guid: 22b86b43150dcc74eb724b513a998269
-  - enabled: 1
-    path: Assets/Project/Scenes/RefactoringScene.unity
-    guid: 9bcf8931f7719be42ab58243179e274b
   m_configObjects: {}
-  m_UseUCBPForAssetBundles: 0
