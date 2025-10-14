@@ -54,20 +54,16 @@ public class WeaponVisual : MonoBehaviour
     /// </summary>
     private void ColorizeParticles(Dictionary<Color, float> colorWeights)
     {
-        Debug.Log($"[WeaponVisual] Покраска {colorWeights.Count} цветов");
-
         int maxParticles = _muzzleInstance.main.maxParticles;
         if (_particles == null || _particles.Length < maxParticles)
             _particles = new ParticleSystem.Particle[maxParticles];
 
         int aliveCount = _muzzleInstance.GetParticles(_particles);
-        Debug.Log($"[WeaponVisual] Частиц активно: {aliveCount}");
 
         if (aliveCount == 0) return;
 
-        // список индексов частиц
         List<int> indices = Enumerable.Range(0, aliveCount).ToList();
-        Shuffle(indices); // перемешиваем индексы, чтобы случайно выбирать частицы
+        Shuffle(indices);
 
         int usedCount = 0;
 
@@ -83,7 +79,6 @@ public class WeaponVisual : MonoBehaviour
         }
 
         _muzzleInstance.SetParticles(_particles, aliveCount);
-        Debug.Log($"[WeaponVisual] Частицы перекрашены. Всего: {usedCount}/{aliveCount}");
     }
 
     private void Shuffle<T>(List<T> list)
