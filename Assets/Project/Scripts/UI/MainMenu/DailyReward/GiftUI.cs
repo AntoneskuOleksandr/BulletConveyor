@@ -17,7 +17,7 @@ public class GiftUI : MonoBehaviour
     private const string TIMER_KEY = "GiftTimer";
 
     [Inject] private TimerManager _timerManager;
-    [Inject] private EconomyManager _economyManager;
+    [Inject] private EconomyService _economy;
 
     private void Awake()
     {
@@ -61,7 +61,7 @@ public class GiftUI : MonoBehaviour
     {
         if (!_timerManager.CanTrigger(TIMER_KEY)) return;
 
-        _economyManager.AddMoney(rewardCoins, claimButton.GetComponent<RectTransform>(), true);
+        _economy.AddCurrency(rewardCoins, true, claimButton.GetComponent<RectTransform>());
 
         _timerManager.Trigger(TIMER_KEY);
         UpdateUI();

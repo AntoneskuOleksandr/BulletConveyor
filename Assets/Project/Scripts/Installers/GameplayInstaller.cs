@@ -52,6 +52,7 @@ public class GameplayInstaller : MonoInstaller
 
         //Weapons & Bullets
         Container.Bind<WeaponManager>().FromInstance(weaponManager).AsSingle();
+        Container.Bind<WeaponFactory>().AsSingle();
         Container.Bind<BulletGenerator>().FromInstance(bulletGenerator).AsSingle();
         Container.Bind<BulletsStack>().FromInstance(bulletsStack).AsSingle();
         Container.Bind<BulletManager>().AsSingle();

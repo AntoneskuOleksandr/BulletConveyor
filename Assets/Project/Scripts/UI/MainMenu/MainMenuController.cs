@@ -26,7 +26,7 @@ public class MainMenuController : MonoBehaviour
 
     private void Start()
     {
-        ShowPanel(homePanel);
+        //ShowPanel(homePanel);
     }
 
     private void ShowPanel(GameObject panelToShow)
