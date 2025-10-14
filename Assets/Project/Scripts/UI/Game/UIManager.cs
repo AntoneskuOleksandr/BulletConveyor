@@ -7,6 +7,8 @@ public class UIManager : MonoBehaviour
     [Header("Panels")]
     [SerializeField] private AbilityPanel abilityPanel;
     [SerializeField] private PauseMenuPanel pauseMenuPanel;
+    [SerializeField] private WinPanel winPanel;
+    [SerializeField] private LosePanel losePanel;
 
     [Header("Text")]
     [SerializeField] private TMP_Text playerMoney;
@@ -104,5 +106,29 @@ public class UIManager : MonoBehaviour
 
         speedUpGameButton.GetComponentInChildren<TMP_Text>().text = newTimeSpeedValue.ToString();
         Time.timeScale = newTimeSpeedValue;
+    }
+
+    public void ShowWinPanel()
+    {
+        if (winPanel != null)
+        {
+            winPanel.ShowPanel();
+        }
+        else
+        {
+            Debug.LogError("WinPanel is not assigned in the inspector.");
+        }
+    }
+
+    public void ShowLosePanel()
+    {
+        if (losePanel != null)
+        {
+            losePanel.ShowPanel();
+        }
+        else
+        {
+            Debug.LogError("LosePanel is not assigned in the inspector.");
+        }
     }
 }
