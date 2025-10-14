@@ -65,38 +65,25 @@ public class WeaponVisual : MonoBehaviour
 
         if (aliveCount == 0) return;
 
-        List<Color> palette = BuildColorPalette(colorWeights, aliveCount);
-        Debug.Log($"[WeaponVisual] Палитра собрана: {palette.Count} элементов");
+        // список индексов частиц
+        List<int> indices = Enumerable.Range(0, aliveCount).ToList();
+        Shuffle(indices); // перемешиваем индексы, чтобы случайно выбирать частицы
 
-        Shuffle(palette);
+        int usedCount = 0;
 
-        for (int i = 0; i < aliveCount; i++)
+        foreach (var kv in colorWeights)
         {
-            _particles[i].startColor = palette[i];
+            int countForColor = Mathf.RoundToInt(aliveCount * kv.Value);
+            for (int i = 0; i < countForColor && usedCount < aliveCount; i++)
+            {
+                int particleIndex = indices[usedCount];
+                _particles[particleIndex].startColor = kv.Key;
+                usedCount++;
+            }
         }
 
         _muzzleInstance.SetParticles(_particles, aliveCount);
-        Debug.Log($"[WeaponVisual] Частицы перекрашены.");
-    }
-
-
-    private List<Color> BuildColorPalette(Dictionary<Color, float> weights, int count)
-    {
-        var palette = new List<Color>(count);
-        float totalWeight = weights.Values.Sum();
-
-        foreach (var kv in weights)
-        {
-            int num = Mathf.RoundToInt(count * (kv.Value / totalWeight));
-            for (int i = 0; i < num; i++)
-                palette.Add(kv.Key);
-        }
-
-        // добиваем, если не хватило из-за округления
-        while (palette.Count < count)
-            palette.Add(weights.Keys.First());
-
-        return palette;
+        Debug.Log($"[WeaponVisual] Частицы перекрашены. Всего: {usedCount}/{aliveCount}");
     }
 
     private void Shuffle<T>(List<T> list)
@@ -106,14 +93,5 @@ public class WeaponVisual : MonoBehaviour
             int j = Random.Range(0, i + 1);
             (list[i], list[j]) = (list[j], list[i]);
         }
-    }
-
-    /// <summary>
-    /// Скрыть эффект (например, при выключении пушки).
-    /// </summary>
-    public void StopEffect()
-    {
-        if (_muzzleInstance == null) return;
-        _muzzleInstance.Stop();
     }
 }

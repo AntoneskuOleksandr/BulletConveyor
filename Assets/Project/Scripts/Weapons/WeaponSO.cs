@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -49,6 +50,9 @@ public class WeaponSO : ScriptableObject
 
     [Header("Upgrade Levels")]
     public UpgradeLevel[] upgradeLevels;
+
+    [Header("Base Effect Chances")]
+    public List<WeaponEffectChance> baseEffectChances;
 
     [Header("Custom Parameters")]
     public WeaponParameter[] Parameters;

@@ -37,9 +37,7 @@ public class Weapon : MonoBehaviour
 
     public WeaponSO Data { get; private set; }
 
-    [Header("Effect Chances from Weapon")]
-    [Tooltip("Задайте стартовые шансы на разные дебаффы от этой пушки.")]
-    public List<WeaponEffectChance> effectChances = new();
+    private List<WeaponEffectChance> baseWeaponEffectChances = new();
 
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
@@ -111,6 +109,8 @@ public class Weapon : MonoBehaviour
         health = so.baseHealth;
         attackRadius = so.baseAttackRadius;
 
+        baseWeaponEffectChances.AddRange(so.baseEffectChances);
+
         // --- Применение апгрейдов ---
         for (int i = 0; i < progress.DamageLevel; i++)
             damage += so.upgradeLevels[i].damageBonus;
@@ -136,7 +136,7 @@ public class Weapon : MonoBehaviour
         if (partToRotate != null)
             _initialRotation = partToRotate.rotation;
 
-        foreach (var effectChance in effectChances)
+        foreach (var effectChance in baseWeaponEffectChances)
         {
             _effectChanceManager.RegisterWeaponChance(
                 this,

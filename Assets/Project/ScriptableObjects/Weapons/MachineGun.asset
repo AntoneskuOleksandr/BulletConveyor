@@ -13,14 +13,19 @@ MonoBehaviour:
   m_Name: MachineGun
   m_EditorClassIdentifier: 
   WeaponId: 2
-  WeaponName: MachineGun
   WeaponGO: {fileID: 7805296867101043242, guid: 901cce198903abd4d9ce739298f5c55e,
     type: 3}
   WeaponType: 0
+  BulletType: 0
   baseDamage: 10
   baseFireRate: 1
   baseHealth: 10
   baseAttackRadius: 50
+  shootStrategy: 0
+  aimStrategy: 0
+  targetStrategy: 0
+  bulletMoveType: 0
+  bulletHitType: 0
   upgradeLevels:
   - cost: 1
     damageBonus: 1
@@ -42,4 +47,13 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
+  baseEffectChances:
+  - effectType: 0
+    chance: 0.1
+  - effectType: 1
+    chance: 0.1
+  - effectType: 2
+    chance: 0.1
+  - effectType: 3
+    chance: 0.1
   Parameters: []
