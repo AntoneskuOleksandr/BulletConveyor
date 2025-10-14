@@ -29,6 +29,8 @@ public class WeaponManager : MonoBehaviour
 
             var weapon = _weaponFactory.AddWeaponComponent(go, so);
             _weapons.Add(weapon);
+
+            weapon.OnWeaponDestroyed += () => _weapons.Remove(weapon);
         }
     }
     public Weapon GetRandomWeapon()

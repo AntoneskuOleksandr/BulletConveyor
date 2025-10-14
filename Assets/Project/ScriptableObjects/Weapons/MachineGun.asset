@@ -19,7 +19,7 @@ MonoBehaviour:
   BulletType: 0
   baseDamage: 10
   baseFireRate: 1
-  baseHealth: 10
+  baseHealth: 100
   baseAttackRadius: 50
   shootStrategy: 0
   aimStrategy: 0

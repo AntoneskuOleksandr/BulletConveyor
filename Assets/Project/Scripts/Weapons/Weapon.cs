@@ -36,12 +36,16 @@ public class Weapon : MonoBehaviour
     public float AimThreshold => aimThreshold;
 
     public WeaponSO Data { get; private set; }
+    public Action OnWeaponDestroyed;
 
     private List<WeaponEffectChance> baseWeaponEffectChances = new();
 
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
+
     private WeaponVisual _weaponVisual;
+    private WeaponStatusCanvas _weaponStatusCanvas;
+    private WeaponHitZone _weaponHitZone;
 
     private Enemy _target;
     public Enemy Target => _target;
@@ -146,6 +150,16 @@ public class Weapon : MonoBehaviour
         }
 
         _weaponVisual = GetComponent<WeaponVisual>();
+        _weaponStatusCanvas = GetComponentInChildren<WeaponStatusCanvas>();
+        _weaponHitZone = GetComponent<WeaponHitZone>();
+
+        if (_weaponHitZone != null)
+            _weaponHitZone.Initialize(this);
+
+        if (_weaponVisual == null)
+            Debug.LogError($"[Weapon] На объекте {gameObject.name} нет WeaponVisual");
+        if (_weaponStatusCanvas == null)
+            Debug.LogError($"[Weapon] На объекте {gameObject.name} нет WeaponStatusCanvas");
     }
 
     protected virtual void OnDisable()
@@ -213,6 +227,39 @@ public class Weapon : MonoBehaviour
     public void OnTargetDeath()
     {
         _target = null;
+    }
+
+    public void TakeDamage(float amount)
+    {
+        if (amount <= 0f) return;
+
+        health -= amount;
+
+        _weaponStatusCanvas?.UpdateHealthBar(health, Data.baseHealth);
+
+        if (health <= 0f)
+        {
+            OnDestroyed();
+        }
+    }
+
+    private void OnDestroyed()
+    {
+        Debug.Log($"[Weapon] {name} destroyed!");
+
+        _target = null;
+        _shootStrategy = null;
+        _aimStrategy = null;
+        _targetStrategy = null;
+
+        var colls = GetComponents<Collider>();
+        foreach (var c in colls) c.enabled = false;
+
+        //if (_weaponVisual != null) _weaponVisual.PlayDestroyEffect();
+
+        OnWeaponDestroyed?.Invoke();
+        // Удаляем объект через пару секунд, либо делаем pooling
+        Destroy(gameObject, 2f);
     }
 
     protected virtual void OnDrawGizmosSelected()
