@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 public class WeaponManager : MonoBehaviour
 {
@@ -9,6 +11,8 @@ public class WeaponManager : MonoBehaviour
     private readonly List<Weapon> _weapons = new();
     private WeaponsService _weaponsService;
     private WeaponFactory _weaponFactory;
+
+    public event Action OnAllWeaponsDestroyed;
 
     [Inject]
     public void Construct(WeaponsService weaponsService, WeaponFactory factory)
@@ -30,7 +34,11 @@ public class WeaponManager : MonoBehaviour
             var weapon = _weaponFactory.AddWeaponComponent(go, so);
             _weapons.Add(weapon);
 
-            weapon.OnWeaponDestroyed += () => _weapons.Remove(weapon);
+            weapon.OnWeaponDestroyed += () =>
+            {
+                _weapons.Remove(weapon);
+                CheckAllWeaponsDestroyed();
+            };
         }
     }
     public Weapon GetRandomWeapon()
@@ -38,5 +46,13 @@ public class WeaponManager : MonoBehaviour
         if (_weapons.Count == 0) return null;
         int randomIndex = Random.Range(0, _weapons.Count);
         return _weapons[randomIndex];
+    }
+
+    private void CheckAllWeaponsDestroyed()
+    {
+        if (_weapons.Count == 0)
+        {
+            OnAllWeaponsDestroyed?.Invoke();
+        }
     }
 }
