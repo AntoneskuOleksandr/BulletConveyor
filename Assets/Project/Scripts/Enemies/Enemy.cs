@@ -1,319 +1,115 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UI;
+using UnityEngine.Events;
+using Zenject;
 
-[RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(Animator))]
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
-    [Header("Main")]
-    public float maxHealth = 1000f;
-    public float fadeOutDuration = 2f;
-    public float minSpeed = 0.5f;
-    public float maxSpeed = 1f;
-    public float damage = 5f;
+    [Header("Stats")]
+    [SerializeField] protected float baseSpeed = 1f;
+    [SerializeField] protected float maxHealth = 100f;
+    [SerializeField] private float killReward = 10f;
+    [SerializeField] private float contactDamage = 20f;
+    [SerializeField] protected Transform hitTransform;
+    [SerializeField] protected EnemyStatusCanvas enemyStatusCanvas;
+    [Header("Read-Only")]
+    [SerializeField] protected float _currentHealth;
 
-    [Header("Animation")]
-    public float deathAnimationDuration = 2.967f;
+    protected Transform _target;
+    protected NavMeshAgent _agent;
+    protected Animator _animator;
+    protected Collider _collider;
+    protected Rigidbody _rigidbody;
 
-    [Header("Effects")]
 
-    [Header("Fire")]
-    public float burnRadius = 3f;
-    public float burnDuration = 5f;
-    public float burnDamage = 80f;
+    public float ContactDamage => contactDamage;
+    public bool IsAlive => _currentHealth > 0f;
+    public float Health => _currentHealth;
+    public float BaseSpeed => baseSpeed;
+    public float KillReward => killReward;
+    public Transform HitTransform => hitTransform;
+    public UnityEvent OnDeath;
 
-    [Header("Freeze")]
-    public float freezeRadius = 3f;
-    public float freezeDuration = 3f;
+    // Все активные дебафы/бафы на враге
+    protected Dictionary<OnHitEffectType, IStatusEffect> _effects = new();
 
-    [Header("Poison")]
-    public float poisonRadius = 5f;
-    public float poisonDuration = 3f;
-    public float poisonDamage = 50f;
+    // Менеджер модификаторов для комбинирования эффектов
+    public ModifierManager ModifierManager { get; private set; }
 
-    [Header("Bool")]
-    public bool hasFireInRadiusEffect = false;
-    public bool hasFreezeInRadiusEffect = false;
-    public bool hasPoisonInRadiusEffect = false;
-
-    [Header("UI")]
-    public Image healthBar;
-    public GameObject canvas;
-
-    public Gun TargetGun { get; private set; }
-
-    [HideInInspector] public float currentHealth;
-
-    protected LayerMask enemyLayer;
-    protected NavMeshAgent agent;
-    protected Animator animator;
-
-    protected bool isFrozen = false;
-    protected bool isBurning = false;
-    protected bool isDead = false;
-    protected bool isPoisoned = false;
-    protected bool isStunned = false;
-
-    public virtual void Start()
+    [Inject]
+    public void Construct(WeaponManager weaponManager, DiContainer container)
     {
-        agent = GetComponent<NavMeshAgent>();
-        agent.speed = Random.Range(minSpeed, maxSpeed);
-        animator = GetComponent<Animator>();
+        // Добавляем менеджер модификаторов на врага
+        ModifierManager = container.InstantiateComponent<ModifierManager>(this.gameObject);
+        ModifierManager.Initialize(this, enemyStatusCanvas);
 
-        currentHealth = maxHealth;
+        _target = weaponManager.GetRandomWeapon()?.transform;
 
-        enemyLayer = this.gameObject.layer;
+        if (_target == null)
+            Debug.LogError("[Enemy] There are no weapons at scene.");
 
-        GetNewGunPosition();
+        _agent = GetComponent<NavMeshAgent>();
+        _animator = GetComponent<Animator>();
+        _collider = GetComponent<Collider>();
+        _rigidbody = GetComponent<Rigidbody>();
+
+        _currentHealth = maxHealth;
     }
 
-    public virtual void Update()
+    protected void OnEnable()
     {
-        if (isDead)
-            return;
+        OnDeath.AddListener(() => enemyStatusCanvas.HideHealthBar());
 
-        if (agent.remainingDistance > agent.stoppingDistance)
+        if (_target != null && _agent != null)
         {
-            animator.SetFloat("MoveSpeed", agent.speed);
+            _agent.SetDestination(_target.position);
+            _animator.SetFloat("MoveSpeed", _agent.speed / 2f);
         }
     }
 
-    public virtual void TakeDamage(float amount)
+    protected void OnDisable()
     {
-        if (isDead)
-            return;
+        OnDeath.RemoveListener(() => enemyStatusCanvas.HideHealthBar());
+    }
 
-        currentHealth -= amount;
+    public void SetSpeed(float speed)
+    {
+        _animator.SetFloat("MoveSpeed", _agent.speed / 2f);
+        _agent.speed = speed;
+    }
 
-        canvas.SetActive(true);
+    public void TakeDamage(float damage)
+    {
+        if (!IsAlive) return;
 
-        healthBar.fillAmount = currentHealth / maxHealth;
+        _currentHealth -= damage;
+        enemyStatusCanvas.SetHealthBarFillAmount(_currentHealth / maxHealth);
 
-        if (currentHealth <= 0)
-        {
+        if (!IsAlive)
             Die();
-        }
     }
 
-    public virtual void Die()
+    /// <summary>
+    /// Смерть врага
+    /// </summary>
+    protected void Die()
     {
-        if (isDead)
-            return;
+        _currentHealth = 0f;
+        OnDeath?.Invoke();
 
-        isDead = true;
+        _collider.enabled = false;
+        if (_rigidbody != null) _rigidbody.isKinematic = true;
 
-        Spawner.Instance.EnemyDied(this);
-
-        if (hasFireInRadiusEffect)
-            if (Random.value < AbilityProbabilityManager.Instance.GetProbability(AbilityManager.Ability.FireInRadius))
-                BurnEnemiesInRadius(transform.position);
-
-        if (hasFreezeInRadiusEffect)
-            if (Random.value < AbilityProbabilityManager.Instance.GetProbability(AbilityManager.Ability.FreezeInRadius))
-                FreezeEnemiesInRadius(transform.position);
-
-
-        if (hasPoisonInRadiusEffect)
-            if (Random.value < AbilityProbabilityManager.Instance.GetProbability(AbilityManager.Ability.PoisonInRadius))
-                PoisonEnemiesInRadius(transform.position);
-
-        GetComponent<Collider>().enabled = false;
-        GetComponent<Rigidbody>().isKinematic = true;
-
-
-        tag = "Untagged";
-        agent.speed = 0f;
-        agent.isStopped = true;
-        agent.radius = 0f;
-        agent.enabled = false;
-
-        canvas.SetActive(false);
-        animator.SetTrigger("DeathTrigger");
-
-        StartCoroutine(FadeOut(3f));
-    }
-
-    protected void BurnEnemiesInRadius(Vector3 position)
-    {
-        Collider[] colliders = Physics.OverlapSphere(position, burnRadius, enemyLayer);
-
-        foreach (Collider collider in colliders)
+        if (_agent != null)
         {
-            Enemy enemy = collider.GetComponent<Enemy>();
-
-            if (enemy != null && enemy != this)
-                enemy.Burn(burnDamage, burnDuration);
-        }
-    }
-
-    protected void FreezeEnemiesInRadius(Vector3 position)
-    {
-        Collider[] colliders = Physics.OverlapSphere(position, freezeRadius, enemyLayer);
-        foreach (Collider collider in colliders)
-        {
-            Enemy enemy = collider.GetComponent<Enemy>();
-            if (enemy != null && enemy != this)
-                enemy.Freeze(freezeDuration);
-        }
-    }
-
-    protected void PoisonEnemiesInRadius(Vector3 position)
-    {
-        Collider[] colliders = Physics.OverlapSphere(position, poisonRadius, enemyLayer);
-        foreach (Collider collider in colliders)
-        {
-            Enemy enemy = collider.GetComponent<Enemy>();
-            if (enemy != null && enemy != this)
-                enemy.Poison(poisonDamage, poisonDuration);
-        }
-    }
-
-    public void Burn(float totalDamage, float duration)
-    {
-        if (!isBurning)
-        {
-            isBurning = true;
-            StartCoroutine(BurnOverTime(totalDamage, duration));
-        }
-    }
-
-    protected IEnumerator BurnOverTime(float totalDamage, float duration)
-    {
-        float damagePerSecond = totalDamage / duration;
-        float rate = 1.0f / duration;
-        float progress = 0.0f;
-
-        while (progress < 1.0)
-        {
-            if (isDead)
-            {
-                isBurning = false;
-                yield break;
-            }
-
-            TakeDamage(damagePerSecond * Time.deltaTime);
-            progress += rate * Time.deltaTime;
-            yield return null;
+            _agent.isStopped = true;
+            _agent.enabled = false;
         }
 
-        isBurning = false;
-    }
+        if (_animator != null)
+            _animator.SetTrigger("DeathTrigger");
 
-    public void Freeze(float duration)
-    {
-        if (!isFrozen)
-        {
-            isFrozen = true;
-
-            agent.speed *= 0.6f;
-            StartCoroutine(Unfreeze(duration));
-        }
-    }
-
-    protected IEnumerator Unfreeze(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        isFrozen = false;
-
-        agent.speed /= 0.6f;
-    }
-
-    public void Poison(float totalDamage, float duration)
-    {
-        if (!isPoisoned)
-        {
-            isPoisoned = true;
-            StartCoroutine(PoisonOverTime(totalDamage, duration));
-        }
-    }
-
-    protected IEnumerator PoisonOverTime(float totalDamage, float duration)
-    {
-        float damagePerSecond = totalDamage / duration;
-        float rate = 1.0f / duration;
-        float progress = 0.0f;
-
-        while (progress < 1.0)
-        {
-            if (isDead)
-            {
-                isPoisoned = false;
-                yield break;
-            }
-
-            TakeDamage(damagePerSecond * Time.deltaTime);
-            progress += rate * Time.deltaTime;
-            yield return null;
-        }
-
-        isPoisoned = false;
-    }
-
-    public void Stun(float stunDuration)
-    {
-        if (!isStunned)
-        {
-            isStunned = true;
-            float originalSpeed = agent.speed;
-            agent.speed = 0;
-            StartCoroutine(RecoverFromStun(stunDuration, originalSpeed));
-        }
-    }
-
-    protected IEnumerator RecoverFromStun(float duration, float originalSpeed)
-    {
-        yield return new WaitForSeconds(duration);
-        isStunned = false;
-        agent.speed = originalSpeed;
-    }
-
-    protected IEnumerator FadeOut(float duration)
-    {
-        yield return new WaitForSeconds(deathAnimationDuration);
-        SkinnedMeshRenderer skinnedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
-        Material material = skinnedMeshRenderer.material;
-        Color color = material.color;
-        float rate = 1.0f / duration;
-        float progress = 0.0f;
-
-        while (progress < 1.0)
-        {
-            color.a = Mathf.Lerp(1, 0, progress);
-            material.color = color;
-            progress += rate * Time.deltaTime;
-            yield return null;
-        }
-
-        color.a = 0;
-        material.color = color;
-        Destroy(gameObject);
-    }
-
-    protected void OnCollisionEnter(Collision collision)
-    {
-        Gun gun = collision.gameObject.GetComponent<Gun>();
-        if (gun != null)
-        {
-            gun.TakeDamage(damage);
-            Die();
-        }
-    }
-
-    public void GetNewGunPosition()
-    {
-        List<Gun> guns = GameManager.Instance.GetAllGuns();
-        if (guns.Count > 0)
-        {
-            TargetGun = guns[Random.Range(0, guns.Count)];
-            agent.SetDestination(TargetGun.transform.position);
-        }
-        else
-        {
-            TargetGun = null;
-            agent.SetDestination(transform.position);
-        }
+        Destroy(this.gameObject, 5f);
     }
 }

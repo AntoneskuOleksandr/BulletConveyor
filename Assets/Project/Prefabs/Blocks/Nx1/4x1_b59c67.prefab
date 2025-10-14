@@ -264,14 +264,17 @@ MonoBehaviour:
   bulletsCountText: {fileID: 5446383112856917226}
   scaleX: 4
   scaleZ: 1
+  blockState: 0
+  blockPreviousState: 0
   bulletsToGenerate: 0
-  isOnBoard: 0
   nextRangBlock: {fileID: 1843681697617903877, guid: 24841f62363b89840925c68ae44c67d6,
     type: 3}
-  rank: 0
-  platform: 0
+  rank: 2
   shape:
   - row: 01000000010000000100000001000000
+  onDragFromBoard:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6827180311982379075
 GameObject:
   m_ObjectHideFlags: 0

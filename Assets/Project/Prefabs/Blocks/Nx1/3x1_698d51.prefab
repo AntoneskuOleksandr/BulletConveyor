@@ -52,14 +52,17 @@ MonoBehaviour:
   bulletsCountText: {fileID: 4256042653996208789}
   scaleX: 3
   scaleZ: 1
-  bulletsToGenerate: 0
-  isOnBoard: 0
+  blockState: 0
+  blockPreviousState: 0
+  bulletsToGenerate: 3
   nextRangBlock: {fileID: 5413735064471061629, guid: cd5a8fe7251b686439d5a76aef6e8505,
     type: 3}
-  rank: 0
-  platform: 0
+  rank: 1
   shape:
   - row: 010000000100000001000000
+  onDragFromBoard:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3889445243948335551
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,7 +160,7 @@ RectTransform:
   m_Father: {fileID: 3388226063873135535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 2.625, y: 1.75}
   m_Pivot: {x: 0, y: 0.5}
@@ -232,7 +235,7 @@ RectTransform:
   m_Father: {fileID: 3388226063873135535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 2.625, y: 1.75}
   m_Pivot: {x: 1, y: 0.5}
@@ -286,12 +289,12 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 1.55
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -392,7 +395,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

@@ -1,0 +1,1 @@
+public enum TargetStrategyType { Nearest }
