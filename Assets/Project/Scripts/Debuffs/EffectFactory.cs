@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 /// <summary>
@@ -42,6 +43,29 @@ public class EffectFactory : MonoBehaviour
             if (e.Type == type) return e;
         return null;
     }
+
+    /// <summary>
+    /// Преобразует шансы эффектов в словарь цветов с весами.
+    /// </summary>
+    public Dictionary<Color, float> ConvertChancesToColors(Dictionary<OnHitEffectType, float> chances)
+    {
+        var result = new Dictionary<Color, float>();
+
+        foreach (var kv in chances)
+        {
+            StatusEffectSO so = GetEffectSO(kv.Key);
+            if (so == null)
+                continue;
+
+            if (result.ContainsKey(so.Color))
+                result[so.Color] += kv.Value;
+            else
+                result[so.Color] = kv.Value;
+        }
+
+        return result;
+    }
+
 
     /// <summary>
     /// Получение иконки для UI

@@ -10,11 +10,9 @@ public class WeaponEffectChance
     [Range(0f, 1f)] public float chance;
 }
 
+[RequireComponent(typeof(WeaponAttachmentPoints), typeof(WeaponVisual))]
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private BulletType bulletType;
-    public BulletType BulletType => bulletType;
-
     [Header("Weapon Settings")]
     [SerializeField] private float turnSpeed = 3f;
     [SerializeField] private float aimThreshold = 2f;
@@ -43,10 +41,12 @@ public class Weapon : MonoBehaviour
     [Tooltip("Задайте стартовые шансы на разные дебаффы от этой пушки.")]
     public List<WeaponEffectChance> effectChances = new();
 
-    private EffectChanceManager _effectChanceManager;
+    [Inject] private EffectChanceManager _effectChanceManager;
+    [Inject] private EffectFactory _effectFactory;
+    private WeaponVisual _weaponVisual;
 
-    private Enemy target;
-    public Enemy Target => target;
+    private Enemy _target;
+    public Enemy Target => _target;
 
     private float _fireCountdown;
     public float FireCountdown => _fireCountdown;
@@ -74,12 +74,6 @@ public class Weapon : MonoBehaviour
     private IShootStrategy _shootStrategy;
     private IAimStrategy _aimStrategy;
     private ITargetStrategy _targetStrategy;
-
-    [Inject]
-    public void Construct(EffectChanceManager effectChanceManager)
-    {
-        _effectChanceManager = effectChanceManager;
-    }
 
     /// <summary>
     /// Назначение стратегий поведения
@@ -112,8 +106,6 @@ public class Weapon : MonoBehaviour
     public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
     {
         Data = so;
-        bulletType = so.BulletType;
-
         damage = so.baseDamage;
         fireRate = so.baseFireRate;
         health = so.baseHealth;
@@ -152,37 +144,50 @@ public class Weapon : MonoBehaviour
                 effectChance.chance
             );
         }
+
+        _weaponVisual = GetComponent<WeaponVisual>();
     }
 
     protected virtual void OnDisable()
     {
-        if (target != null)
-            target.OnDeath.RemoveListener(OnTargetDeath);
+        if (_target != null)
+            _target.OnDeath.RemoveListener(OnTargetDeath);
     }
 
     protected void Update()
     {
-        // --- обновляем цель ---
         _targetRefreshTimer -= Time.deltaTime;
         if (_targetRefreshTimer <= 0f)
         {
             _targetRefreshTimer = _targetRefreshRate;
-            target = _targetStrategy?.FindTarget(this);
+            _target = _targetStrategy?.FindTarget(this);
         }
 
-        // --- логика поведения ---
-        if (target != null)
+        if (_target != null)
         {
             _idleTimer = 0f;
-            _aimStrategy?.Aim(this);
-            _shootStrategy?.Shoot(this);
+
+            if (_aimStrategy?.TryAim(this) == true)
+            {
+                if (_shootStrategy?.TryShoot(this) == true)
+                {
+                    // 1. Получаем шансы эффектов для этой пушки
+                    var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
+
+                    // 2. Конвертируем в словарь цветов
+                    var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
+
+                    // 3. Визуализируем
+                    _weaponVisual?.PlayShotEffect(colorWeights);
+                }
+            }
+
         }
         else
         {
             HandleIdleRotation();
         }
 
-        // --- таймер перезарядки ---
         if (_fireCountdown > 0f)
             _fireCountdown -= Time.deltaTime;
     }
@@ -207,7 +212,7 @@ public class Weapon : MonoBehaviour
 
     public void OnTargetDeath()
     {
-        target = null;
+        _target = null;
     }
 
     protected virtual void OnDrawGizmosSelected()

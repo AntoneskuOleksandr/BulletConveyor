@@ -1,4 +1,7 @@
 public interface IShootStrategy
 {
-    void Shoot(Weapon weapon);
+    /// <summary>
+    /// Возвращает true, если выстрел реально произошёл.
+    /// </summary>
+    bool TryShoot(Weapon weapon);
 }

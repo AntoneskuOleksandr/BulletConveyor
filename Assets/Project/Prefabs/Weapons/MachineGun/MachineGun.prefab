@@ -1753,6 +1753,7 @@ GameObject:
   - component: {fileID: 7429299505993265296}
   - component: {fileID: 5195655992512359833}
   - component: {fileID: 1410583737084430005}
+  - component: {fileID: 4335888418020646041}
   m_Layer: 9
   m_Name: MachineGun
   m_TagString: Gun
@@ -1813,6 +1814,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePoint: {fileID: 6450309541370084910}
   partToRotate: {fileID: 9065552717764785487}
+--- !u!114 &4335888418020646041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7805296867101043242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf52847350b9ca545b74ac99027c0d93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzleFlashPrefab: {fileID: 1529251847436644345, guid: 81a7de5c9a1e99348994bfff5859685a,
+    type: 3}
+  muzzlePoint: {fileID: 6450309541370084910}
 --- !u!1 &7806363943985588663
 GameObject:
   m_ObjectHideFlags: 0
