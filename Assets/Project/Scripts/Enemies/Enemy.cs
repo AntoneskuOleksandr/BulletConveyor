@@ -10,8 +10,11 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected float baseSpeed = 1f;
     [SerializeField] protected float maxHealth = 100f;
     [SerializeField] private float killReward = 10f;
+    [SerializeField] private float contactDamage = 20f;
     [SerializeField] protected Transform hitTransform;
     [SerializeField] protected EnemyStatusCanvas enemyStatusCanvas;
+    [Header("Read-Only")]
+    [SerializeField] protected float _currentHealth;
 
     protected Transform _target;
     protected NavMeshAgent _agent;
@@ -19,8 +22,8 @@ public abstract class Enemy : MonoBehaviour
     protected Collider _collider;
     protected Rigidbody _rigidbody;
 
-    [SerializeField] protected float _currentHealth;
 
+    public float ContactDamage => contactDamage;
     public bool IsAlive => _currentHealth > 0f;
     public float Health => _currentHealth;
     public float BaseSpeed => baseSpeed;
@@ -42,6 +45,9 @@ public abstract class Enemy : MonoBehaviour
         ModifierManager.Initialize(this, enemyStatusCanvas);
 
         _target = weaponManager.GetRandomWeapon()?.transform;
+
+        if (_target == null)
+            Debug.LogError("[Enemy] There are no weapons at scene.");
 
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
