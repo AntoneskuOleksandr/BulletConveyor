@@ -56,6 +56,35 @@ public class EffectChanceManager
         return results;
     }
 
+    public Dictionary<OnHitEffectType, float> GetAllChancesForWeapon(Weapon weapon)
+    {
+        var result = new Dictionary<OnHitEffectType, float>();
+
+        foreach (var global in _globalChances)
+        {
+            result[global.EffectType] = global.TotalChance;
+        }
+
+        if (weapon != null && _weaponChances.TryGetValue(weapon, out var weaponList))
+        {
+            foreach (var local in weaponList)
+            {
+                if (result.ContainsKey(local.EffectType))
+                    result[local.EffectType] += local.TotalChance;
+                else
+                    result[local.EffectType] = local.TotalChance;
+            }
+        }
+
+        var keys = new List<OnHitEffectType>(result.Keys);
+        foreach (var key in keys)
+        {
+            result[key] = Mathf.Clamp01(result[key]);
+        }
+
+        return result;
+    }
+
     public void ClearWeaponChances(Weapon weapon)
     {
         if (_weaponChances.ContainsKey(weapon))

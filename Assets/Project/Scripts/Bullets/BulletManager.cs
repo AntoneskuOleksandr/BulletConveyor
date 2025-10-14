@@ -8,45 +8,32 @@ public class BulletManager
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
 
-    public Bullet GetBullet(Weapon weapon)
+    /// <summary>
+    /// Получает пулю из пула и применяет к ней эффекты.
+    /// Обратите внимание — здесь мы больше не задаём стратегии!
+    /// </summary>
+    public Bullet TryGetBullet(Weapon weapon)
     {
-        if (!_bulletsStack.HaveBullet) return null;
+        if (!_bulletsStack.HaveBullet)
+            return null;
 
         GameObject bulletGO = _bulletsStack.GetBulletGOFromStack();
-        if (bulletGO == null) return null;
+        if (bulletGO == null)
+            return null;
 
-        Bullet bullet = CreateBullet(bulletGO, weapon);
-        AddEffectsToBullet(bullet, weapon);
+        Bullet bullet = bulletGO.GetComponent<Bullet>();
+        if (bullet == null)
+            bullet = bulletGO.AddComponent<Bullet>();
 
-        return bullet;
-    }
-
-    private Bullet CreateBullet(GameObject bulletGO, Weapon weapon)
-    {
-        switch (weapon.BulletType)
-        {
-            case BulletType.Standard:
-                bulletGO.AddComponent<StandardBullet>();
-                break;
-            case BulletType.Missile:
-                bulletGO.AddComponent<Missile>();
-                break;
-        }
-        return bulletGO.GetComponent<Bullet>();
-    }
-
-    private void AddEffectsToBullet(Bullet bullet, Weapon sourceWeapon)
-    {
-        List<OnHitEffectType> effectTypes = _effectChanceManager.RollEffectsForWeapon(sourceWeapon);
-
-        foreach (var type in effectTypes)
+        // эффекты из шанс-менеджера
+        var effects = _effectChanceManager.RollEffectsForWeapon(weapon);
+        foreach (var type in effects)
         {
             IOnHitEffect effect = _effectFactory.CreateEffect(type);
-
-            Debug.Log("Add Effect To Bullet: " + effect);
-
             if (effect != null)
                 bullet.AddEffect(effect);
         }
+
+        return bullet;
     }
 }

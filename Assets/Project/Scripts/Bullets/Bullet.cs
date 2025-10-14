@@ -1,80 +1,84 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Bullet : MonoBehaviour
+[RequireComponent(typeof(Rigidbody), typeof(Collider))]
+[DisallowMultipleComponent]
+public class Bullet : MonoBehaviour
 {
-    protected Transform _target;
-    protected Vector3 _direction;
-    protected Rigidbody _rigidbody;
-    protected Collider _collider;
+    [Header("Base Stats")]
+    [SerializeField] private float _speed = 20f;
+    [SerializeField] private float _damage = 10f;
 
-    protected float _speed = 20f;
-    protected float _damage = 10f;
+    private Transform _target;
+    private Rigidbody _rigidbody;
+    private Collider _collider;
 
-    protected List<IOnHitEffect> _effects = new List<IOnHitEffect>();
+    private IBulletMoveStrategy _moveStrategy;
+    private IBulletHitStrategy _hitStrategy;
+
+    private readonly List<IOnHitEffect> _effects = new();
+    private BulletVisual _visual;
 
     public float Damage => _damage;
     public float Speed => _speed;
+    public Transform Target => _target;
+    public Rigidbody Rigidbody => _rigidbody;
+    public Collider Collider => _collider;
 
-    public void AddEffect(IOnHitEffect effect) => _effects.Add(effect);
-
-    public virtual void Init(float damage, Transform spawnPoint, Transform target)
+    private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
-
-        if (_rigidbody == null)
-        {
-            Debug.LogError("Rigidbody component is missing on the bullet.");
-            return;
-        }
-        if (_collider == null)
-        {
-            Debug.LogError("Collider component is missing on the bullet.");
-            return;
-        }
-
-        this._damage = damage;
-        this._target = target;
-
-        this.transform.position = spawnPoint.position;
-        this.transform.rotation = spawnPoint.rotation;
-
-        Launch();
+        _visual = GetComponent<BulletVisual>();
     }
 
-    protected void Launch()
+    public void SetStrategies(IBulletMoveStrategy move, IBulletHitStrategy hit)
     {
+        _moveStrategy = move;
+        _hitStrategy = hit;
+    }
+
+    public void AddEffect(IOnHitEffect effect) => _effects.Add(effect);
+
+    public void ApplyEffects(Enemy enemy)
+    {
+        foreach (var effect in _effects)
+            effect.Apply(this, enemy);
+    }
+
+    public void Init(float damage, Transform spawnPoint, Transform target)
+    {
+        _damage = damage;
+        _target = target;
+
+        transform.position = spawnPoint.position;
+        transform.rotation = spawnPoint.rotation;
+
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
         _collider.enabled = true;
         _collider.isTrigger = true;
 
-        _direction = _target.position - this.transform.position;
-        _rigidbody.linearVelocity = _direction.normalized * Speed;
+        _visual?.OnSpawn();
+        SetVisual(Color.green);
+
+        _moveStrategy?.Launch(this, target);
     }
 
-    protected void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.CompareTag("Enemy"))
-        {
-            HitTarget(other.transform);
-        }
-
-        Destroy(this.gameObject);
+        _hitStrategy?.Hit(this, other);
+        _visual?.OnDespawn();
+        Destroy(gameObject);
     }
 
-    protected void HitTarget(Transform target)
+    private void OnDisable()
     {
-        Enemy enemy = target.GetComponent<Enemy>();
+        _visual?.OnDespawn();
+    }
 
-        if (enemy != null)
-        {
-            enemy.TakeDamage(Damage); //Base damage
-            foreach (var effect in _effects)
-            {
-                effect.Apply(this, enemy);
-            }
-        }
+    public void SetVisual(Color baseColor)
+    {
+        _visual?.SetBaseColor(baseColor);
     }
 }

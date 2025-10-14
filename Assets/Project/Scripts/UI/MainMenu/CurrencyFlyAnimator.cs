@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using DG.Tweening;
-using Zenject;
+using System;
 
 public class CurrencyFlyAnimator : MonoBehaviour
 {
@@ -13,8 +13,6 @@ public class CurrencyFlyAnimator : MonoBehaviour
     [SerializeField] private float totalAnimationTime = 1.5f;
     [SerializeField] private int maxIcons = 20;
     [SerializeField] private Vector2 spawnSpread = new Vector2(50f, 50f);
-
-    [Inject] private EconomyManager _economyManager;
 
     private Canvas _rootCanvas;
     private Camera _uiCamera;
@@ -29,18 +27,31 @@ public class CurrencyFlyAnimator : MonoBehaviour
             : null;
     }
 
-    public void AnimateCurrencyGain(int amount, RectTransform spawnFrom)
+    /// <summary>
+    /// Запускает анимацию монет и вызывает addCurrencyCallback на каждую монету.
+    /// onComplete вызывается, когда анимация полностью завершена.
+    /// </summary>
+    public void AnimateCurrencyGain(
+        int amount,
+        RectTransform fromUI,
+        Action<int> addCurrencyCallback,
+        Action onComplete = null)
     {
-        if (!currencyPrefab || !target || !spawnParent || !spawnFrom)
+        if (!currencyPrefab || !target || !spawnParent || !fromUI)
         {
-            Debug.LogError($"[CurrencyFlyAnimator] Missing refs: prefab={currencyPrefab}, target={target}, spawnParent={spawnParent}, spawnFrom={spawnFrom}");
+            Debug.LogError("[CurrencyFlyAnimator] Missing references!");
+            onComplete?.Invoke();
             return;
         }
 
-        StartCoroutine(SpawnAndFly(amount, spawnFrom));
+        StartCoroutine(SpawnAndFly(amount, fromUI, addCurrencyCallback, onComplete));
     }
 
-    private IEnumerator SpawnAndFly(int amount, RectTransform spawnFrom)
+    private IEnumerator SpawnAndFly(
+        int amount,
+        RectTransform spawnFrom,
+        Action<int> addCurrencyCallback,
+        Action onComplete)
     {
         bool sameParentForBoth =
             spawnFrom.parent == spawnParent &&
@@ -64,6 +75,8 @@ public class CurrencyFlyAnimator : MonoBehaviour
             targetLocal = ToLocalOn(spawnParent, target);
         }
 
+        int completed = 0;
+
         for (int i = 0; i < visualCoins; i++)
         {
             RectTransform icon = Instantiate(currencyPrefab, spawnParent);
@@ -72,8 +85,8 @@ public class CurrencyFlyAnimator : MonoBehaviour
             icon.localScale = Vector3.one;
 
             Vector2 jitter = new Vector2(
-                Random.Range(-spawnSpread.x, spawnSpread.x),
-                Random.Range(-spawnSpread.y, spawnSpread.y));
+                UnityEngine.Random.Range(-spawnSpread.x, spawnSpread.x),
+                UnityEngine.Random.Range(-spawnSpread.y, spawnSpread.y));
 
             Vector2 start = startLocal + jitter;
             icon.anchoredPosition = start;
@@ -85,13 +98,15 @@ public class CurrencyFlyAnimator : MonoBehaviour
                 .OnComplete(() =>
                 {
                     Destroy(icon.gameObject);
-                    _economyManager?.AddMoneyDirect(reward);
+                    addCurrencyCallback?.Invoke(reward); // начисляем по монете
+                    completed++;
+                    if (completed == visualCoins)
+                        onComplete?.Invoke(); // все монетки долетели
                 });
 
             yield return new WaitForSeconds(totalAnimationTime / visualCoins);
         }
     }
-
 
     private Vector2 ToLocalOn(RectTransform onto, RectTransform rt)
     {

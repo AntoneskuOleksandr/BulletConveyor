@@ -15,6 +15,7 @@ public class StatusEffectSO : ScriptableObject
 {
     public OnHitEffectType Type;
     public float Duration;
+    public Color Color;
 
     [Header("Effect Parameters")]
     public List<EffectParameter> Parameters = new List<EffectParameter>();
