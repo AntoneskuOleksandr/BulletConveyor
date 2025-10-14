@@ -4,7 +4,7 @@ public class MergePlatformsManager : MonoBehaviour
 {
     [SerializeField] private Platform[] platforms;
 
-    private void Awake()
+    private void Start()
     {
         for (int i = 0; i < platforms.Length; i++)
             platforms[i].index = i;

@@ -9,6 +9,8 @@ public class DragStateMachine
         CurrentState?.Exit();
         CurrentState = newState;
         CurrentState.Enter();
+
+        Debug.Log("State Machine Current State: " + CurrentState);
     }
 
     public void Update() => CurrentState?.Update();

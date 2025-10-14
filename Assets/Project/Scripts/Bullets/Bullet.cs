@@ -1,84 +1,176 @@
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(Collider))]
-[DisallowMultipleComponent]
-public class Bullet : MonoBehaviour
+public abstract class Bullet : MonoBehaviour
 {
-    [Header("Base Stats")]
-    [SerializeField] private float _speed = 20f;
-    [SerializeField] private float _damage = 10f;
+    [Header("General")]
+    public float speed = 70f;
+    public float explosionRadius = 5f;
+    public float yEnemyOffSet = 1.2f;
+    public LayerMask enemyLayer;
+    public float timeToDead = 3f;
 
-    private Transform _target;
-    private Rigidbody _rigidbody;
-    private Collider _collider;
+    [Header("Effects")]
+    [Header("Burn")]
+    public float burnRadius;
+    public float burnDuration;
+    public float burnDamage;
 
-    private IBulletMoveStrategy _moveStrategy;
-    private IBulletHitStrategy _hitStrategy;
+    [Header("Freeze")]
+    public float freezeRadius;
+    public float freezeDuration;
 
-    private readonly List<IOnHitEffect> _effects = new();
-    private BulletVisual _visual;
+    [Header("Poison")]
+    public float poisonRadius;
+    public float poisonDuration;
+    public float poisonDamage;
 
-    public float Damage => _damage;
-    public float Speed => _speed;
-    public Transform Target => _target;
-    public Rigidbody Rigidbody => _rigidbody;
-    public Collider Collider => _collider;
+    [Header("Stun")]
+    public float stunDuration;
 
-    private void Awake()
+    [Header("Bullet Damage Increase")]
+    public float damageMultiplier;
+
+    public GameObject impactEffect;
+    public enum Effect { None, Burn, Freeze, InstantDeath, Poison, Stun, IncearedDamage, Explosion }
+    public Effect effect = Effect.None;
+
+    public TrailRenderer trail;
+    public Color trailColor;
+
+    public float damage;
+
+    public event Action<GameObject> OnBulletHit;
+
+
+    private void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _collider = GetComponent<Collider>();
-        _visual = GetComponent<BulletVisual>();
+        burnDamage = damage;
+        poisonDamage = damage;
     }
 
-    public void SetStrategies(IBulletMoveStrategy move, IBulletHitStrategy hit)
+    private void OnEnable()
     {
-        _moveStrategy = move;
-        _hitStrategy = hit;
+        UpdateTrailColor();
     }
 
-    public void AddEffect(IOnHitEffect effect) => _effects.Add(effect);
-
-    public void ApplyEffects(Enemy enemy)
+    public void UpdateTrailColor()
     {
-        foreach (var effect in _effects)
-            effect.Apply(this, enemy);
+        trail.startColor = trailColor;
+        trail.endColor = trailColor;
+        trail.enabled = true;
     }
 
-    public void Init(float damage, Transform spawnPoint, Transform target)
+    public virtual void HitTarget(Transform target)
     {
-        _damage = damage;
-        _target = target;
+        Enemy enemy = target.GetComponent<Enemy>();
 
-        transform.position = spawnPoint.position;
-        transform.rotation = spawnPoint.rotation;
+        Debug.Log(effect);
 
-        _rigidbody.isKinematic = false;
-        _rigidbody.useGravity = false;
-        _collider.enabled = true;
-        _collider.isTrigger = true;
+        if (effect == Effect.Burn)
+            enemy.Burn(burnDamage, burnDuration);
+        else if (effect == Effect.Freeze)
+            enemy.Freeze(freezeDuration);
+        else if (effect == Effect.InstantDeath)
+            enemy.Die();
+        else if (effect == Effect.Poison)
+            enemy.Poison(poisonDamage, poisonDuration);
+        else if (effect == Effect.Stun)
+            enemy.Stun(stunDuration);
+        else if (effect == Effect.IncearedDamage)
+            damage *= damageMultiplier;
+        else if (effect == Effect.Explosion)
+            Explode();
 
-        _visual?.OnSpawn();
-        SetVisual(Color.green);
+        Damage(target);
 
-        _moveStrategy?.Launch(this, target);
+        if (enemy.hasFireInRadiusEffect)
+        {
+            enemy.burnRadius = burnRadius;
+            enemy.burnDuration = burnDuration;
+            enemy.burnDamage = burnDamage;
+        }
+        else if (enemy.hasFreezeInRadiusEffect)
+        {
+            enemy.freezeRadius = freezeRadius;
+            enemy.freezeDuration = freezeDuration;
+        }
+        else if (enemy.hasPoisonInRadiusEffect)
+        {
+            enemy.poisonRadius = poisonRadius;
+            enemy.poisonDuration = poisonDuration;
+            enemy.poisonDamage = poisonDamage;
+        }
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void ShowParticles()
     {
-        _hitStrategy?.Hit(this, other);
-        _visual?.OnDespawn();
-        Destroy(gameObject);
+        GameObject effectIns = Instantiate(impactEffect, transform.position, transform.rotation);
+
+        Material newMat = new Material(effectIns.GetComponent<ParticleSystemRenderer>().material.shader);
+        newMat.color = trailColor;
+
+        effectIns.GetComponent<ParticleSystemRenderer>().material = newMat;
+
+        Destroy(effectIns, 3f);
+    }
+    public void Damage(Transform enemyTransform)
+    {
+        Enemy enemy = enemyTransform.GetComponent<Enemy>();
+        if (enemy != null)
+            enemy.TakeDamage(damage);
     }
 
-    private void OnDisable()
+    public virtual void OnTriggerEnter(Collider other)
     {
-        _visual?.OnDespawn();
+        if (this.GetComponent<Bullet>().enabled)
+        {
+            if (other.CompareTag("Enemy"))
+            {
+                HitTarget(other.transform);
+                ShowParticles();
+            }
+
+            OnBulletHit?.Invoke(gameObject);
+        }
     }
 
-    public void SetVisual(Color baseColor)
+    public void SetOnWaitingState()
     {
-        _visual?.SetBaseColor(baseColor);
+        gameObject.SetActive(false);
+        gameObject.isStatic = false;
+    }
+
+    public void Explode()
+    {
+        Collider[] colliders = new Collider[20];
+        int count = Physics.OverlapSphereNonAlloc(transform.position, explosionRadius, colliders, enemyLayer);
+
+        for (int i = 0; i < count; i++)
+        {
+            Enemy enemy = colliders[i].GetComponent<Enemy>();
+
+            if (enemy.hasFireInRadiusEffect)
+            {
+                enemy.burnRadius = burnRadius;
+                enemy.burnDuration = burnDuration;
+                enemy.burnDamage = burnDamage;
+            }
+            else if (enemy.hasFreezeInRadiusEffect)
+            {
+                enemy.freezeRadius = freezeRadius;
+                enemy.freezeDuration = freezeDuration;
+            }
+            else if (enemy.hasPoisonInRadiusEffect)
+            {
+                enemy.poisonRadius = poisonRadius;
+                enemy.poisonDuration = poisonDuration;
+                enemy.poisonDamage = poisonDamage;
+            }
+
+            enemy.TakeDamage(damage);
+        }
+        ShowParticles();
+        gameObject.SetActive(false);
     }
 }

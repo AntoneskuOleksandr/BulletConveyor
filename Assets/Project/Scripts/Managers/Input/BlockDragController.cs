@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum DragActionType
@@ -30,15 +31,13 @@ public class BlockDragController
     private DragSession session;
     private readonly TileManager tileManager;
     private readonly MergePlatformsManager mergePlatformsManager;
-    private readonly BoardManager boardManager;
     private readonly Camera camera;
 
     private readonly float blockDragingYOffset = 0.925f;
 
-    public BlockDragController(TileManager tileManager, BoardManager boardManager, MergePlatformsManager mergePlatformsManager, Camera camera)
+    public BlockDragController(TileManager tileManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
         this.tileManager = tileManager;
-        this.boardManager = boardManager;
         this.mergePlatformsManager = mergePlatformsManager;
         this.camera = camera;
     }
@@ -46,10 +45,7 @@ public class BlockDragController
     public void StartDragging(BlockParent blockToDrag)
     {
         session = new DragSession(blockToDrag, blockDragingYOffset);
-
-        if (blockToDrag.blockData.platform != -1)
-            mergePlatformsManager.SetPlatformFree(session.DraggedBlock.blockData.platform);
-
+        mergePlatformsManager.SetPlatformFree(session.DraggedBlock.platform);
         session.DraggedBlock.StartDragging();
     }
 
@@ -92,7 +88,7 @@ public class BlockDragController
         if (TryPlaceOnPlatform(out var platformIndex))
             return new DragResult(DragActionType.PlaceOnPlatform, session.DraggedBlock, null, platformIndex);
 
-        return new DragResult(DragActionType.Cancel);
+        return new DragResult(DragActionType.Cancel, session.DraggedBlock);
     }
 
     private bool TryMerge(RaycastHit hit, out BlockParent block1, out BlockParent block2)
@@ -103,7 +99,7 @@ public class BlockDragController
         if (block2 == null || block1 == block2)
             return false;
 
-        return block2.rank == block1.rank && !block2.blockData.isOnBoard;
+        return block2.rank == block1.rank && !block2.isOnBoard;
     }
 
     private bool TryPlaceOnBoard()
@@ -152,21 +148,22 @@ public class BlockDragController
         session = null;
     }
 
-    private void PlaceOnBoard(Vector2Int? savedTopLeft = null)
+    private void PlaceOnBoard()
     {
-        Vector2Int topLeft = savedTopLeft ?? GetTopLeftIndexByBlockPosition(session.DraggedBlock);
-        List<Tile> tiles = CheckAvailableTilesForShape(session.DraggedBlock, topLeft);
-        if (tiles == null) return;
+        // получим top-left индекс матрицы и список тайлов
+        Vector2Int topLeft = GetTopLeftIndexByBlockPosition(session.DraggedBlock);
+        var availableTiles = CheckAvailableTilesForShape(session.DraggedBlock, topLeft);
+        if (availableTiles == null) return;
 
+        // pivot матрицы (центр bounding box формы, учитываем нули)
         Vector2 pivot = GetMatrixPivot(session.DraggedBlock);
+
+        // финальная мировая позиция: центр топ-левел тайла + смещение до pivot
         Vector3 topLeftWorld = tileManager.TileToWorld(topLeft);
         Vector3 finalPos = topLeftWorld + new Vector3(pivot.x * tileManager.CellSize, 0f, pivot.y * tileManager.CellSize);
 
-        session.DraggedBlock.PlaceOnBoard(tiles, finalPos);
-        session.DraggedBlock.blockData.topLeftIndex = topLeft;
-        boardManager.RegisterBlock(session.DraggedBlock);
+        session.DraggedBlock.PlaceOnBoard(availableTiles, finalPos);
     }
-
 
     private void PlaceOnPlatform(int platformIndex)
     {
@@ -176,21 +173,9 @@ public class BlockDragController
 
     private void Cancel()
     {
-        switch (session.DraggedBlock.blockPreviousState)
-        {
-            case BlockState.OnPlatform:
-                {
-                    Debug.Log("Cancel to platform " + session.DraggedBlock.blockPreviousData.platform);
-                    PlaceOnPlatform(session.DraggedBlock.blockPreviousData.platform);
-                    break;
-                }
-            case BlockState.OnBoard:
-                {
-                    Debug.Log("Cancel to board");
-                    PlaceOnBoard(session.DraggedBlock.blockData.topLeftIndex);
-                    break;
-                }
-        }
+        session.DraggedBlock.ReturnToPreviousState();
+        if (session.DraggedBlock.IsWasOnPlatform())
+            mergePlatformsManager.SetPlatformBusy(session.DraggedBlock.platform);
     }
 
     // === Вспомогательные методы ===
