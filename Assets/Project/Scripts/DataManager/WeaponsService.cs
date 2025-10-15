@@ -22,9 +22,6 @@ public class WeaponsService
         _dataManager = dataManager;
         _db = db;
         _economy = economy;
-
-        Debug.Log($"[WeaponService] PlayerData: {_playerData}, DataManager: {_dataManager}, " +
-            $"WeaponDatabaseSO: {_db}, EconomyService: {_economy}");
     }
 
     public WeaponProgressRO GetProgressRO(int id)
