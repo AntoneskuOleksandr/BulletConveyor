@@ -11,11 +11,21 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField] private Button startGameButton;
     [SerializeField] private string gameSceneName = "GameScene";
 
-    [Inject] private EconomyService _economy;
+    [Inject] private EconomyService _economyService;
+    [Inject] private WeaponsService _weaponsService;
 
     private void OnEnable()
     {
-        _economy.OnCurrencyChanged += (currencyType) => { UpdateMoneyDisplay(); };
+        _economyService.OnCurrencyChanged += (currencyType) =>
+        {
+            UpdateMoneyDisplay();
+        };
+        _weaponsService.OnSelectionChanged += () =>
+        {
+            startGameButton.interactable = _weaponsService.GetSelectedCount() > 0;
+        };
+
+        startGameButton.interactable = _weaponsService.GetSelectedCount() > 0;
         startGameButton.onClick.AddListener(StartGame);
 
         UpdateMoneyDisplay();
@@ -23,19 +33,18 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        _economy.OnCurrencyChanged -= (currencyType) => { UpdateMoneyDisplay(); };
+        _economyService.OnCurrencyChanged -= (currencyType) => { UpdateMoneyDisplay(); };
         startGameButton.onClick.RemoveListener(StartGame);
     }
 
     private void StartGame()
     {
-        Debug.Log("Start Game button clicked!");
         SceneManager.LoadScene(gameSceneName);
     }
 
     private void UpdateMoneyDisplay()
     {
-        float gears = _economy.GetCurrency(CurrencyType.Gears);
+        float gears = _economyService.GetCurrency(CurrencyType.Gears);
         moneyText.text = gears.ToString();
     }
 }
