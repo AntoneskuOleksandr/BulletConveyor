@@ -25,7 +25,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
             panel.button.onClick.AddListener(() => Upgrade(capturedType));
         }
 
-        _economyService.OnCurrencyChanged += RefreshUI;
+        _economyService.OnCurrencyChanged += (currencyType) => { RefreshUI(); };
         _weaponsService.OnWeaponsChanged += RefreshUI;
 
         _weaponsCarousel.OnWeaponChanged += SetWeapon;
@@ -39,7 +39,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
         foreach (var panel in upgradeParametrPanels)
             panel.button.onClick.RemoveAllListeners();
 
-        _economyService.OnCurrencyChanged -= RefreshUI;
+        _economyService.OnCurrencyChanged -= (currencyType) => { RefreshUI(); };
         _weaponsService.OnWeaponsChanged -= RefreshUI;
 
         ClosePanel();
@@ -103,7 +103,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
         int cost = currentWeapon.upgradeLevels[level].cost;
 
-        panel.button.interactable = _economyService.Currency >= cost;
+        panel.button.interactable = _economyService.GetCurrency(CurrencyType.Gears) >= cost;
         panel.priceText.text = cost.ToString();
 
         if (panel.progressBar != null)

@@ -1,3 +1,4 @@
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,7 +15,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        _economy.OnCurrencyChanged += UpdateMoneyDisplay;
+        _economy.OnCurrencyChanged += (currencyType) => { UpdateMoneyDisplay(); };
         startGameButton.onClick.AddListener(StartGame);
 
         UpdateMoneyDisplay();
@@ -22,7 +23,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        _economy.OnCurrencyChanged -= UpdateMoneyDisplay;
+        _economy.OnCurrencyChanged -= (currencyType) => { UpdateMoneyDisplay(); };
         startGameButton.onClick.RemoveListener(StartGame);
     }
 
@@ -34,6 +35,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void UpdateMoneyDisplay()
     {
-        moneyText.text = _economy.Currency.ToString();
+        float gears = _economy.GetCurrency(CurrencyType.Gears);
+        moneyText.text = gears.ToString();
     }
 }

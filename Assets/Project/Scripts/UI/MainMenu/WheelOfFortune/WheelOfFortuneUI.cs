@@ -53,7 +53,7 @@ public class WheelOfFortuneUI : MonoBehaviour
     private int? currentWinningIndex;
     private Vector2 _lastWheelSize;
 
-    [Inject] private EconomyService _economy;
+    [Inject] private EconomyService _economyService;
     [Inject] private TimerManager _timerManager;
 
     private void Awake()
@@ -282,7 +282,7 @@ public class WheelOfFortuneUI : MonoBehaviour
         if (currentWinningIndex == null) return;
 
         int reward = segments[currentWinningIndex.Value].reward;
-        _economy.AddCurrency(reward, true, this.GetComponent<RectTransform>());
+        _economyService.AddCurrency(CurrencyType.Gears, reward, true, this.GetComponent<RectTransform>());
 
         ResetHighlights();
         wheelPanel.SetActive(false);

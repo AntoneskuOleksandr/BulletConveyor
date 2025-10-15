@@ -32,9 +32,9 @@ public class CurrencyFlyAnimator : MonoBehaviour
     /// onComplete вызывается, когда анимация полностью завершена.
     /// </summary>
     public void AnimateCurrencyGain(
-        int amount,
+        float amount,
         RectTransform fromUI,
-        Action<int> addCurrencyCallback,
+        Action<float> addCurrencyCallback,
         Action onComplete = null)
     {
         if (!currencyPrefab || !target || !spawnParent || !fromUI)
@@ -48,19 +48,19 @@ public class CurrencyFlyAnimator : MonoBehaviour
     }
 
     private IEnumerator SpawnAndFly(
-        int amount,
+        float amount,
         RectTransform spawnFrom,
-        Action<int> addCurrencyCallback,
+        Action<float> addCurrencyCallback,
         Action onComplete)
     {
         bool sameParentForBoth =
             spawnFrom.parent == spawnParent &&
             target.parent == spawnParent;
 
-        int visualCoins = Mathf.Min(amount, maxIcons);
+        float visualCoins = Mathf.Min(amount, maxIcons);
 
-        int baseValue = amount / visualCoins;
-        int remainder = amount % visualCoins;
+        float baseValue = amount / visualCoins;
+        float remainder = amount % visualCoins;
 
         Vector2 startLocal, targetLocal;
 
@@ -91,7 +91,7 @@ public class CurrencyFlyAnimator : MonoBehaviour
             Vector2 start = startLocal + jitter;
             icon.anchoredPosition = start;
 
-            int reward = baseValue + (i < remainder ? 1 : 0);
+            float reward = baseValue + (i < remainder ? 1 : 0);
 
             icon.DOAnchorPos(targetLocal, flyDuration)
                 .SetEase(Ease.InQuad)

@@ -18,7 +18,7 @@ public class SaveManager : IInitializable
 
     public void Initialize()
     {
-        _economy.OnCurrencyChanged += Save;
+        _economy.OnCurrencyChanged += (currencyType) => { Save(); };
         _weapons.OnWeaponsChanged += Save;
         _weapons.OnSelectionChanged += Save;
     }
