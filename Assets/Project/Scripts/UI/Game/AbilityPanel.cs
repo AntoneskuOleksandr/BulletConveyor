@@ -30,7 +30,6 @@ public class AbilityPanel : MonoBehaviour
     public void ShowPanel()
     {
         gameObject.SetActive(true);
-        Debug.Log("[AbilityPanel] ShowPanel called.");
         GenerateAbilities();
         Time.timeScale = 0f;
     }
@@ -77,7 +76,6 @@ public class AbilityPanel : MonoBehaviour
     {
         _selectedAbilities.Add(data);
 
-        Debug.Log($"[AbilityPanel] Ability selected: {data.onHitEffectType}");
         _effectChanceManager.RegisterGlobalChance(
             data.onHitEffectType,
             data.probability,

@@ -4,7 +4,7 @@ using Zenject;
 public class GameplayInstaller : MonoInstaller
 {
     [Header("Player")]
-    //[SerializeField] private PlayerRuntimeManager playerManager;
+    [SerializeField] private PlayerRuntimeManager playerManager;
 
     [Header("UI")]
     [SerializeField] private UIManager uiManager;
@@ -36,7 +36,7 @@ public class GameplayInstaller : MonoInstaller
     public override void InstallBindings()
     {
         //Player
-        //Container.Bind<PlayerRuntimeManager>().FromInstance(playerManager).AsSingle();
+        Container.Bind<PlayerRuntimeManager>().FromInstance(playerManager).AsSingle();
 
         //UI
         Container.Bind<UIManager>().FromInstance(uiManager).AsSingle();

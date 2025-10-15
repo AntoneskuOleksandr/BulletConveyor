@@ -36,8 +36,6 @@ public class EconomyService
     {
         if (amount <= 0) return;
 
-        Debug.Log($"[EconomyService] Adding {amount} of {type} (animated: {animated})");
-
         if (animated && from != null && _animator != null)
             _animator.AnimateCurrencyGain(amount, from, a => ModifyCurrency(type, a));
         else

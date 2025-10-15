@@ -26,9 +26,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private ProgressBar progressBar;
 
     [Inject] private BlockManager _blockManager;
-    //[Inject] private PlayerRuntimeManager _playerManager;
+    [Inject] private PlayerRuntimeManager _playerManager;
     [Inject] private WaveManager _waveManager;
-    [Inject] private IReadOnlyPlayerData _readOnlyPlayerData;
 
     private void OnEnable()
     {
@@ -48,10 +47,10 @@ public class UIManager : MonoBehaviour
         {
             pauseGameButton.onClick.AddListener(pauseMenuPanel.ShowPanel);
         }
-        //if (_playerManager != null)
-        //{
-        //    _playerManager.OnMoneyChanged += UpdateUI;
-        //}
+        if (_playerManager != null)
+        {
+            _playerManager.OnMoneyChanged += UpdateUI;
+        }
         if (_waveManager != null && abilityPanel != null)
         {
             _waveManager.OnTimerBetweenWavesStarted += (waveIndex, timeBetweenWaves) =>
@@ -71,18 +70,18 @@ public class UIManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        //playerMoney.text = _playerManager.Money.ToString();
+        playerMoney.text = _playerManager.Money.ToString();
         buyBlockText.text = _blockManager.BlockPrice.ToString();
-        //buyBlockButton.interactable = _playerManager.Money >= _blockManager.BlockPrice;
+        buyBlockButton.interactable = _playerManager.Money >= _blockManager.BlockPrice;
     }
 
     private void OnBuyButtonClicked()
     {
-        //if (_playerManager.Money >= _blockManager.BlockPrice)
-        //{
-        //    _playerManager.SpendMoney(_blockManager.BlockPrice);
-        //    _blockManager.CreateBlock();
-        //}
+        if (_playerManager.Money >= _blockManager.BlockPrice)
+        {
+            _playerManager.SpendMoney(_blockManager.BlockPrice);
+            _blockManager.CreateBlock();
+        }
 
         UpdateUI();
     }
