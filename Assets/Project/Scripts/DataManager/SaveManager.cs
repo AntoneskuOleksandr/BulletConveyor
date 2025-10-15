@@ -25,6 +25,6 @@ public class SaveManager : IInitializable
 
     private void Save()
     {
-        _repo.Save(_data.PlayerData);
+        //_repo.Save(_data.PlayerData);
     }
 }

@@ -7,13 +7,15 @@ public class EconomyService
 
     private readonly DataManager _dataManager;
     private CurrencyFlyAnimator _animator;
+    private PlayerData _playerData;
 
-    private PlayerData Data => _dataManager.PlayerData;
-    public int Currency => Data.currency;
-
-    public EconomyService(DataManager dataManager)
+    public int Currency => _playerData.currency;
+    public EconomyService(PlayerData playerData, DataManager dataManager)
     {
+        _playerData = playerData;
         _dataManager = dataManager;
+
+        Debug.Log($"[EconomyService] PlayerData: {_playerData}, DataManager: {_dataManager}");
     }
 
     public void SetAnimator(CurrencyFlyAnimator animator)
@@ -29,18 +31,20 @@ public class EconomyService
             _animator.AnimateCurrencyGain(amount, from, AddCurrencyDirect);
         else
             AddCurrencyDirect(amount);
+
+        _dataManager.Save();
     }
 
     public void AddCurrencyDirect(int amount)
     {
-        Data.currency += amount;
+        _playerData.currency += amount;
         OnCurrencyChanged?.Invoke();
     }
 
     public bool TrySpend(int amount)
     {
-        if (Data.currency < amount) return false;
-        Data.currency -= amount;
+        if (_playerData.currency < amount) return false;
+        _playerData.currency -= amount;
         OnCurrencyChanged?.Invoke();
         return true;
     }

@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
-public class PlayerData
+public class PlayerData : IReadOnlyPlayerData
 {
     public int currency;
-    public List<WeaponEntry> weapons = new();         // Прогресс оружия
-    public List<int> selectedWeaponIds = new();       // Выбранные пушки
+    public List<WeaponEntry> weapons = new();
+    public List<int> selectedWeaponIds = new();
+
+    public int Currency => currency;
+    public IReadOnlyList<WeaponEntry> Weapons => weapons;
+    public IReadOnlyList<int> SelectedWeaponIds => selectedWeaponIds;
 }
 
 [Serializable]

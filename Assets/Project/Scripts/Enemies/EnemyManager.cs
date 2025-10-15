@@ -9,7 +9,7 @@ public class EnemyManager : MonoBehaviour
 
     private List<Enemy> _enemies = new List<Enemy>();
 
-    [Inject] private PlayerRuntimeManager _playerRuntimeManager;
+    //[Inject] private PlayerRuntimeManager _playerRuntimeManager;
 
     public void RegisterEnemies(List<Enemy> enemies)
     {
@@ -27,7 +27,7 @@ public class EnemyManager : MonoBehaviour
         {
             OnEnemyDied?.Invoke(enemy);
             _enemies.Remove(enemy);
-            _playerRuntimeManager.AddMoney(enemy.KillReward);
+            //_playerRuntimeManager.AddMoney(enemy.KillReward);
         }
     }
 

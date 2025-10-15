@@ -7,18 +7,27 @@ public class ProjectInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        // --- Core data ---
         Container.BindInstance(weaponDatabase).AsSingle();
-        Container.Bind<DataRepository>().AsSingle();
-        Container.BindInterfacesAndSelfTo<DataManager>().AsSingle().NonLazy();
 
-        // --- Services ---
-        Container.Bind<EconomyService>().AsSingle();
-        Container.Bind<WeaponsService>().AsSingle(); 
+        DataRepository dataRepository = new DataRepository();
+        var dataManager = new DataManager(dataRepository);
+        var playerData = dataManager.LoadOrCreate();
+
+        Container.BindInstance(dataRepository).AsSingle();
+        Container.BindInstance(dataManager).AsSingle();
+        Container.Bind<IReadOnlyPlayerData>().FromInstance(playerData).AsSingle();
+
+        Container.Bind<EconomyService>()
+            .AsSingle()
+            .WithArguments(playerData, dataManager);
+
+        Container.Bind<WeaponsService>()
+            .AsSingle()
+            .WithArguments(playerData, dataManager, weaponDatabase);
+
         Container.BindInterfacesAndSelfTo<SaveManager>().AsSingle();
 
 
-        // --- Optional UI-independent systems ---
         Container.Bind<TimerManager>().AsSingle();
     }
 }
