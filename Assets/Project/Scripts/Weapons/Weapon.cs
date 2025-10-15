@@ -245,8 +245,6 @@ public class Weapon : MonoBehaviour
 
     private void OnDestroyed()
     {
-        Debug.Log($"[Weapon] {name} destroyed!");
-
         _target = null;
         _shootStrategy = null;
         _aimStrategy = null;

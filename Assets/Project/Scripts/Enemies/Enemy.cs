@@ -23,7 +23,6 @@ public abstract class Enemy : MonoBehaviour
     protected Collider _collider;
     protected Rigidbody _rigidbody;
 
-
     public float ContactDamage => contactDamage;
     public bool IsAlive => _currentHealth > 0f;
     public float Health => _currentHealth;

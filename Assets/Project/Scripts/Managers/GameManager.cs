@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Zenject;
 
@@ -25,22 +26,24 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine(_bulletGenerator.StartBulletGeneration());
 
-        _weaponManager.OnAllWeaponsDestroyed += Lose;
+        _weaponManager.OnAllWeaponsDestroyed += () => StartCoroutine(Lose());
         _waveManager.OnWaveCompleted += wave =>
         {
             if (wave >= _waveManager.TotalWaves)
-                Win();
+                StartCoroutine(Win());
         };
     }
 
-    private void Win()
+    private IEnumerator Win()
     {
+        yield return null; // Wait one frame to ensure all events are processed
         Time.timeScale = 0f;
         _uiManager.ShowWinPanel();
     }
 
-    private void Lose()
+    private IEnumerator Lose()
     {
+        yield return null; // Wait one frame to ensure all events are processed
         Time.timeScale = 0f;
         _uiManager.ShowLosePanel();
     }

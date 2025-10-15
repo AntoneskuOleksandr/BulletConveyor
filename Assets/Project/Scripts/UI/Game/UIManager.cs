@@ -11,7 +11,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private LosePanel losePanel;
 
     [Header("Text")]
-    [SerializeField] private TMP_Text playerMoney;
+    [SerializeField] private TMP_Text playerCoins;
     [SerializeField] private TMP_Text buyBlockText;
 
     [Header("Buttons")]
@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
         }
         if (_playerManager != null)
         {
-            _playerManager.OnMoneyChanged += UpdateUI;
+            _playerManager.OnCurrencyChanged += UpdateUI;
         }
         if (_waveManager != null && abilityPanel != null)
         {
@@ -70,16 +70,16 @@ public class UIManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        playerMoney.text = _playerManager.Money.ToString();
+        playerCoins.text = _playerManager.GetCurrency(CurrencyType.Coins).ToString();
         buyBlockText.text = _blockManager.BlockPrice.ToString();
-        buyBlockButton.interactable = _playerManager.Money >= _blockManager.BlockPrice;
+        buyBlockButton.interactable = _playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice;
     }
 
     private void OnBuyButtonClicked()
     {
-        if (_playerManager.Money >= _blockManager.BlockPrice)
+        if (_playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice)
         {
-            _playerManager.SpendMoney(_blockManager.BlockPrice);
+            _playerManager.TrySpend(CurrencyType.Coins, _blockManager.BlockPrice);
             _blockManager.CreateBlock();
         }
 

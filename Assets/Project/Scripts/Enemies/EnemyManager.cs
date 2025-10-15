@@ -9,7 +9,6 @@ public class EnemyManager : MonoBehaviour
 
     private List<Enemy> _enemies = new List<Enemy>();
 
-    [Inject] private EconomyService _economyService;
     [Inject] private PlayerRuntimeManager _playerRuntimeManager;
 
     public void RegisterEnemies(List<Enemy> enemies)
@@ -26,10 +25,10 @@ public class EnemyManager : MonoBehaviour
     {
         if (_enemies.Contains(enemy))
         {
-            OnEnemyDied?.Invoke(enemy);
+            _playerRuntimeManager.AddCurrency(CurrencyType.Coins, enemy.CoinsKillReward);
+            _playerRuntimeManager.AddCurrency(CurrencyType.Gears, enemy.GearsKillReward);
             _enemies.Remove(enemy);
-            _playerRuntimeManager.AddMoney(enemy.CoinsKillReward);
-            _economyService.AddCurrency(CurrencyType.Gears, enemy.GearsKillReward);
+            OnEnemyDied?.Invoke(enemy);
         }
     }
 
