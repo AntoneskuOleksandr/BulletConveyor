@@ -5,8 +5,6 @@ public class BasicAimStrategy : IAimStrategy
     public bool TryAim(Weapon weapon)
     {
         var target = weapon.Target;
-        if (target == null || weapon.PartToRotate == null)
-            return false;
 
         // Вектор на цель
         Vector3 dir = target.HitTransform.position - weapon.PartToRotate.position;

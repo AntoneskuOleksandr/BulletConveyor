@@ -177,7 +177,7 @@ public class Weapon : MonoBehaviour
             _target = _targetStrategy?.FindTarget(this);
         }
 
-        if (_target != null)
+        if (_target != null && _target.IsAlive)
         {
             _idleTimer = 0f;
 
@@ -185,13 +185,10 @@ public class Weapon : MonoBehaviour
             {
                 if (_shootStrategy?.TryShoot(this) == true)
                 {
-                    // 1. Получаем шансы эффектов для этой пушки
                     var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
 
-                    // 2. Конвертируем в словарь цветов
                     var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
 
-                    // 3. Визуализируем
                     _weaponVisual?.PlayShotEffect(colorWeights);
                 }
             }
@@ -256,8 +253,6 @@ public class Weapon : MonoBehaviour
         //if (_weaponVisual != null) _weaponVisual.PlayDestroyEffect();
 
         OnWeaponDestroyed?.Invoke();
-        // Удаляем объект через пару секунд, либо делаем pooling
-        Destroy(gameObject, 2f);
     }
 
     protected virtual void OnDrawGizmosSelected()
