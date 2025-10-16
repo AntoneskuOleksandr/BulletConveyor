@@ -13,6 +13,7 @@ public class GameplayInstaller : MonoInstaller
     [SerializeField] private UIManager uiManager;
     [SerializeField] private AbilityPanel abilityPanel;
     [SerializeField] private PauseMenuPanel pauseMenuPanel;
+    [SerializeField] private ProgressBar progressBar;
 
     [Header("Board-Related Managers")]
     [SerializeField] private BoardManager boardManager;
@@ -48,6 +49,7 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<UIManager>().FromInstance(uiManager).AsSingle();
         Container.Bind<AbilityPanel>().FromInstance(abilityPanel).AsSingle();
         Container.Bind<PauseMenuPanel>().FromInstance(pauseMenuPanel).AsSingle();
+        Container.Bind<ProgressBar>().FromInstance(progressBar).AsSingle();
 
         //Board-Related Managers
         Container.Bind<BoardManager>().FromInstance(boardManager).AsSingle();

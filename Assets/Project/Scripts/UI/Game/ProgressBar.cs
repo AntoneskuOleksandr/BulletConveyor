@@ -32,7 +32,7 @@ public class ProgressBar : MonoBehaviour
     [SerializeField] private float fillSmoothSpeed = 5f;   // чем больше Ч тем быстрее анимаци€
     [SerializeField] private float scrollSmoothSpeed = 5f; // отдельна€ скорость дл€ скролла
 
-    private void Awake()
+    public void Initialize()
     {
         GenerateProgressBar();
 

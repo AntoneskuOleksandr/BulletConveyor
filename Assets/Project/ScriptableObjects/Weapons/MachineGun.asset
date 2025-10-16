@@ -48,13 +48,5 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
-  baseEffectChances:
-  - effectType: 0
-    chance: 0.1
-  - effectType: 1
-    chance: 0.1
-  - effectType: 2
-    chance: 0.1
-  - effectType: 3
-    chance: 0.1
+  baseEffectChances: []
   Parameters: []

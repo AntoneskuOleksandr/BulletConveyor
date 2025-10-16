@@ -28,6 +28,10 @@ public class ProjectInstaller : MonoInstaller
             .AsSingle()
             .WithArguments(playerData);
 
+        Container.Bind<TutorialProgressService>()
+            .AsSingle()
+            .WithArguments(playerData);
+
         Container.BindInterfacesAndSelfTo<SaveManager>().AsSingle();
 
 

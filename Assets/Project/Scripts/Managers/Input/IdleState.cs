@@ -31,6 +31,8 @@ public class IdleState : IDragState
             return;
         }
 
+        if (!blockParent.CanDrag)
+            return;
         dragController.StartDragging(blockParent);
         stateMachine.ChangeState(new DraggingState(stateMachine, dragController, mergePlatformsManager, blockManager));
     }

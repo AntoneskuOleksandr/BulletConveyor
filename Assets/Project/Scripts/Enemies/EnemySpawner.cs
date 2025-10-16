@@ -4,9 +4,6 @@ using Zenject;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Enemy Prefabs")]
-    [SerializeField] private GameObject enemyPrefab1;
-    [SerializeField] private GameObject enemyPrefab2;
 
     [Header("Spawn Area")]
     [SerializeField] private Transform pointA;
@@ -15,7 +12,16 @@ public class EnemySpawner : MonoBehaviour
     [Inject] private DiContainer _container;
     [Inject] private EnemyManager _enemyManager;
 
+    private GameObject enemyPrefab1;
+    private GameObject enemyPrefab2;
+
     private float totalSpawnedEnemies = 0;
+
+    public void Initialize(GameObject enemyPrefabType1, GameObject enemyPrefabType2)
+    {
+        enemyPrefab1 = enemyPrefabType1;
+        enemyPrefab2 = enemyPrefabType2;
+    }
 
     /// <summary>
     /// Спавнит указанное количество врагов.

@@ -9,11 +9,14 @@ public class PlayerData : IReadOnlyPlayerData
     public List<int> selectedWeaponIds = new();
     public int playerLevel = 0;
     public int selectedLevelIndex = 0;
+    public bool isTutorialCompleted = false;
 
     public IReadOnlyList<CurrencyEntry> Currencies => currencies;
     public IReadOnlyList<WeaponEntry> Weapons => weapons;
     public IReadOnlyList<int> SelectedWeaponIds => selectedWeaponIds;
     public int PlayerLevel => playerLevel;
+    public int SelectedLevelIndex => selectedLevelIndex;
+    public bool IsTutorialCompleted => isTutorialCompleted;
 }
 
 [Serializable]
