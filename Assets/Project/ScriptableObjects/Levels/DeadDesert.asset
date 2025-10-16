@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfe648d32d025e74fb0dd4d816a7555f, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b1d5901d999c624b851e32479d09f8b, type: 3}
   m_Name: DeadDesert
   m_EditorClassIdentifier: 
-  levelIndex: 1
-  levelName: Dead Desert
-  sceneToLoad: Level 2
-  gradientColorTop: {r: 1, g: 0.8117647, b: 0.36862746, a: 1}
-  gradientColorBottom: {r: 1, g: 0.54901963, b: 0.49803922, a: 1}
+  MiniLevelGO: {fileID: 6825727076216823925, guid: ce308d9c0665f48409dc8c27cbb7415c,
+    type: 3}
+  LevelIndex: 1
+  LevelName: Dead Desert
+  GradientColorTop: {r: 1, g: 0.8117647, b: 0.36862746, a: 1}
+  GradientColorBottom: {r: 1, g: 0.54901963, b: 0.49803922, a: 1}
+  levelConfig: {fileID: 11400000, guid: 7242dca775cd1d747a12154fa44ce44c, type: 2}

@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfe648d32d025e74fb0dd4d816a7555f, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b1d5901d999c624b851e32479d09f8b, type: 3}
   m_Name: Galaxy
   m_EditorClassIdentifier: 
-  levelIndex: 2
-  levelName: Galaxy
-  sceneToLoad: Level 3
-  gradientColorTop: {r: 0.49411765, g: 0.53333336, b: 1, a: 1}
-  gradientColorBottom: {r: 0.6901961, g: 0.36078432, b: 1, a: 1}
+  MiniLevelGO: {fileID: 7430739264406534101, guid: 9305123e445ebd14b9d5db951b220360,
+    type: 3}
+  LevelIndex: 2
+  LevelName: Galaxy
+  SceneToLoad: Level 3
+  GradientColorTop: {r: 0.49411765, g: 0.53333336, b: 1, a: 1}
+  GradientColorBottom: {r: 0.6901961, g: 0.36078432, b: 1, a: 1}

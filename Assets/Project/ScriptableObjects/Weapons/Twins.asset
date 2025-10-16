@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
+  m_Name: Twins
+  m_EditorClassIdentifier: 
+  WeaponId: 7
+  WeaponGO: {fileID: 363017843951669691, guid: 4e8d349ca2e277c46989178f00733a86, type: 3}
+  RequiredLevel: 7
+  WeaponType: 0
+  BulletType: 0
+  baseDamage: 0
+  baseFireRate: 0
+  baseHealth: 0
+  baseAttackRadius: 0
+  shootStrategy: 0
+  aimStrategy: 0
+  targetStrategy: 0
+  bulletMoveType: 0
+  bulletHitType: 0
+  upgradeLevels:
+  - cost: 1
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 2
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 3
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 4
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  - cost: 5
+    damageBonus: 1
+    fireRateBonus: 2
+    healthBonus: 3
+  baseEffectChances: []
+  Parameters: []
