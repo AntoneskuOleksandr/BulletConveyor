@@ -13,12 +13,20 @@ MonoBehaviour:
   m_Name: SniperRifle
   m_EditorClassIdentifier: 
   WeaponId: 6
-  WeaponName: SniperRifle
   WeaponGO: {fileID: 7131669628609375706, guid: edf58623006fdac47a4bbae81b1f457a,
     type: 3}
+  RequiredLevel: 6
+  WeaponType: 0
+  BulletType: 0
   baseDamage: 0
   baseFireRate: 0
   baseHealth: 0
+  baseAttackRadius: 0
+  shootStrategy: 0
+  aimStrategy: 0
+  targetStrategy: 0
+  bulletMoveType: 0
+  bulletHitType: 0
   upgradeLevels:
   - cost: 1
     damageBonus: 1
@@ -40,3 +48,5 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
+  baseEffectChances: []
+  Parameters: []

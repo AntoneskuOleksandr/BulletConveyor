@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: Artillery
   m_EditorClassIdentifier: 
-  WeaponId: 0
+  WeaponId: 1
   WeaponGO: {fileID: 537084489268377665, guid: 7a8bf8822dfee0743ad74eea85eb9d51, type: 3}
+  RequiredLevel: 1
   WeaponType: 1
   BulletType: 1
   baseDamage: 30
@@ -46,6 +47,7 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 0.1
     healthBonus: 3
+  baseEffectChances: []
   Parameters:
   - Type: 0
     Value: 5

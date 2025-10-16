@@ -3121,6 +3121,9 @@ MonoBehaviour:
   currencyFlyAnimator: {fileID: 8397157842996898635}
   upgradeWeaponPanel: {fileID: 7636716125183121862}
   weaponsCarousel: {fileID: 8285199966934206573}
+  mainMenuUIManager: {fileID: 7497639412101259998}
+  mainMenuController: {fileID: 5682280792269053889}
+  levelDisplay: {fileID: 3399931289574049221}
 --- !u!1 &1703537214
 GameObject:
   m_ObjectHideFlags: 0
@@ -3392,6 +3395,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1730405318}
+  m_CullTransparentMesh: 1
+--- !u!1 &1753961511
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1753961512}
+  - component: {fileID: 1753961514}
+  - component: {fileID: 1753961513}
+  m_Layer: 5
+  m_Name: LockPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1753961512
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753961511}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 2471945474588999508}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 256, y: 256}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1753961513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753961511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: c96221b2fa172274aaa98f6b5cfc9e24, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1753961514
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753961511}
   m_CullTransparentMesh: 1
 --- !u!1 &1795677174
 GameObject:
@@ -6258,6 +6336,7 @@ RectTransform:
   - {fileID: 1568342162032188997}
   - {fileID: 5635392077726794233}
   - {fileID: 8061424894795643947}
+  - {fileID: 1753961512}
   m_Father: {fileID: 7497639412101259997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -9241,9 +9320,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeButton: {fileID: 1355954140334862165}
   selectButton: {fileID: 995352049903692747}
-  selectButtonText: {fileID: 8068717971927660670}
   nextWeaponButton: {fileID: 1814846962}
   previousWeaponButton: {fileID: 1703537217}
+  selectButtonText: {fileID: 8068717971927660670}
 --- !u!1 &6695821495782855297
 GameObject:
   m_ObjectHideFlags: 0
@@ -9954,6 +10033,7 @@ MonoBehaviour:
   moneyText: {fileID: 9019229570463177238}
   startGameButton: {fileID: 1867840113616226951}
   gameSceneName: RefactoringScene
+  lockPanel: {fileID: 1753961511}
 --- !u!222 &7508070439745928775
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10693,9 +10773,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapons:
+  - {fileID: 11400000, guid: 8ad446669e6403246a170d6482f240a9, type: 2}
   - {fileID: 11400000, guid: d241f259f23d9b042997cb0644b38141, type: 2}
   - {fileID: 11400000, guid: 656e82b8947ac5847a9376a768587c28, type: 2}
-  - {fileID: 11400000, guid: 8ad446669e6403246a170d6482f240a9, type: 2}
   - {fileID: 11400000, guid: c5f38e753c67dc540b61af89537b3f81, type: 2}
   - {fileID: 11400000, guid: 7885008bb9a8aa641b001334c9121e8b, type: 2}
   - {fileID: 11400000, guid: d9d8d380dc3c2f046b7c1eb384e39c3d, type: 2}
@@ -11227,7 +11307,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 53.25
+  m_fontSize: 53.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11356,7 +11436,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36.25
+  m_fontSize: 36.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

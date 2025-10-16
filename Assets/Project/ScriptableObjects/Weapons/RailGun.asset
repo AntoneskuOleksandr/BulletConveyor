@@ -13,12 +13,20 @@ MonoBehaviour:
   m_Name: RailGun
   m_EditorClassIdentifier: 
   WeaponId: 4
-  WeaponName: RailGun
   WeaponGO: {fileID: 9119458496086393018, guid: 8651b846820e0da469d7eac898b86e4a,
     type: 3}
+  RequiredLevel: 4
+  WeaponType: 0
+  BulletType: 0
   baseDamage: 0
   baseFireRate: 0
   baseHealth: 0
+  baseAttackRadius: 0
+  shootStrategy: 0
+  aimStrategy: 0
+  targetStrategy: 0
+  bulletMoveType: 0
+  bulletHitType: 0
   upgradeLevels:
   - cost: 1
     damageBonus: 1
@@ -40,3 +48,5 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
+  baseEffectChances: []
+  Parameters: []

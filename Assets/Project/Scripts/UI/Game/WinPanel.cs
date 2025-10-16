@@ -1,9 +1,11 @@
-using UnityEngine;
+using Zenject;
 
-public class WinPanel : MonoBehaviour
+public class WinPanel : ResultPanelBase
 {
-    public void ShowPanel()
+    [Inject] private LevelService _levelService;
+
+    protected override void OnAfterReward()
     {
-        gameObject.SetActive(true);
+        _levelService.IncreaseLevel();
     }
 }

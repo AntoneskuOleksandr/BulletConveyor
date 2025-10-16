@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,8 @@ public class MainMenuController : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private Button homeButton;
     [SerializeField] private Button weaponsButton;
+
+    public event Action OnPanelChanged;
 
     private void Awake()
     {
@@ -34,5 +37,7 @@ public class MainMenuController : MonoBehaviour
         homePanel.SetActive(false);
         weaponsPanel.SetActive(false);
         panelToShow.SetActive(true);
+
+        OnPanelChanged?.Invoke();
     }
 }

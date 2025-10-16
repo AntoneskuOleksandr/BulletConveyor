@@ -32,8 +32,10 @@ public class WeaponSO : ScriptableObject
     [Header("General Info")]
     public int WeaponId;
     public GameObject WeaponGO;
+    public int RequiredLevel;
     public WeaponType WeaponType;
     public BulletType BulletType;
+
 
     [Header("Base Stats")]
     public int baseDamage;

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using Zenject;
-using Debug = UnityEngine.Debug;
 
 public class WeaponsService
 {
@@ -10,18 +11,20 @@ public class WeaponsService
 
     private readonly DataManager _dataManager;
     private readonly WeaponDatabaseSO _db;
-    private readonly EconomyService _economy;
+    private readonly EconomyService _economyService;
+    private readonly LevelService _levelService;
     private PlayerData _playerData;
 
     private readonly int _maxSlots = 3;
 
     [Inject]
-    public WeaponsService(PlayerData playerData, DataManager dataManager, WeaponDatabaseSO db, EconomyService economy)
+    public WeaponsService(PlayerData playerData, DataManager dataManager, WeaponDatabaseSO db, EconomyService economy, LevelService levelService)
     {
         _playerData = playerData;
         _dataManager = dataManager;
         _db = db;
-        _economy = economy;
+        _economyService = economy;
+        _levelService = levelService;
     }
 
     public WeaponProgressRO GetProgressRO(int id)
@@ -51,7 +54,7 @@ public class WeaponsService
         };
 
         if (level >= weapon.upgradeLevels.Length) return false;
-        if (!_economy.TrySpend(CurrencyType.Gears, weapon.upgradeLevels[level].cost)) return false;
+        if (!_economyService.TrySpend(CurrencyType.Gears, weapon.upgradeLevels[level].cost)) return false;
 
         switch (type)
         {
@@ -78,7 +81,18 @@ public class WeaponsService
         return result;
     }
 
+    public List<WeaponSO> GetAvailableWeapons()
+    {
+        var lvl = _levelService.GetCurrentLevel();
+        return _db.weapons.Where(w => w.RequiredLevel <= lvl).ToList();
+    }
+
     public bool IsSelected(int id) => _playerData.selectedWeaponIds.Contains(id);
+    public bool IsAvailable(int id)
+    {
+        var so = _db.weapons.Find(w => w.WeaponId == id);
+        return so != null && so.RequiredLevel <= _levelService.GetCurrentLevel();
+    }
 
     public int GetSelectedCount() => _playerData.selectedWeaponIds.Count;
 
@@ -86,6 +100,16 @@ public class WeaponsService
 
     public bool SelectWeapon(int id, int maxSlots = -1)
     {
+        var so = _db.weapons.Find(w => w.WeaponId == id);
+        if (so == null)
+            return false;
+
+        if (so.RequiredLevel > _levelService.GetCurrentLevel())
+        {
+            Debug.LogError($"[WeaponsService] Weapon {so.name} (ID: {id}) is not available at current level {_levelService.GetCurrentLevel()}.");
+            return false;
+        }
+
         int limit = maxSlots <= 0 ? _maxSlots : maxSlots;
         if (_playerData.selectedWeaponIds.Contains(id) || _playerData.selectedWeaponIds.Count >= limit)
             return false;

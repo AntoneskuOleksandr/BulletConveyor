@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class LevelDisplay : MonoBehaviour
 {
@@ -15,8 +17,13 @@ public class LevelDisplay : MonoBehaviour
     [Header("Background")]
     [SerializeField] private BackgroundGenerator backgroundGenerator;
 
+    [Inject] private LevelService _levelService;
+    [Inject] private MainMenuUIManager _mainMenuUIManager;
+
     private LevelSO currentLevel;
     private GameObject currentMiniLevel;
+
+    public event Action OnLevelChanged;
 
     private void OnEnable()
     {
@@ -56,9 +63,16 @@ public class LevelDisplay : MonoBehaviour
         }
 
         currentMiniLevel = Instantiate(levels[index].MiniLevelGO, miniLevels);
-
         backgroundGenerator.SetColor(levels[index].GradientColorTop, levels[index].GradientColorBottom);
-
         currentLevel = levels[index];
+
+        _mainMenuUIManager.SetLockPanelState(levels[index].LevelIndex > _levelService.GetCurrentLevel());
+
+        OnLevelChanged?.Invoke();
+    }
+
+    public int GetCurrentLevel()
+    {
+        return currentLevel.LevelIndex;
     }
 }
