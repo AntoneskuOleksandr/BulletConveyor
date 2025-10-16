@@ -1,4 +1,3 @@
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,9 +9,12 @@ public class MainMenuUIManager : MonoBehaviour
     [SerializeField] private TMP_Text moneyText;
     [SerializeField] private Button startGameButton;
     [SerializeField] private string gameSceneName = "GameScene";
+    [SerializeField] private GameObject lockPanel;
 
     [Inject] private EconomyService _economyService;
     [Inject] private WeaponsService _weaponsService;
+    [Inject] private LevelService _levelService;
+    [Inject] private LevelDisplay _levelDisplay;
 
     private void OnEnable()
     {
@@ -22,12 +24,16 @@ public class MainMenuUIManager : MonoBehaviour
         };
         _weaponsService.OnSelectionChanged += () =>
         {
-            startGameButton.interactable = _weaponsService.GetSelectedCount() > 0;
+            UpdateStartButtonState();
+        };
+        _levelDisplay.OnLevelChanged += () =>
+        {
+            UpdateStartButtonState();
         };
 
-        startGameButton.interactable = _weaponsService.GetSelectedCount() > 0;
         startGameButton.onClick.AddListener(StartGame);
 
+        UpdateStartButtonState();
         UpdateMoneyDisplay();
     }
 
@@ -35,6 +41,19 @@ public class MainMenuUIManager : MonoBehaviour
     {
         _economyService.OnCurrencyChanged -= (currencyType) => { UpdateMoneyDisplay(); };
         startGameButton.onClick.RemoveListener(StartGame);
+    }
+
+    public void SetLockPanelState(bool show)
+    {
+        lockPanel.SetActive(show);
+    }
+
+    private void UpdateStartButtonState()
+    {
+        bool hasSelectedWeapons = _weaponsService.GetSelectedCount() > 0;
+        bool isLevelAvailable = _levelService.CanAccessLevel(_levelDisplay.GetCurrentLevel());
+
+        startGameButton.interactable = hasSelectedWeapons && isLevelAvailable;
     }
 
     private void StartGame()

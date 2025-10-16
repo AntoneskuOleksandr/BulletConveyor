@@ -7,12 +7,18 @@ public class MainMenuInstaller : MonoInstaller
     [SerializeField] private CurrencyFlyAnimator currencyFlyAnimator;
     [SerializeField] private UpgradeWeaponPanel upgradeWeaponPanel;
     [SerializeField] private WeaponsCarousel weaponsCarousel;
+    [SerializeField] private MainMenuUIManager mainMenuUIManager;
+    [SerializeField] private MainMenuController mainMenuController;
+    [SerializeField] private LevelDisplay levelDisplay;
 
     public override void InstallBindings()
     {
         Container.BindInstance(currencyFlyAnimator).AsSingle();
         Container.BindInstance(upgradeWeaponPanel).AsSingle();
         Container.BindInstance(weaponsCarousel).AsSingle();
+        Container.BindInstance(mainMenuUIManager).AsSingle();
+        Container.BindInstance(mainMenuController).AsSingle();
+        Container.BindInstance(levelDisplay).AsSingle();
 
         Container.BindInterfacesAndSelfTo<EconomyAnimatorLinker>().AsSingle()
             .WithArguments(currencyFlyAnimator);

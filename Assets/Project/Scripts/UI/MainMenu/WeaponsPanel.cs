@@ -1,35 +1,37 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using TMPro;
 
 public class WeaponsPanel : MonoBehaviour
 {
     [Header("References")]
-    [Inject] private WeaponsCarousel weaponsCarousel;
-    [Inject] private UpgradeWeaponPanel upgradeWeaponPanel;
+    [Inject] private WeaponsCarousel _weaponsCarousel;
+    [Inject] private UpgradeWeaponPanel _upgradeWeaponPanel;
     [Inject] private WeaponsService _weaponsService;
+    [Inject] private MainMenuUIManager _mainMenuUIManager;
 
-    [Header("UI Elements")]
+    [Header("Buttons")]
     [SerializeField] private Button upgradeButton;
     [SerializeField] private Button selectButton;
-    [SerializeField] private TMP_Text selectButtonText;
-
     [SerializeField] private Button nextWeaponButton;
     [SerializeField] private Button previousWeaponButton;
 
+    [Header("Text")]
+    [SerializeField] private TMP_Text selectButtonText;
+
     private void OnEnable()
     {
-        nextWeaponButton.onClick.AddListener(() => weaponsCarousel.Next());
-        previousWeaponButton.onClick.AddListener(() => weaponsCarousel.Prev());
-        upgradeButton.onClick.AddListener(() => upgradeWeaponPanel.OnUpgradeButtonClick());
+        nextWeaponButton.onClick.AddListener(() => _weaponsCarousel.Next());
+        previousWeaponButton.onClick.AddListener(() => _weaponsCarousel.Prev());
+        upgradeButton.onClick.AddListener(() => _upgradeWeaponPanel.OnUpgradeButtonClick());
         selectButton.onClick.AddListener(SelectWeapon);
 
-        weaponsCarousel.OnWeaponChanged += OnWeaponChanged;
-        _weaponsService.OnSelectionChanged += RefreshSelectButton;
-        _weaponsService.OnWeaponsChanged += RefreshSelectButton;
+        _weaponsCarousel.OnWeaponChanged += OnWeaponChanged;
+        _weaponsService.OnSelectionChanged += RefreshWeaponsUI;
+        _weaponsService.OnWeaponsChanged += RefreshWeaponsUI;
 
-        OnWeaponChanged(weaponsCarousel.CurrentWeapon);
+        OnWeaponChanged(_weaponsCarousel.CurrentWeapon);
     }
 
     private void OnDisable()
@@ -39,26 +41,26 @@ public class WeaponsPanel : MonoBehaviour
         upgradeButton.onClick.RemoveAllListeners();
         selectButton.onClick.RemoveAllListeners();
 
-        weaponsCarousel.OnWeaponChanged -= OnWeaponChanged;
-        _weaponsService.OnSelectionChanged -= RefreshSelectButton;
-        _weaponsService.OnWeaponsChanged -= RefreshSelectButton;
+        _weaponsCarousel.OnWeaponChanged -= OnWeaponChanged;
+        _weaponsService.OnSelectionChanged -= RefreshWeaponsUI;
+        _weaponsService.OnWeaponsChanged -= RefreshWeaponsUI;
     }
 
     private void OnDestroy()
     {
-        weaponsCarousel.OnWeaponChanged -= OnWeaponChanged;
-        _weaponsService.OnSelectionChanged -= RefreshSelectButton;
-        _weaponsService.OnWeaponsChanged -= RefreshSelectButton;
+        _weaponsCarousel.OnWeaponChanged -= OnWeaponChanged;
+        _weaponsService.OnSelectionChanged -= RefreshWeaponsUI;
+        _weaponsService.OnWeaponsChanged -= RefreshWeaponsUI;
     }
 
     private void OnWeaponChanged(WeaponSO weapon)
     {
-        RefreshSelectButton();
+        RefreshWeaponsUI();
     }
 
     private void SelectWeapon()
     {
-        var weapon = weaponsCarousel.CurrentWeapon;
+        var weapon = _weaponsCarousel.CurrentWeapon;
         if (weapon == null) return;
 
         int id = weapon.WeaponId;
@@ -76,12 +78,12 @@ public class WeaponsPanel : MonoBehaviour
             }
         }
 
-        RefreshSelectButton();
+        RefreshWeaponsUI();
     }
 
-    private void RefreshSelectButton()
+    private void RefreshWeaponsUI()
     {
-        var weapon = weaponsCarousel.CurrentWeapon;
+        var weapon = _weaponsCarousel.CurrentWeapon;
         if (weapon == null)
         {
             selectButton.interactable = false;
@@ -94,6 +96,9 @@ public class WeaponsPanel : MonoBehaviour
         int selectedCount = _weaponsService.GetSelectedCount();
         int maxSlots = _weaponsService.GetMaxSlots();
 
+        if (ChangeLockState(id))
+            return;
+
         if (isSelected)
         {
             selectButton.interactable = true;
@@ -105,5 +110,21 @@ public class WeaponsPanel : MonoBehaviour
             selectButton.interactable = canSelect;
             if (selectButtonText != null) selectButtonText.text = canSelect ? "Select" : $"Full ({selectedCount}/{maxSlots})";
         }
+    }
+
+    private bool ChangeLockState(int weaponId)
+    {
+        bool isLock = !_weaponsService.IsAvailable(weaponId);
+
+        if (isLock)
+        {
+            selectButton.interactable = false;
+            selectButtonText.text = "Locked";
+        }
+
+        _mainMenuUIManager.SetLockPanelState(isLock);
+        upgradeButton.interactable = !isLock;
+
+        return isLock;
     }
 }

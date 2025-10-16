@@ -17,13 +17,16 @@ public class ProjectInstaller : MonoInstaller
         Container.BindInstance(dataManager).AsSingle();
         Container.Bind<IReadOnlyPlayerData>().FromInstance(playerData).AsSingle();
 
+        Container.Bind<LevelService>().AsSingle()
+            .WithArguments(playerData);
+
         Container.Bind<EconomyService>()
             .AsSingle()
-            .WithArguments(playerData, dataManager);
+            .WithArguments(playerData);
 
         Container.Bind<WeaponsService>()
             .AsSingle()
-            .WithArguments(playerData, dataManager, weaponDatabase);
+            .WithArguments(playerData);
 
         Container.BindInterfacesAndSelfTo<SaveManager>().AsSingle();
 

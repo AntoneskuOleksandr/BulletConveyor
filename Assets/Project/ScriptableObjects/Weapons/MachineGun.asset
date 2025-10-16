@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: MachineGun
   m_EditorClassIdentifier: 
-  WeaponId: 2
+  WeaponId: 0
   WeaponGO: {fileID: 7805296867101043242, guid: 901cce198903abd4d9ce739298f5c55e,
     type: 3}
+  RequiredLevel: 0
   WeaponType: 0
   BulletType: 0
   baseDamage: 10

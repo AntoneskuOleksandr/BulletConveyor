@@ -7,10 +7,12 @@ public class PlayerData : IReadOnlyPlayerData
     public List<CurrencyEntry> currencies = new();
     public List<WeaponEntry> weapons = new();
     public List<int> selectedWeaponIds = new();
+    public int currentLevel = 0;
 
     public IReadOnlyList<CurrencyEntry> Currencies => currencies;
     public IReadOnlyList<WeaponEntry> Weapons => weapons;
     public IReadOnlyList<int> SelectedWeaponIds => selectedWeaponIds;
+    public int CurrentLevel => currentLevel;
 }
 
 [Serializable]

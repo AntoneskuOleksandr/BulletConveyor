@@ -13,11 +13,19 @@ MonoBehaviour:
   m_Name: Twins
   m_EditorClassIdentifier: 
   WeaponId: 7
-  WeaponName: Twins
   WeaponGO: {fileID: 363017843951669691, guid: 4e8d349ca2e277c46989178f00733a86, type: 3}
+  RequiredLevel: 7
+  WeaponType: 0
+  BulletType: 0
   baseDamage: 0
   baseFireRate: 0
   baseHealth: 0
+  baseAttackRadius: 0
+  shootStrategy: 0
+  aimStrategy: 0
+  targetStrategy: 0
+  bulletMoveType: 0
+  bulletHitType: 0
   upgradeLevels:
   - cost: 1
     damageBonus: 1
@@ -39,3 +47,5 @@ MonoBehaviour:
     damageBonus: 1
     fireRateBonus: 2
     healthBonus: 3
+  baseEffectChances: []
+  Parameters: []
