@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -11,6 +12,11 @@ public class GameManager : MonoBehaviour
     [Inject] private WeaponManager _weaponManager;
     [Inject] private UIManager _uiManager;
 
+    [Inject] private LevelLoader _levelLoader;
+    [Inject] private PlayerProgressService _progress;
+
+    [SerializeField] private LevelSO[] levels;
+
     private void Start()
     {
         StartGame();
@@ -18,6 +24,26 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        int currentLevel = _progress.GetSelectedLevel();
+
+        // Находим LevelSO по LevelIndex
+        LevelSO levelSO = levels.FirstOrDefault(l => l.LevelIndex == currentLevel);
+        if (levelSO == null)
+        {
+            Debug.LogError($"[GameManager] Level with index {currentLevel} not found!");
+            return;
+        }
+
+        LevelConfig config = levelSO.levelConfig;
+        if (config == null)
+        {
+            Debug.LogError($"[GameManager] LevelConfig for Level {currentLevel} is null!");
+            return;
+        }
+
+        Debug.Log($"Starting Level: {config.levelName} (Index: {currentLevel})");
+        _levelLoader.LoadLevel(config);
+
         _tileGenerator.GenerateGrid(6, 6);
         _tileManager.Initialize();
         _weaponManager.InitializeWeapons();
@@ -36,14 +62,14 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator Win()
     {
-        yield return null; // Wait one frame to ensure all events are processed
+        yield return null;
         Time.timeScale = 0f;
         _uiManager.ShowWinPanel();
     }
 
     private IEnumerator Lose()
     {
-        yield return null; // Wait one frame to ensure all events are processed
+        yield return null;
         Time.timeScale = 0f;
         _uiManager.ShowLosePanel();
     }

@@ -13,7 +13,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     [Inject] private EconomyService _economyService;
     [Inject] private WeaponsService _weaponsService;
-    [Inject] private LevelService _levelService;
+    [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private LevelDisplay _levelDisplay;
 
     private void OnEnable()
@@ -51,7 +51,7 @@ public class MainMenuUIManager : MonoBehaviour
     private void UpdateStartButtonState()
     {
         bool hasSelectedWeapons = _weaponsService.GetSelectedCount() > 0;
-        bool isLevelAvailable = _levelService.CanAccessLevel(_levelDisplay.GetCurrentLevel());
+        bool isLevelAvailable = _playerProgressService.CanAccessLevel(_levelDisplay.GetCurrentLevel());
 
         startGameButton.interactable = hasSelectedWeapons && isLevelAvailable;
     }
@@ -59,6 +59,7 @@ public class MainMenuUIManager : MonoBehaviour
     private void StartGame()
     {
         SceneManager.LoadScene(gameSceneName);
+        _playerProgressService.SetSelectedLevel(_levelDisplay.GetCurrentLevel());
     }
 
     private void UpdateMoneyDisplay()

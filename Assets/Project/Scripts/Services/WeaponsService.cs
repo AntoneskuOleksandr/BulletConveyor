@@ -12,19 +12,19 @@ public class WeaponsService
     private readonly DataManager _dataManager;
     private readonly WeaponDatabaseSO _db;
     private readonly EconomyService _economyService;
-    private readonly LevelService _levelService;
+    private readonly PlayerProgressService _playerProgressService;
     private PlayerData _playerData;
 
     private readonly int _maxSlots = 3;
 
     [Inject]
-    public WeaponsService(PlayerData playerData, DataManager dataManager, WeaponDatabaseSO db, EconomyService economy, LevelService levelService)
+    public WeaponsService(PlayerData playerData, DataManager dataManager, WeaponDatabaseSO db, EconomyService economy, PlayerProgressService playerProgressService)
     {
         _playerData = playerData;
         _dataManager = dataManager;
         _db = db;
         _economyService = economy;
-        _levelService = levelService;
+        _playerProgressService = playerProgressService;
     }
 
     public WeaponProgressRO GetProgressRO(int id)
@@ -83,7 +83,7 @@ public class WeaponsService
 
     public List<WeaponSO> GetAvailableWeapons()
     {
-        var lvl = _levelService.GetCurrentLevel();
+        var lvl = _playerProgressService.GetCurrentLevel();
         return _db.weapons.Where(w => w.RequiredLevel <= lvl).ToList();
     }
 
@@ -91,7 +91,7 @@ public class WeaponsService
     public bool IsAvailable(int id)
     {
         var so = _db.weapons.Find(w => w.WeaponId == id);
-        return so != null && so.RequiredLevel <= _levelService.GetCurrentLevel();
+        return so != null && so.RequiredLevel <= _playerProgressService.GetCurrentLevel();
     }
 
     public int GetSelectedCount() => _playerData.selectedWeaponIds.Count;
@@ -104,9 +104,9 @@ public class WeaponsService
         if (so == null)
             return false;
 
-        if (so.RequiredLevel > _levelService.GetCurrentLevel())
+        if (so.RequiredLevel > _playerProgressService.GetCurrentLevel())
         {
-            Debug.LogError($"[WeaponsService] Weapon {so.name} (ID: {id}) is not available at current level {_levelService.GetCurrentLevel()}.");
+            Debug.LogError($"[WeaponsService] Weapon {so.name} (ID: {id}) is not available at current level {_playerProgressService.GetCurrentLevel()}.");
             return false;
         }
 

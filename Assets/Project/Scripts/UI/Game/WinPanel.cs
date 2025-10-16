@@ -2,10 +2,10 @@ using Zenject;
 
 public class WinPanel : ResultPanelBase
 {
-    [Inject] private LevelService _levelService;
+    [Inject] private PlayerProgressService _playerProgressService;
 
     protected override void OnAfterReward()
     {
-        _levelService.IncreaseLevel();
+        _playerProgressService.IncreasePlayerLevel();
     }
 }
