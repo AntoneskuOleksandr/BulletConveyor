@@ -6,6 +6,9 @@ public class GameplayInstaller : MonoInstaller
     [Header("Player")]
     [SerializeField] private PlayerRuntimeManager playerManager;
 
+    [Header("Level-Related Scripts")]
+    [SerializeField] private LevelLoader levelLoader;
+
     [Header("UI")]
     [SerializeField] private UIManager uiManager;
     [SerializeField] private AbilityPanel abilityPanel;
@@ -37,6 +40,9 @@ public class GameplayInstaller : MonoInstaller
     {
         //Player
         Container.Bind<PlayerRuntimeManager>().FromInstance(playerManager).AsSingle();
+
+        //Level-Related Scripts
+        Container.Bind<LevelLoader>().FromInstance(levelLoader).AsSingle();
 
         //UI
         Container.Bind<UIManager>().FromInstance(uiManager).AsSingle();

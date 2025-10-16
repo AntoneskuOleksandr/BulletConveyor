@@ -17,7 +17,7 @@ public class LevelDisplay : MonoBehaviour
     [Header("Background")]
     [SerializeField] private BackgroundGenerator backgroundGenerator;
 
-    [Inject] private LevelService _levelService;
+    [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private MainMenuUIManager _mainMenuUIManager;
 
     private LevelSO currentLevel;
@@ -40,8 +40,7 @@ public class LevelDisplay : MonoBehaviour
             ShowLevel(previousIndex);
         });
 
-        if (levels.Count > 0)
-            ShowLevel(0);
+        ShowLevel(_playerProgressService.GetSelectedLevel());
 
         miniLevels.gameObject.SetActive(true);
     }
@@ -66,7 +65,7 @@ public class LevelDisplay : MonoBehaviour
         backgroundGenerator.SetColor(levels[index].GradientColorTop, levels[index].GradientColorBottom);
         currentLevel = levels[index];
 
-        _mainMenuUIManager.SetLockPanelState(levels[index].LevelIndex > _levelService.GetCurrentLevel());
+        _mainMenuUIManager.SetLockPanelState(levels[index].LevelIndex > _playerProgressService.GetCurrentLevel());
 
         OnLevelChanged?.Invoke();
     }

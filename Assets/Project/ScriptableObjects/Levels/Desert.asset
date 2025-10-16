@@ -16,6 +16,6 @@ MonoBehaviour:
     type: 3}
   LevelIndex: 0
   LevelName: Desert
-  SceneToLoad: Level 1
   GradientColorTop: {r: 1, g: 0.8117647, b: 0.36862746, a: 1}
   GradientColorBottom: {r: 1, g: 0.54901963, b: 0.49803922, a: 1}
+  levelConfig: {fileID: 11400000, guid: 27777e2e33fce8547b402f1c31c9bc46, type: 2}

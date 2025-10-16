@@ -17,7 +17,7 @@ public class ProjectInstaller : MonoInstaller
         Container.BindInstance(dataManager).AsSingle();
         Container.Bind<IReadOnlyPlayerData>().FromInstance(playerData).AsSingle();
 
-        Container.Bind<LevelService>().AsSingle()
+        Container.Bind<PlayerProgressService>().AsSingle()
             .WithArguments(playerData);
 
         Container.Bind<EconomyService>()

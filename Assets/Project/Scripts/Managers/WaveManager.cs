@@ -6,14 +6,14 @@ using Zenject;
 public class WaveManager : MonoBehaviour
 {
     [Header("Wave Settings")]
-    [SerializeField] private int totalWaves = 10;
+    [SerializeField] private int totalWaves;
     [SerializeField] private float waveDuration = 30f;
     [SerializeField] private float timeBetweenWaves = 5f;
 
     [Header("Enemy Count Per Wave")]
-    [SerializeField] private int minEnemyCount = 3;
-    [SerializeField] private int maxEnemyCount = 5;
-    [SerializeField] private int enemyIncrementPerWave = 1;
+    [SerializeField] private int minEnemyCount;
+    [SerializeField] private int maxEnemyCount;
+    [SerializeField] private int enemyIncrementPerWave;
 
     private int currentWave = 0;
     private int enemiesAlive = 0;
@@ -22,14 +22,25 @@ public class WaveManager : MonoBehaviour
     [Inject] private EnemyManager _enemyManager;
 
     // События
-    public event Action<float> OnWaveRoutineStarted;   // Время между волнами
-    public event Action<int, float> OnWaveStarted;     // Номер волны, длительность волны
-    public event Action<int> OnWaveCompleted;          // Номер волны
-    public event Action<int, float> OnTimerBetweenWavesStarted; // Номер волны, время между волнами
-    public event Action<int, int> OnEnemiesChanged;    // alive, total
-    public event Action<float, int> OnWaveProgress;    // Прогресс текущей волны (0..1) + номер волны
+    public event Action<float> OnWaveRoutineStarted;
+    public event Action<int, float> OnWaveStarted;
+    public event Action<int> OnWaveCompleted;
+    public event Action<int, float> OnTimerBetweenWavesStarted;
+    public event Action<int, int> OnEnemiesChanged;
+    public event Action<float, int> OnWaveProgress;
 
     public int TotalWaves => totalWaves;
+
+    /// <summary>
+    /// Конфигурирует параметры волн на основе LevelConfig.
+    /// </summary>
+    public void Configure(int total, int baseCount, int increment, int extraRange)
+    {
+        totalWaves = total;
+        minEnemyCount = baseCount;
+        maxEnemyCount = baseCount + extraRange;
+        enemyIncrementPerWave = increment;
+    }
 
     public void Initialize()
     {
@@ -44,7 +55,6 @@ public class WaveManager : MonoBehaviour
         for (currentWave = 1; currentWave <= totalWaves; currentWave++)
         {
             OnTimerBetweenWavesStarted?.Invoke(currentWave, timeBetweenWaves);
-
             yield return new WaitForSeconds(timeBetweenWaves);
 
             StartWave(currentWave);
@@ -59,7 +69,6 @@ public class WaveManager : MonoBehaviour
 
             // Если волна закончилась раньше времени
             OnWaveProgress?.Invoke(1f, currentWave);
-
             EndWave(currentWave);
         }
     }
@@ -70,7 +79,6 @@ public class WaveManager : MonoBehaviour
         int maxCount = maxEnemyCount + enemyIncrementPerWave * (waveIndex - 1);
         int enemyCount = UnityEngine.Random.Range(minCount, maxCount + 1);
 
-        // Добавляем новых врагов к уже существующим
         enemiesAlive += _enemySpawner.SpawnWave(enemyCount, waveIndex, totalWaves);
 
         OnWaveStarted?.Invoke(waveIndex, waveDuration);
