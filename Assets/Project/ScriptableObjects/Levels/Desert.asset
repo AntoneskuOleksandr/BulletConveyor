@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfe648d32d025e74fb0dd4d816a7555f, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b1d5901d999c624b851e32479d09f8b, type: 3}
   m_Name: Desert
   m_EditorClassIdentifier: 
-  levelIndex: 0
-  levelName: Desert
-  sceneToLoad: Level 1
-  gradientColorTop: {r: 1, g: 0.8117647, b: 0.36862746, a: 1}
-  gradientColorBottom: {r: 1, g: 0.54901963, b: 0.49803922, a: 1}
+  MiniLevelGO: {fileID: 7608597789408355191, guid: 6f4c47338b2e5264dac48617b5763297,
+    type: 3}
+  LevelIndex: 0
+  LevelName: Desert
+  GradientColorTop: {r: 1, g: 0.8117647, b: 0.36862746, a: 1}
+  GradientColorBottom: {r: 1, g: 0.54901963, b: 0.49803922, a: 1}
+  levelConfig: {fileID: 11400000, guid: 27777e2e33fce8547b402f1c31c9bc46, type: 2}
