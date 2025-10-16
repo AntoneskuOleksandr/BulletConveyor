@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using Zenject;
@@ -18,10 +18,13 @@ public class WaveManager : MonoBehaviour
     private int currentWave = 0;
     private int enemiesAlive = 0;
 
+    private bool isFrozen = false;            // новый флаг
+    private bool waitingForUnfreeze = false;  // вспомогательный флаг
+
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private EnemyManager _enemyManager;
+    [Inject] private ProgressBar _progressBar;
 
-    // �������
     public event Action<float> OnWaveRoutineStarted;
     public event Action<int, float> OnWaveStarted;
     public event Action<int> OnWaveCompleted;
@@ -31,22 +34,44 @@ public class WaveManager : MonoBehaviour
 
     public int TotalWaves => totalWaves;
 
-    /// <summary>
-    /// ������������� ��������� ���� �� ������ LevelConfig.
-    /// </summary>
-    public void Configure(int total, int baseCount, int increment, int extraRange)
+    #region Public API
+
+    public void Configure(int total, int baseCount, int increment, int extraRange, GameObject enemyType1, GameObject enemyType2)
     {
         totalWaves = total;
         minEnemyCount = baseCount;
         maxEnemyCount = baseCount + extraRange;
         enemyIncrementPerWave = increment;
+
+        _enemySpawner.Initialize(enemyType1, enemyType2);
+        _progressBar.Initialize();
     }
 
-    public void Initialize()
+    public void StartWaves()
     {
         _enemyManager.OnEnemyDied += HandleEnemyDeath;
         StartCoroutine(WaveRoutine());
     }
+
+    /// <summary>
+    /// Замораживает генерацию волн (между волнами).
+    /// </summary>
+    public void Freeze()
+    {
+        isFrozen = true;
+    }
+
+    /// <summary>
+    /// Размораживает генерацию волн (если стояла на паузе).
+    /// </summary>
+    public void Unfreeze()
+    {
+        isFrozen = false;
+    }
+
+    #endregion
+
+    #region Core Logic
 
     private IEnumerator WaveRoutine()
     {
@@ -54,6 +79,15 @@ public class WaveManager : MonoBehaviour
 
         for (currentWave = 1; currentWave <= totalWaves; currentWave++)
         {
+            // Перед началом новой волны проверяем заморозку
+            if (isFrozen)
+            {
+                waitingForUnfreeze = true;
+                yield return new WaitUntil(() => !isFrozen);
+                waitingForUnfreeze = false;
+            }
+
+            // время между волнами
             OnTimerBetweenWavesStarted?.Invoke(currentWave, timeBetweenWaves);
             yield return new WaitForSeconds(timeBetweenWaves);
 
@@ -67,7 +101,6 @@ public class WaveManager : MonoBehaviour
                 yield return null;
             }
 
-            // ���� ����� ����������� ������ �������
             OnWaveProgress?.Invoke(1f, currentWave);
             EndWave(currentWave);
         }
@@ -95,4 +128,6 @@ public class WaveManager : MonoBehaviour
         enemiesAlive = Mathf.Max(0, enemiesAlive - 1);
         OnEnemiesChanged?.Invoke(enemiesAlive, enemiesAlive);
     }
+
+    #endregion
 }

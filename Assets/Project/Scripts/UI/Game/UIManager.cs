@@ -25,41 +25,63 @@ public class UIManager : MonoBehaviour
     [Header("Progress Bar")]
     [SerializeField] private ProgressBar progressBar;
 
+    [Header("Tutorial")]
+    [SerializeField] private TutorialManager tutorialManager;
+    [Inject] private TutorialProgressService _tutorialProgressService;
+
     [Inject] private BlockManager _blockManager;
     [Inject] private PlayerRuntimeManager _playerManager;
     [Inject] private WaveManager _waveManager;
 
     private void OnEnable()
     {
-        if (buyBlockButton != null)
+        if (!_tutorialProgressService.IsTutorialCompleted)
         {
-            buyBlockButton.onClick.AddListener(OnBuyButtonClicked);
-        }
-        if (buyBlockByAdButton != null)
-        {
-            buyBlockByAdButton.onClick.AddListener(OnBuyBlockByAdButtonClicked);
-        }
-        if (speedUpGameButton != null)
-        {
-            speedUpGameButton.onClick.AddListener(OnSpeedUpButtonClicked);
-        }
-        if (pauseGameButton != null && pauseMenuPanel != null)
-        {
-            pauseGameButton.onClick.AddListener(pauseMenuPanel.ShowPanel);
-        }
-        if (_playerManager != null)
-        {
-            _playerManager.OnCurrencyChanged += UpdateUI;
-        }
-        if (_waveManager != null && abilityPanel != null)
-        {
-            _waveManager.OnTimerBetweenWavesStarted += (waveIndex, timeBetweenWaves) =>
+            if (buyBlockButton != null)
             {
-                if (waveIndex % 2 == 0)
+                buyBlockButton.onClick.AddListener(OnBuyButtonClicked);
+
+                buyBlockByAdButton.gameObject.SetActive(false);
+                speedUpGameButton.gameObject.SetActive(false);
+                if (_playerManager != null)
                 {
-                    abilityPanel.ShowPanel();
+                    _playerManager.OnCurrencyChanged += UpdateUI;
                 }
-            };
+                pauseGameButton.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            if (buyBlockButton != null)
+            {
+                buyBlockButton.onClick.AddListener(OnBuyButtonClicked);
+            }
+            if (buyBlockByAdButton != null)
+            {
+                buyBlockByAdButton.onClick.AddListener(OnBuyBlockByAdButtonClicked);
+            }
+            if (speedUpGameButton != null)
+            {
+                speedUpGameButton.onClick.AddListener(OnSpeedUpButtonClicked);
+            }
+            if (pauseGameButton != null && pauseMenuPanel != null)
+            {
+                pauseGameButton.onClick.AddListener(pauseMenuPanel.ShowPanel);
+            }
+            if (_playerManager != null)
+            {
+                _playerManager.OnCurrencyChanged += UpdateUI;
+            }
+            if (_waveManager != null && abilityPanel != null)
+            {
+                _waveManager.OnTimerBetweenWavesStarted += (waveIndex, timeBetweenWaves) =>
+                {
+                    if (waveIndex % 2 == 0)
+                    {
+                        abilityPanel.ShowPanel();
+                    }
+                };
+            }
         }
     }
 

@@ -8,6 +8,7 @@ public class BlockManager : MonoBehaviour
     [SerializeField] private float priceMultiplier = 1.25f;
 
     public float BlockPrice => currentBlockPrice;
+    public BlockParent LastCreatedBlock { get; private set; }
 
     private int buyedBlockCount = 0;
     private int maxBlockRank = 0;
@@ -62,6 +63,8 @@ public class BlockManager : MonoBehaviour
 
         parent.bulletsToGenerate += 0;
         parent.rank = blockToCreateIndex;
+
+        LastCreatedBlock = parent;
     }
 
     private void IncreaseBlockPrice()
@@ -86,6 +89,8 @@ public class BlockManager : MonoBehaviour
             block2.transform.position,
             Quaternion.identity
         ).GetComponent<BlockParent>();
+
+        LastCreatedBlock = newBlock;
 
         newBlock.blockData.platform = block2.blockData.platform;
         newBlock.rank = block2.rank + 1;

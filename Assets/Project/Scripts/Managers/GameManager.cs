@@ -5,6 +5,9 @@ using Zenject;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private LevelSO[] levels;
+    [SerializeField] private TutorialManager tutorialManager;
+
     [Inject] private TileManager _tileManager;
     [Inject] private TileGenerator _tileGenerator;
     [Inject] private BulletGenerator _bulletGenerator;
@@ -13,18 +16,48 @@ public class GameManager : MonoBehaviour
     [Inject] private UIManager _uiManager;
 
     [Inject] private LevelLoader _levelLoader;
-    [Inject] private PlayerProgressService _progress;
-
-    [SerializeField] private LevelSO[] levels;
+    [Inject] private WeaponsService _weaponsService;
+    [Inject] private PlayerProgressService _playerProgressService;
+    [Inject] private TutorialProgressService _tutorialProgress;
+    [Inject] private PlayerRuntimeManager _playerRuntimeManager;
 
     private void Start()
     {
-        StartGame();
+        if (!_tutorialProgress.IsTutorialCompleted)
+        {
+            _playerRuntimeManager.AddCurrency(CurrencyType.Coins, 100);
+            tutorialManager.StartTutorial();
+            int currentLevel = _playerProgressService.GetSelectedLevel();
+
+            _levelLoader.LoadLevel(levels[0].levelConfig);
+
+            _tileGenerator.GenerateGrid(6, 6);
+            _tileManager.Initialize();
+
+            _weaponsService.SelectWeapon(0);
+
+            _weaponManager.InitializeWeapons();
+            _bulletGenerator.Initialize();
+
+            StartCoroutine(_bulletGenerator.StartBulletGeneration());
+
+            _weaponManager.OnAllWeaponsDestroyed += () => StartCoroutine(Lose());
+            _waveManager.OnWaveCompleted += wave =>
+            {
+                if (wave >= _waveManager.TotalWaves)
+                    StartCoroutine(Win());
+            };
+        }
+        else
+        {
+            StartGame();
+        }
     }
+
 
     public void StartGame()
     {
-        int currentLevel = _progress.GetSelectedLevel();
+        int currentLevel = _playerProgressService.GetSelectedLevel();
 
         // Находим LevelSO по LevelIndex
         LevelSO levelSO = levels.FirstOrDefault(l => l.LevelIndex == currentLevel);
@@ -41,14 +74,13 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Starting Level: {config.levelName} (Index: {currentLevel})");
         _levelLoader.LoadLevel(config);
 
         _tileGenerator.GenerateGrid(6, 6);
         _tileManager.Initialize();
         _weaponManager.InitializeWeapons();
         _bulletGenerator.Initialize();
-        _waveManager.Initialize();
+        _waveManager.StartWaves();
 
         StartCoroutine(_bulletGenerator.StartBulletGeneration());
 

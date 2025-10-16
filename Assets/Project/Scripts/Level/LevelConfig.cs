@@ -22,6 +22,10 @@ public class LevelConfig : ScriptableObject
     [Tooltip("Дополнительное смещение к максимальному количеству врагов (диапазон)")]
     public int extraEnemyCountRange = 2;
 
+    [Header("Spawn Settings")]
+    public GameObject enemyType1;
+    public GameObject enemyType2;
+
     [Header("Audio")]
     public AudioClip backgroundMusic;
 }

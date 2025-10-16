@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,6 +35,8 @@ public class BlockDragController
     private readonly Camera camera;
 
     private readonly float blockDragingYOffset = 0.925f;
+
+    public static event Action<DragResult> OnDragFinished;
 
     public BlockDragController(TileManager tileManager, BoardManager boardManager, MergePlatformsManager mergePlatformsManager, Camera camera)
     {
@@ -149,6 +152,8 @@ public class BlockDragController
                 Cancel();
                 break;
         }
+
+        OnDragFinished?.Invoke(result);
         session = null;
     }
 

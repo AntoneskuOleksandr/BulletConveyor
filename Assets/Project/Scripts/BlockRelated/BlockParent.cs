@@ -25,6 +25,9 @@ public class BlockData
 public class BlockParent : MonoBehaviour
 {
     [SerializeField] private float DraggSpeed = 7f;
+
+    public bool CanDrag = true;
+
     public TMP_Text bulletsCountText;
 
     public int scaleX = 1;

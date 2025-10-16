@@ -8,10 +8,10 @@ public class LevelLoader : MonoBehaviour
     private GameObject _currentEnvironment;
 
     [Inject] private WaveManager _waveManager;
+    [Inject] private TutorialProgressService _tutorialProgressService;
 
     public void LoadLevel(LevelConfig config)
     {
-        Debug.Log("Loading Level...");
 
         if (config == null)
         {
@@ -21,29 +21,28 @@ public class LevelLoader : MonoBehaviour
 
         // Удаляем старое окружение
         if (_currentEnvironment != null)
-        {
-            Debug.Log("Unloading previous environment...");
             Destroy(_currentEnvironment);
-        }
+
 
         // Подгружаем новое окружение
         if (config.environmentPrefab != null)
-        {
-            Debug.Log("Loading new environment...");
             _currentEnvironment = Instantiate(config.environmentPrefab, environmentRoot);
-        }
+
         else
             Debug.LogError("Environment prefab is null in LevelConfig.");
 
-        Debug.Log("Configuring wave manager...");
-        // Настраиваем волны
-        _waveManager.Configure(
-            config.totalWaves,
-            config.baseEnemyCount,
-            config.enemyIncrementPerWave,
-            config.extraEnemyCountRange
-        );
-
-        Debug.Log($"Level Loaded: {config.levelName}");
+        if (!_tutorialProgressService.IsTutorialCompleted)
+            _waveManager.Configure(2, 1, 0, 0, config.enemyType1, config.enemyType1);
+        else
+        {
+            _waveManager.Configure(
+                config.totalWaves,
+                config.baseEnemyCount,
+                config.enemyIncrementPerWave,
+                config.extraEnemyCountRange,
+                config.enemyType1,
+                config.enemyType2
+            );
+        }
     }
 }
