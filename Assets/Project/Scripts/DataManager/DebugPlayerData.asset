@@ -25,4 +25,4 @@ MonoBehaviour:
     dmgLvl: 0
     fireRateLvl: 0
     healthLvl: 0
-  selectedWeaponIds: 0000000001000000
+  selectedWeaponIds: 00000000

@@ -20,6 +20,11 @@ public class EnemyStatusCanvas : MonoBehaviour
     // Для Stackable: тип → список UI
     private Dictionary<OnHitEffectType, List<StatusEffectUI>> _stackableEffects = new();
 
+    private void Start()
+    {
+        HideStatusCanvas();
+    }
+
     #region Health Bar
     public void SetHealthBarFillAmount(float fillAmount)
     {
@@ -34,7 +39,7 @@ public class EnemyStatusCanvas : MonoBehaviour
         }
     }
 
-    public void HideHealthBar() => this.gameObject.SetActive(false);
+    public void HideStatusCanvas() => this.gameObject.SetActive(false);
     #endregion
 
     #region Status Effects

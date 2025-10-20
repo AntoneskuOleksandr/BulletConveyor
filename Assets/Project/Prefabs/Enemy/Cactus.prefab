@@ -470,8 +470,11 @@ MonoBehaviour:
   baseSpeed: 1
   maxHealth: 100
   killReward: 100
+  gearsKillReward: 1
+  contactDamage: 20
   hitTransform: {fileID: 6859917437934386780}
   enemyStatusCanvas: {fileID: 1307107464858118680}
+  _currentHealth: 0
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
