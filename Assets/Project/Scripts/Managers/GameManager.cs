@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
     {
         if (!_tutorialProgress.IsTutorialCompleted)
         {
-            _playerRuntimeManager.AddCurrency(CurrencyType.Coins, 100);
             tutorialManager.StartTutorial();
             int currentLevel = _playerProgressService.GetSelectedLevel();
 
