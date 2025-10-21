@@ -13,7 +13,11 @@ public class BasicShootStrategy : IShootStrategy
         if (bullet == null) return false;
 
         bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(weapon.Damage, weapon.FirePoint, weapon.Target.HitTransform);
+        bullet.Init(
+            weapon.Damage,
+            weapon.Data.GetParameter(WeaponParameterType.LaunchSpeed),
+            weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint),
+            weapon.Target.HitTransform);
 
         weapon.ResetFireCountdown();
         return true;

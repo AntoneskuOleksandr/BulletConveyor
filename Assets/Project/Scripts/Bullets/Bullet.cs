@@ -5,10 +5,6 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class Bullet : MonoBehaviour
 {
-    [Header("Base Stats")]
-    [SerializeField] private float _speed = 20f;
-    [SerializeField] private float _damage = 10f;
-
     private Transform _target;
     private Rigidbody _rigidbody;
     private Collider _collider;
@@ -18,9 +14,7 @@ public class Bullet : MonoBehaviour
 
     private readonly List<IOnHitEffect> _effects = new();
     private BulletVisual _visual;
-
-    public float Damage => _damage;
-    public float Speed => _speed;
+    public float Damage { get; private set; }
     public Transform Target => _target;
     public Rigidbody Rigidbody => _rigidbody;
     public Collider Collider => _collider;
@@ -31,6 +25,12 @@ public class Bullet : MonoBehaviour
         _collider = GetComponent<Collider>();
         _visual = GetComponent<BulletVisual>();
     }
+
+    private void FixedUpdate()
+    {
+        _moveStrategy?.UpdateRotation(this);
+    }
+
 
     public void SetStrategies(IBulletMoveStrategy move, IBulletHitStrategy hit)
     {
@@ -46,9 +46,9 @@ public class Bullet : MonoBehaviour
             effect.Apply(this, enemy);
     }
 
-    public void Init(float damage, Transform spawnPoint, Transform target)
+    public void Init(float damage, float launchSpeed, Transform spawnPoint, Transform target)
     {
-        _damage = damage;
+        Damage = damage;
         _target = target;
 
         transform.position = spawnPoint.position;
@@ -62,7 +62,7 @@ public class Bullet : MonoBehaviour
         _visual?.OnSpawn();
         SetVisual(Color.green);
 
-        _moveStrategy?.Launch(this, target);
+        _moveStrategy?.Launch(this, target, launchSpeed);
     }
 
     private void OnTriggerEnter(Collider other)

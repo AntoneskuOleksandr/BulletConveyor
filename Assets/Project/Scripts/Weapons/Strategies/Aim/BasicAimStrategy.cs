@@ -7,20 +7,20 @@ public class BasicAimStrategy : IAimStrategy
         var target = weapon.Target;
 
         // Вектор на цель
-        Vector3 dir = target.HitTransform.position - weapon.PartToRotate.position;
+        Vector3 dir = target.HitTransform.position - weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).position;
         dir.y = 0f;
         if (dir == Vector3.zero) return false;
 
         // Текущий и целевой поворот
         Quaternion lookRotation = Quaternion.LookRotation(dir);
-        weapon.PartToRotate.rotation = Quaternion.Lerp(
-            weapon.PartToRotate.rotation,
+        weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation = Quaternion.Lerp(
+            weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation,
             lookRotation,
             Time.deltaTime * weapon.TurnSpeed
         );
 
         // --- Проверяем угол ---
-        float angle = Quaternion.Angle(weapon.PartToRotate.rotation, lookRotation);
+        float angle = Quaternion.Angle(weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation, lookRotation);
         return angle <= weapon.AimThreshold;
     }
 }

@@ -20,9 +20,5 @@ MonoBehaviour:
     amount: 0
   - type: 1
     amount: 0
-  weapons:
-  - id: 0
-    dmgLvl: 0
-    fireRateLvl: 0
-    healthLvl: 0
-  selectedWeaponIds: 00000000
+  weapons: []
+  selectedWeaponIds: 01000000

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using UnityEngine;
 using Zenject;
 
@@ -23,17 +24,15 @@ public class Weapon : MonoBehaviour
     private float fireRate;
     private float attackRadius;
 
-    private Transform firePoint;
-    private Transform partToRotate;
-
     public float Damage => damage;
     public float Health => health;
     public float FireRate => fireRate;
     public float AttackRadius => attackRadius;
-    public Transform FirePoint => firePoint;
-    public Transform PartToRotate => partToRotate;
     public float TurnSpeed => turnSpeed;
     public float AimThreshold => aimThreshold;
+    public WeaponAttachmentPoints AttachmentPoints => _attachmentPoints;
+
+    private WeaponAttachmentPoints _attachmentPoints;
 
     public WeaponSO Data { get; private set; }
     public Action OnWeaponDestroyed;
@@ -56,10 +55,11 @@ public class Weapon : MonoBehaviour
     private float _targetRefreshRate = 1f;
     private float _targetRefreshTimer = 0f;
 
+    private Transform _baseRotation;
     private Quaternion _initialRotation;
     private float _idleTimer = 0f;
 
-    [Header("Strategy Info (Read Only)")]
+    [Header("Strategy Info (Read Only at inspector)")]
     [SerializeField] private ShootStrategyType shootStrategyType;
     [SerializeField] private AimStrategyType aimStrategyType;
     [SerializeField] private TargetStrategyType targetStrategyType;
@@ -123,22 +123,18 @@ public class Weapon : MonoBehaviour
         for (int i = 0; i < progress.HealthLevel; i++)
             health += so.upgradeLevels[i].healthBonus;
 
-        var attachment = GetComponent<WeaponAttachmentPoints>();
-        if (attachment != null)
-        {
-            firePoint = attachment.firePoint;
-            partToRotate = attachment.partToRotate;
-        }
+        _attachmentPoints = GetComponent<WeaponAttachmentPoints>();
+        if (_attachmentPoints == null)
+            Debug.LogError($"[Weapon] Object {gameObject.name} has no WeaponAttachmentPoints");
         else
-        {
-            Debug.LogWarning($"[Weapon] На объекте {gameObject.name} нет WeaponAttachmentPoints");
-        }
+            _baseRotation = _attachmentPoints.Get(WeaponAttachmentType.BaseRotation);
+
     }
 
     protected virtual void Start()
     {
-        if (partToRotate != null)
-            _initialRotation = partToRotate.rotation;
+        if (AttachmentPoints.Get(WeaponAttachmentType.BaseRotation) != null)
+            _initialRotation = AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation;
 
         foreach (var effectChance in baseWeaponEffectChances)
         {
@@ -183,8 +179,10 @@ public class Weapon : MonoBehaviour
 
             if (_aimStrategy?.TryAim(this) == true)
             {
+                Debug.Log($"[Weapon] TryAim = true");
                 if (_shootStrategy?.TryShoot(this) == true)
                 {
+                    Debug.Log($"[Weapon] Shoot");
                     var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
 
                     var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
@@ -192,7 +190,6 @@ public class Weapon : MonoBehaviour
                     _weaponVisual?.PlayShotEffect(colorWeights);
                 }
             }
-
         }
         else
         {
@@ -206,10 +203,10 @@ public class Weapon : MonoBehaviour
     private void HandleIdleRotation()
     {
         _idleTimer += Time.deltaTime;
-        if (_idleTimer >= idleReturnDelay && partToRotate != null)
+        if (_idleTimer >= idleReturnDelay && _baseRotation != null)
         {
-            partToRotate.rotation = Quaternion.Lerp(
-                partToRotate.rotation,
+            _baseRotation.rotation = Quaternion.Lerp(
+                _baseRotation.rotation,
                 _initialRotation,
                 Time.deltaTime * turnSpeed
             );

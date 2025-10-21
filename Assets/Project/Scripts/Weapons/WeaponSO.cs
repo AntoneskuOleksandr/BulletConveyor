@@ -14,9 +14,7 @@ public class UpgradeLevel
 public enum WeaponParameterType
 {
     AoERadius,
-    LaserLength,
-    LaserWidth,
-    HomingSpeed
+    LaunchSpeed
 }
 
 [Serializable]
@@ -69,6 +67,5 @@ public class WeaponSO : ScriptableObject
         }
         return defaultValue;
     }
-
 }
 

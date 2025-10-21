@@ -2,16 +2,26 @@ using UnityEngine;
 
 public class ArcMoveStrategy : IBulletMoveStrategy
 {
-    public void Launch(Bullet bullet, Transform target)
+    public void Launch(Bullet bullet, Transform target, float launchSpeed)
     {
-        Vector3 dir = target.position - bullet.transform.position;
         bullet.Rigidbody.useGravity = true;
 
-        float distance = dir.magnitude;
-        float angle = 45f * Mathf.Deg2Rad;
-        float v = Mathf.Sqrt(distance * Physics.gravity.magnitude / Mathf.Sin(2 * angle));
+        Vector3 dir = bullet.transform.forward;
+        bullet.Rigidbody.linearVelocity = dir * launchSpeed;
+        bullet.transform.rotation = Quaternion.LookRotation(dir);
+    }
 
-        Vector3 velocity = dir.normalized * v * Mathf.Cos(angle) + Vector3.up * v * Mathf.Sin(angle);
-        bullet.Rigidbody.linearVelocity = velocity;
+    public void UpdateRotation(Bullet bullet)
+    {
+        Vector3 velocity = bullet.Rigidbody.linearVelocity;
+        if (velocity.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(velocity);
+            bullet.transform.rotation = Quaternion.Slerp(
+                bullet.transform.rotation,
+                targetRotation,
+                Time.fixedDeltaTime * 10f
+            );
+        }
     }
 }

@@ -9,6 +9,7 @@ public class StrategyInstaller : MonoInstaller
 
         // Aim strategies
         Container.Bind<BasicAimStrategy>().AsSingle();
+        Container.Bind<BallisticAimStrategy>().AsSingle();
 
         // Targeting strategies
         Container.Bind<NearestTargetStrategy>().AsSingle();
