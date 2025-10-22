@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -18,7 +17,6 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float turnSpeed = 3f;
     [SerializeField] private float aimThreshold = 2f;
     [SerializeField] private float idleReturnDelay = 2f;
-    [SerializeField] private WeaponSO so;
 
     private float damage;
     private float health;
@@ -78,9 +76,6 @@ public class Weapon : MonoBehaviour
     private IAimStrategy _aimStrategy;
     private ITargetStrategy _targetStrategy;
 
-    /// <summary>
-    /// Назначение стратегий поведения
-    /// </summary>
     public void SetWeaponStrategy(IShootStrategy shoot, ShootStrategyType shootType,
         IAimStrategy aim, AimStrategyType aimType,
         ITargetStrategy target, TargetStrategyType targetType)
@@ -103,10 +98,7 @@ public class Weapon : MonoBehaviour
         bulletHitType = hitType;
     }
 
-    /// <summary>
-    /// Инициализация параметров пушки из ScriptableObject
-    /// </summary>
-    public void Initialize()
+    public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
     {
         Data = so;
         damage = so.baseDamage;
@@ -116,25 +108,16 @@ public class Weapon : MonoBehaviour
 
         baseWeaponEffectChances.AddRange(so.baseEffectChances);
 
-        _attachmentPoints = GetComponent<WeaponAttachmentPoints>();
-        if (_attachmentPoints == null)
-            Debug.LogError($"[Weapon] Object {gameObject.name} has no WeaponAttachmentPoints");
-        else
-        {
-            Debug.Log("_attachmentPoints: " + _attachmentPoints);
-
-            _baseRotation = _attachmentPoints.Get(WeaponAttachmentType.BaseRotation);
-
-            Debug.Log(_baseRotation);
-        }
+        for (int i = 0; i < progress.DamageLevel; i++)
+            damage += so.upgradeLevels[i].damageBonus;
+        for (int i = 0; i < progress.FireRateLevel; i++)
+            fireRate += so.upgradeLevels[i].fireRateBonus;
+        for (int i = 0; i < progress.HealthLevel; i++)
+            health += so.upgradeLevels[i].healthBonus;
     }
 
     protected virtual void Start()
     {
-        Initialize();
-        if (AttachmentPoints.Get(WeaponAttachmentType.BaseRotation) != null)
-            _initialRotation = AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation;
-
         foreach (var effectChance in baseWeaponEffectChances)
         {
             _effectChanceManager.RegisterWeaponChance(
@@ -147,14 +130,22 @@ public class Weapon : MonoBehaviour
         _weaponVisual = GetComponent<WeaponVisual>();
         _weaponStatusCanvas = GetComponentInChildren<WeaponStatusCanvas>();
         _weaponHitZone = GetComponent<WeaponHitZone>();
+        _attachmentPoints = GetComponent<WeaponAttachmentPoints>();
 
         if (_weaponHitZone != null)
             _weaponHitZone.Initialize(this);
 
         if (_weaponVisual == null)
-            Debug.LogError($"[Weapon] На объекте {gameObject.name} нет WeaponVisual");
+            Debug.LogError($"[Weapon] {gameObject.name}  WeaponVisual is null");
         if (_weaponStatusCanvas == null)
-            Debug.LogError($"[Weapon] На объекте {gameObject.name} нет WeaponStatusCanvas");
+            Debug.LogError($"[Weapon] {gameObject.name}  WeaponStatusCanvas is null");
+        if (_weaponHitZone == null)
+            Debug.LogError($"[Weapon] {gameObject.name}  WeaponHitZone is null");
+        if (_attachmentPoints == null)
+            Debug.LogError($"[Weapon] {gameObject.name}  _attachmentPoints is null");
+
+        if (AttachmentPoints.Get(WeaponAttachmentType.BaseRotation) != null)
+            _initialRotation = AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation;
     }
 
     protected virtual void OnDisable()
@@ -178,10 +169,8 @@ public class Weapon : MonoBehaviour
 
             if (_aimStrategy?.TryAim(this) == true)
             {
-                Debug.Log($"[Weapon] TryAim = true");
                 if (_shootStrategy?.TryShoot(this) == true)
                 {
-                    Debug.Log($"[Weapon] Shoot");
                     var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
 
                     var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
