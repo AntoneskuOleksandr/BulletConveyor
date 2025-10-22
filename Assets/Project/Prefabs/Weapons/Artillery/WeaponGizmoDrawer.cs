@@ -15,7 +15,7 @@ public class WeaponGizmoDrawer : MonoBehaviour
             weapon = GetComponent<Weapon>();
             return;
         }
-        var firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
+        var firePoint = weapon.AttachmentPoints?.Get(WeaponAttachmentType.FirePoint);
         if (firePoint == null) return;
 
         Vector3 startPos = firePoint.position;

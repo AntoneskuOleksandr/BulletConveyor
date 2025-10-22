@@ -12,7 +12,7 @@ public class WeaponVisual : MonoBehaviour
     private ParticleSystem _muzzleInstance;
     private ParticleSystem.Particle[] _particles;
 
-    private void Awake()
+    private void Start()
     {
         var attachment = GetComponent<WeaponAttachmentPoints>();
         muzzlePoint = attachment?.Get(WeaponAttachmentType.FirePoint);

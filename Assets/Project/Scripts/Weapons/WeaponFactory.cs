@@ -51,7 +51,7 @@ public class WeaponFactory
         );
 
         var progress = _weaponsService.GetProgressRO(so.WeaponId);
-        weapon.InitializeFromSO(so, progress);
+        //weapon.InitializeFromSO(so, progress);
 
         return weapon;
     }

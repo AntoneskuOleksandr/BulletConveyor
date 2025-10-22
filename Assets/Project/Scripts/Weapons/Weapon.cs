@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
+using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -18,6 +18,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float turnSpeed = 3f;
     [SerializeField] private float aimThreshold = 2f;
     [SerializeField] private float idleReturnDelay = 2f;
+    [SerializeField] private WeaponSO so;
 
     private float damage;
     private float health;
@@ -105,7 +106,7 @@ public class Weapon : MonoBehaviour
     /// <summary>
     /// Инициализация параметров пушки из ScriptableObject
     /// </summary>
-    public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
+    public void Initialize()
     {
         Data = so;
         damage = so.baseDamage;
@@ -115,24 +116,22 @@ public class Weapon : MonoBehaviour
 
         baseWeaponEffectChances.AddRange(so.baseEffectChances);
 
-        // --- Применение апгрейдов ---
-        for (int i = 0; i < progress.DamageLevel; i++)
-            damage += so.upgradeLevels[i].damageBonus;
-        for (int i = 0; i < progress.FireRateLevel; i++)
-            fireRate += so.upgradeLevels[i].fireRateBonus;
-        for (int i = 0; i < progress.HealthLevel; i++)
-            health += so.upgradeLevels[i].healthBonus;
-
         _attachmentPoints = GetComponent<WeaponAttachmentPoints>();
         if (_attachmentPoints == null)
             Debug.LogError($"[Weapon] Object {gameObject.name} has no WeaponAttachmentPoints");
         else
+        {
+            Debug.Log("_attachmentPoints: " + _attachmentPoints);
+
             _baseRotation = _attachmentPoints.Get(WeaponAttachmentType.BaseRotation);
 
+            Debug.Log(_baseRotation);
+        }
     }
 
     protected virtual void Start()
     {
+        Initialize();
         if (AttachmentPoints.Get(WeaponAttachmentType.BaseRotation) != null)
             _initialRotation = AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation;
 
