@@ -12,10 +12,11 @@ public class Ballistic : MonoBehaviour
         Weapon weapon = GetComponent<Weapon>();
 
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
+        Transform staticFirePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.StaticFirePoint);
         Transform baseRot = weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation);
         Transform barrelRot = weapon.AttachmentPoints.Get(WeaponAttachmentType.BarrelRotation);
 
-        Vector3 firePos = firePoint.position;
+        Vector3 firePos = staticFirePoint.position;
         Vector3 targetPos = target.position;
 
 
