@@ -38,6 +38,11 @@ public class BallisticAimStrategy : IAimStrategy
         float highAngleRad = Mathf.Atan((Mathf.Pow(v, 2) + Mathf.Sqrt(discriminant)) / (g * d));
         float lowAngleRad = Mathf.Atan((Mathf.Pow(v, 2) - Mathf.Sqrt(discriminant)) / (g * d));
 
+        Quaternion desiredLocalPitch = Quaternion.Euler(-lowAngleRad * Mathf.Rad2Deg, 0f, 0f);
+        barrelRot.localRotation = desiredLocalPitch;
+
+        Debug.Log("BarrelRot: " + barrelRot);
+
         return false;
     }
 }
