@@ -6,8 +6,7 @@ public enum WeaponAttachmentType
 {
     BaseRotation,   
     BarrelRotation,
-    FirePoint,
-    StaticFirePoint
+    FirePoint
 }
 
 [Serializable]
