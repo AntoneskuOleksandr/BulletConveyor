@@ -183,7 +183,7 @@ public class Weapon : MonoBehaviour
                 }
             }
 
-            Debug.Log($"[Weapon] {_aimStrategies.Count} aim strategies processed. Aimed: {aimed}");
+            //Debug.Log($"[Weapon] {_aimStrategies.Count} aim strategies processed. Aimed: {aimed}");
 
             if (aimed)
             {

@@ -55,6 +55,9 @@ public class BallisticAimStrategy : IAimStrategy
 
         barrelRot.localRotation = Quaternion.Euler(currentThetaDeg, 0f, 0f);
 
-        return true;
+        float angleDiff = Mathf.Abs(Mathf.DeltaAngle(currentThetaDeg, targetThetaDeg));
+        bool isAimed = angleDiff <= weapon.AimThreshold;
+
+        return isAimed;
     }
 }
