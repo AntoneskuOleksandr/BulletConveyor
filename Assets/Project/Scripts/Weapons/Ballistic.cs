@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Ballistic : MonoBehaviour
 {
@@ -14,10 +14,12 @@ public class Ballistic : MonoBehaviour
         Transform baseRot = weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation);
         Transform barrelRot = weapon.AttachmentPoints.Get(WeaponAttachmentType.BarrelRotation);
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
-        Transform staticFirePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.StaticFirePoint);
 
-        Vector3 firePos = staticFirePoint.position;
+        Vector3 firePos = barrelRot.position;
         Vector3 targetPos = target.position;
+
+        float lengthOfBarrel = Vector3.Distance(firePoint.position, barrelRot.position);
+        Debug.Log("Length of barrel: " + lengthOfBarrel);
 
 
         if (firePoint == null || baseRot == null || barrelRot == null)
