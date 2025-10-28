@@ -14,7 +14,6 @@ public class UpgradeLevel
 public enum WeaponParameterType
 {
     AoERadius,
-    LaunchSpeed,
     RotationSpeed,
 }
 

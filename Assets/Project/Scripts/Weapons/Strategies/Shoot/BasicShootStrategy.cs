@@ -15,7 +15,7 @@ public class BasicShootStrategy : IShootStrategy
         bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
         bullet.Init(
             weapon.Damage,
-            weapon.Data.GetParameter(WeaponParameterType.LaunchSpeed),
+            weapon.LaunchSpeed,
             weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint),
             weapon.Target.HitTransform);
 

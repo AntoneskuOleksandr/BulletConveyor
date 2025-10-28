@@ -20,7 +20,7 @@ public class WeaponGizmoDrawer : MonoBehaviour
         if (firePoint == null) return;
 
         Vector3 startPos = firePoint.position;
-        Vector3 velocity = firePoint.forward * weapon.Data.GetParameter(WeaponParameterType.LaunchSpeed);
+        Vector3 velocity = firePoint.forward * weapon.LaunchSpeed;
         Vector3 gravity = Physics.gravity;
 
         Vector3 previousPos = startPos;

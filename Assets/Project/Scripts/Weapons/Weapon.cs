@@ -27,6 +27,7 @@ public class Weapon : MonoBehaviour
     public float Health => health;
     public float FireRate => fireRate;
     public float AttackRadius => attackRadius;
+    public float LaunchSpeed => Mathf.Sqrt(attackRadius * Mathf.Abs(Physics.gravity.y));
     public float TurnSpeed => turnSpeed;
     public float AimThreshold => aimThreshold;
     public WeaponAttachmentPoints AttachmentPoints => _attachmentPoints;

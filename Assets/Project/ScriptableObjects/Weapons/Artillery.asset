@@ -20,7 +20,7 @@ MonoBehaviour:
   baseDamage: 30
   baseFireRate: 0.33333334
   baseHealth: 150
-  baseAttackRadius: 100
+  baseAttackRadius: 30
   shootStrategy: 0
   aimStrategy: 1
   targetStrategy: 0
@@ -52,4 +52,6 @@ MonoBehaviour:
   - Type: 0
     Value: 5
   - Type: 1
-    Value: 15
+    Value: 17.16
+  - Type: 2
+    Value: 30

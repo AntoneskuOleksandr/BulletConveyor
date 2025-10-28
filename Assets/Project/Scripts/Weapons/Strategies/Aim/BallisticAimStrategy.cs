@@ -22,9 +22,9 @@ public class BallisticAimStrategy : IAimStrategy
             initialized = true;
         }
 
-        float v = weapon.Data.GetParameter(WeaponParameterType.LaunchSpeed);
-
         float g = Mathf.Abs(Physics.gravity.y);
+        float v = weapon.LaunchSpeed;
+
 
         Vector3 t = target.position;
         Vector3 d0 = t - firePoint.position;
@@ -55,7 +55,6 @@ public class BallisticAimStrategy : IAimStrategy
 
         barrelRot.localRotation = Quaternion.Euler(currentThetaDeg, 0f, 0f);
 
-        Debug.Log($"Theta target: {targetThetaDeg:F2}°, current: {currentThetaDeg:F2}°");
         return true;
     }
 }
