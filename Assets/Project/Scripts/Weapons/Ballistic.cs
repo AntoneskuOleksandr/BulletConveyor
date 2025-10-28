@@ -5,12 +5,6 @@ public class Ballistic : MonoBehaviour
     [SerializeField] private Transform target;
     [SerializeField] private int maxIterations;
 
-    private void Update()
-    {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        TryAim();
-    }
-
     public bool TryAim()
     {
         Weapon weapon = GetComponent<Weapon>();

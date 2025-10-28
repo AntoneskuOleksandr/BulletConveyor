@@ -17,7 +17,6 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float turnSpeed = 3f;
     [SerializeField] private float aimThreshold = 2f;
     [SerializeField] private float idleReturnDelay = 2f;
-    [SerializeField] private WeaponSO so;
 
     private float damage;
     private float health;
@@ -109,17 +108,16 @@ public class Weapon : MonoBehaviour
 
         baseWeaponEffectChances.AddRange(so.baseEffectChances);
 
-        /*        for (int i = 0; i < progress.DamageLevel; i++)
-                    damage += so.upgradeLevels[i].damageBonus;
-                for (int i = 0; i < progress.FireRateLevel; i++)
-                    fireRate += so.upgradeLevels[i].fireRateBonus;
-                for (int i = 0; i < progress.HealthLevel; i++)
-                    health += so.upgradeLevels[i].healthBonus;*/
+        for (int i = 0; i < progress.DamageLevel; i++)
+            damage += so.upgradeLevels[i].damageBonus;
+        for (int i = 0; i < progress.FireRateLevel; i++)
+            fireRate += so.upgradeLevels[i].fireRateBonus;
+        for (int i = 0; i < progress.HealthLevel; i++)
+            health += so.upgradeLevels[i].healthBonus;
     }
 
     protected virtual void Start()
     {
-        InitializeFromSO(so, new WeaponProgressRO { });
         foreach (var effectChance in baseWeaponEffectChances)
         {
             _effectChanceManager.RegisterWeaponChance(

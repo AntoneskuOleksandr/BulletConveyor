@@ -125,6 +125,7 @@ MonoBehaviour:
   steps: 200
   timestep: 0.1
   color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  weaponAttachmentType: 2
 --- !u!114 &2378862048849484823
 MonoBehaviour:
   m_ObjectHideFlags: 0
