@@ -6,6 +6,7 @@ public class WeaponGizmoDrawer : MonoBehaviour
     public int steps = 50;
     public float timestep = 0.1f;
     public Color color = Color.yellow;
+    public WeaponAttachmentType weaponAttachmentType;
 
 
     private void OnDrawGizmos()
@@ -15,7 +16,7 @@ public class WeaponGizmoDrawer : MonoBehaviour
             weapon = GetComponent<Weapon>();
             return;
         }
-        var firePoint = weapon.AttachmentPoints?.Get(WeaponAttachmentType.FirePoint);
+        var firePoint = weapon.AttachmentPoints?.Get(weaponAttachmentType);
         if (firePoint == null) return;
 
         Vector3 startPos = firePoint.position;
