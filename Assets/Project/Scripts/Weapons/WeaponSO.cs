@@ -15,6 +15,7 @@ public enum WeaponParameterType
 {
     AoERadius,
     LaunchSpeed
+    RotationSpeed,
 }
 
 [Serializable]

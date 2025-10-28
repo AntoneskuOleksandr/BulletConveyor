@@ -3,9 +3,7 @@
 public class BallisticAimStrategy : IAimStrategy
 {
     private const int MAX_ITERATIONS = 3;
-
-    private float smoothSpeed = 3f;
-    private float currentTheta;
+    private float currentThetaDeg;
     private bool initialized = false;
 
     public bool TryAim(Weapon weapon)
@@ -15,20 +13,19 @@ public class BallisticAimStrategy : IAimStrategy
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
         Transform target = weapon.Target.HitTransform;
 
+        if (!baseRot || !barrelRot || !firePoint || !target)
+            return false;
+
         if (!initialized)
         {
-            float startDeg = -barrelRot.localEulerAngles.x;
-            if (startDeg > 180f)
-                startDeg -= 360f; // корректируем диапазон
-
-            currentTheta = startDeg * Mathf.Deg2Rad;
+            currentThetaDeg = Mathf.DeltaAngle(0f, barrelRot.localEulerAngles.x);
             initialized = true;
         }
 
         float v = weapon.Data.GetParameter(WeaponParameterType.LaunchSpeed);
+
         float g = Mathf.Abs(Physics.gravity.y);
 
-        // Проверяем дискриминант
         Vector3 t = target.position;
         Vector3 d0 = t - firePoint.position;
         float x0 = new Vector3(d0.x, 0f, d0.z).magnitude;
@@ -36,39 +33,29 @@ public class BallisticAimStrategy : IAimStrategy
 
         float D = Mathf.Pow(v, 4) - g * (g * x0 * x0 + 2 * y0 * v * v);
         if (D < 0f)
-        {
-            Debug.LogWarning("No ballistic solution found: target out of range.");
             return false;
-        }
 
-        // численное решение
         float theta = 0f;
         float delta = 0.001f;
 
         for (int i = 0; i < MAX_ITERATIONS; i++)
         {
-            barrelRot.localRotation = Quaternion.Euler(-theta * Mathf.Rad2Deg, 0f, 0f);
-            Vector3 p = firePoint.position;
-            Vector3 d = t - p;
-            float x = new Vector3(d.x, 0f, d.z).magnitude;
-            float y = d.y;
-            float f = x * Mathf.Tan(theta) - (g * x * x) / (2 * v * v * Mathf.Cos(theta) * Mathf.Cos(theta)) - y;
-
-            float th = theta + delta;
-            barrelRot.localRotation = Quaternion.Euler(-th * Mathf.Rad2Deg, 0f, 0f);
-            Vector3 p2 = firePoint.position;
-            Vector3 d2 = t - p2;
-            float x2 = new Vector3(d2.x, 0f, d2.z).magnitude;
-            float y2 = d2.y;
-            float f2 = x2 * Mathf.Tan(th) - (g * x2 * x2) / (2 * v * v * Mathf.Cos(th) * Mathf.Cos(th)) - y2;
-
-            theta -= f * (delta) / (f2 - f);
+            float f = x0 * Mathf.Tan(theta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta) * Mathf.Cos(theta)) - y0;
+            float f2 = x0 * Mathf.Tan(theta + delta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta + delta) * Mathf.Cos(theta + delta)) - y0;
+            theta -= f * delta / (f2 - f);
         }
 
-        barrelRot.localRotation = Quaternion.Euler(-theta * Mathf.Rad2Deg, 0f, 0f);
+        float targetThetaDeg = -theta * Mathf.Rad2Deg;
 
-        Debug.Log($"Aiming at target. Theta: {-theta * Mathf.Rad2Deg} deg");
+        currentThetaDeg = Mathf.MoveTowardsAngle(
+            currentThetaDeg,
+            targetThetaDeg,
+            weapon.Data.GetParameter(WeaponParameterType.RotationSpeed) * Time.deltaTime
+        );
 
+        barrelRot.localRotation = Quaternion.Euler(currentThetaDeg, 0f, 0f);
+
+        Debug.Log($"Theta target: {targetThetaDeg:F2}°, current: {currentThetaDeg:F2}°");
         return true;
     }
 }
