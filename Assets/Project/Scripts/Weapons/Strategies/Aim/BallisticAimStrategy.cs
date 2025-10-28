@@ -67,6 +67,8 @@ public class BallisticAimStrategy : IAimStrategy
 
         barrelRot.localRotation = Quaternion.Euler(-theta * Mathf.Rad2Deg, 0f, 0f);
 
+        Debug.Log($"Aiming at target. Theta: {-theta * Mathf.Rad2Deg} deg");
+
         return true;
     }
 }
