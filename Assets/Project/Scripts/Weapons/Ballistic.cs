@@ -50,9 +50,6 @@ public class Ballistic : MonoBehaviour
         //float highAngleDeg = highAngleRad * Mathf.Rad2Deg;
         float lowAngleDeg = lowAngleRad * Mathf.Rad2Deg;
 
-        Debug.Log($"discriminant: {discriminant} = Mathf.Pow({v}, 4) - {g} * ({g} * Mathf.Pow({d}, 2) + 2 * {y} * Mathf.Pow({v}, 2));");
-
-        //Debug.Log($"highAngleRad: {highAngleDeg} = Mathf.Atan((Mathf.Pow({v}, {2}) + Mathf.Sqrt({discriminant})) / ({g} * {d}));");
         Debug.Log($"lowAngleDeg: {lowAngleDeg} = Mathf.Atan((Mathf.Pow({v}, {2}) - Mathf.Sqrt({discriminant})) / ({g} * {d}));");
 
         Quaternion desiredPitch = Quaternion.Euler(-lowAngleDeg, 0f, 0f);
