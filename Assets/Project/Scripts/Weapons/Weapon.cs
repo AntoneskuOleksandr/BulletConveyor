@@ -61,7 +61,7 @@ public class Weapon : MonoBehaviour
 
     [Header("Strategy Info (Read Only at inspector)")]
     [SerializeField] private ShootStrategyType shootStrategyType;
-    [SerializeField] private AimStrategyType aimStrategyType;
+    [SerializeField] private List<AimStrategyType> aimStrategyTypes;
     [SerializeField] private TargetStrategyType targetStrategyType;
     [SerializeField] private BulletMoveType bulletMoveType;
     [SerializeField] private BulletHitType bulletHitType;
@@ -69,24 +69,23 @@ public class Weapon : MonoBehaviour
     public IBulletMoveStrategy BulletMoveStrategy => _bulletMoveStrategy;
     public IBulletHitStrategy BulletHitStrategy => _bulletHitStrategy;
 
-
     private IBulletMoveStrategy _bulletMoveStrategy;
     private IBulletHitStrategy _bulletHitStrategy;
 
     private IShootStrategy _shootStrategy;
-    private IAimStrategy _aimStrategy;
+    private List<IAimStrategy> _aimStrategies = new List<IAimStrategy>();
     private ITargetStrategy _targetStrategy;
 
     public void SetWeaponStrategy(IShootStrategy shoot, ShootStrategyType shootType,
-        IAimStrategy aim, AimStrategyType aimType,
+        List<IAimStrategy> aims, List<AimStrategyType> aimTypes,
         ITargetStrategy target, TargetStrategyType targetType)
     {
         _shootStrategy = shoot;
-        _aimStrategy = aim;
+        _aimStrategies = aims;
         _targetStrategy = target;
 
         shootStrategyType = shootType;
-        aimStrategyType = aimType;
+        aimStrategyTypes = aimTypes;
         targetStrategyType = targetType;
     }
 
@@ -168,14 +167,30 @@ public class Weapon : MonoBehaviour
         {
             _idleTimer = 0f;
 
-            if (_aimStrategy?.TryAim(this) == true)
+            bool aimed = true;
+            if (_aimStrategies == null || _aimStrategies.Count == 0)
+                aimed = false;
+            else
+            {
+                // вызываем все aim стратегии по очереди.
+                // Если любая из них вернёт false — считаем, что не готово
+                foreach (var aim in _aimStrategies)
+                {
+                    if (aim == null) continue;
+                    bool res = aim.TryAim(this);
+                    if (!res)
+                        aimed = false;
+                }
+            }
+
+            Debug.Log($"[Weapon] {_aimStrategies.Count} aim strategies processed. Aimed: {aimed}");
+
+            if (aimed)
             {
                 if (_shootStrategy?.TryShoot(this) == true)
                 {
                     var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
-
                     var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
-
                     _weaponVisual?.PlayShotEffect(colorWeights);
                 }
             }
@@ -230,7 +245,7 @@ public class Weapon : MonoBehaviour
     {
         _target = null;
         _shootStrategy = null;
-        _aimStrategy = null;
+        _aimStrategies = null;
         _targetStrategy = null;
 
         var colls = GetComponents<Collider>();

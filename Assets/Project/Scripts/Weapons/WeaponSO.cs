@@ -43,7 +43,7 @@ public class WeaponSO : ScriptableObject
 
     [Header("Strategies")]
     public ShootStrategyType shootStrategy;
-    public AimStrategyType aimStrategy;
+    public List<AimStrategyType> aimStrategies;
     public TargetStrategyType targetStrategy;
     public BulletMoveType bulletMoveType;
     public BulletHitType bulletHitType;

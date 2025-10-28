@@ -22,7 +22,7 @@ MonoBehaviour:
   baseHealth: 150
   baseAttackRadius: 30
   shootStrategy: 0
-  aimStrategy: 1
+  aimStrategies: 01000000
   targetStrategy: 0
   bulletMoveType: 1
   bulletHitType: 1
