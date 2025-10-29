@@ -2,6 +2,8 @@
 
 public class BallisticAimStrategy : IAimStrategy
 {
+    private readonly bool _useHighArc = false;
+
     public AimResult ComputeAim(Weapon weapon)
     {
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
@@ -14,20 +16,21 @@ public class BallisticAimStrategy : IAimStrategy
         float v = weapon.LaunchSpeed;
 
         Vector3 t = target.position;
-        Vector3 d0 = t - firePoint.position;
-        float x0 = new Vector3(d0.x, 0f, d0.z).magnitude;
-        float y0 = d0.y;
+        Vector3 d = t - firePoint.position;
+        float x = new Vector3(d.x, 0f, d.z).magnitude;
+        float y = d.y;
 
-        float D = Mathf.Pow(v, 4) - g * (g * x0 * x0 + 2 * y0 * v * v);
+        // v² = (g * x²) / (2 * cos²θ * (x * tanθ - y))
+        // θ:
+        float D = Mathf.Pow(v, 4) - g * (g * x * x + 2 * y * v * v);
         if (D < 0f)
             return AimResult.Empty;
 
-        float theta = 0f;
-        float delta = 0.001f;
+        float sqrt = Mathf.Sqrt(D);
+        float angle1 = Mathf.Atan((v * v + sqrt) / (g * x));
+        float angle2 = Mathf.Atan((v * v - sqrt) / (g * x));
 
-        float f = x0 * Mathf.Tan(theta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta) * Mathf.Cos(theta)) - y0;
-        float f2 = x0 * Mathf.Tan(theta + delta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta + delta) * Mathf.Cos(theta + delta)) - y0;
-        theta -= f * delta / (f2 - f);
+        float theta = _useHighArc ? Mathf.Max(angle1, angle2) : Mathf.Min(angle1, angle2);
 
         float targetThetaDeg = -theta * Mathf.Rad2Deg;
 
