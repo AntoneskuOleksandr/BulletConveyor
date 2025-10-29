@@ -53,8 +53,8 @@ public class WeaponsService
             _ => 0
         };
 
-        if (level >= weapon.upgradeLevels.Length) return false;
-        if (!_economyService.TrySpend(CurrencyType.Gears, weapon.upgradeLevels[level].cost)) return false;
+        if (level >= weapon.UpgradeLevels.Length) return false;
+        if (!_economyService.TrySpend(CurrencyType.Gears, weapon.UpgradeLevels[level].Cost)) return false;
 
         switch (type)
         {

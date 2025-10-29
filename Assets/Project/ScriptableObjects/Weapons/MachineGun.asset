@@ -18,35 +18,23 @@ MonoBehaviour:
   RequiredLevel: 0
   WeaponType: 0
   BulletType: 0
-  baseDamage: 10
-  baseFireRate: 1
-  baseHealth: 100
-  baseAttackRadius: 50
-  shootStrategy: 0
-  aimStrategy: 0
-  targetStrategy: 0
-  bulletMoveType: 0
-  bulletHitType: 0
-  upgradeLevels:
-  - cost: 1
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 2
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 3
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 4
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 5
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  baseEffectChances: []
+  BaseDamage: 25
+  BaseFireRate: 0.5
+  BaseHealth: 100
+  BaseAttackRadius: 15
+  FindTargetRadiusCoefficient: 1.5
+  AimThreshold: 1
+  YawTurnSpeed: 3
+  PitchTurnSpeed: 0
+  UsePitch: 0
+  UseYaw: 1
+  LaunchSpeedMode: 0
+  LaunchSpeed: 25
+  ShootStrategy: 0
+  AimStrategies: 00000000
+  TargetStrategy: 0
+  BulletMoveType: 0
+  BulletHitType: 0
+  UpgradeLevels: []
+  BaseEffectChances: []
   Parameters: []

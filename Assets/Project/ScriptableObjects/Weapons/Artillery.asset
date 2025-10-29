@@ -20,10 +20,13 @@ MonoBehaviour:
   baseDamage: 30
   baseFireRate: 0.33333334
   baseHealth: 150
-  baseAttackRadius: 30
+  baseAttackRadius: 15
+  FindTargetRadius: 0
   AimThreshold: 1
-  YawTurnSpeed: 10
-  PitchTurnSpeed: 30
+  YawTurnSpeed: 2
+  PitchTurnSpeed: 3
+  UsePitch: 1
+  UseYaw: 1
   shootStrategy: 0
   aimStrategies: 0000000001000000
   targetStrategy: 0

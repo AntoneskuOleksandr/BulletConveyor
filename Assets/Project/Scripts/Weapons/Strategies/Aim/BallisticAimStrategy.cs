@@ -13,7 +13,6 @@ public class BallisticAimStrategy : IAimStrategy
         float g = Mathf.Abs(Physics.gravity.y);
         float v = weapon.LaunchSpeed;
 
-
         Vector3 t = target.position;
         Vector3 d0 = t - firePoint.position;
         float x0 = new Vector3(d0.x, 0f, d0.z).magnitude;

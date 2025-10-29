@@ -5,10 +5,10 @@ using UnityEngine;
 [Serializable]
 public class UpgradeLevel
 {
-    public int cost;
-    public int damageBonus;
-    public float fireRateBonus;
-    public int healthBonus;
+    public int Cost;
+    public int DamageBonus;
+    public float FireRateBonus;
+    public int HealthBonus;
 }
 
 public enum WeaponParameterType
@@ -35,30 +35,38 @@ public class WeaponSO : ScriptableObject
     public BulletType BulletType;
 
     [Header("Base Stats")]
-    public int baseDamage;
-    public float baseFireRate;
-    public int baseHealth;
-    public float baseAttackRadius;
+    public int BaseDamage;
+    public float BaseFireRate;
+    public int BaseHealth;
+    public float BaseAttackRadius;
+    public float FindTargetRadiusCoefficient;
+
+    [Header("Aiming Settings")]
     public float AimThreshold;
     public float YawTurnSpeed;
     public float PitchTurnSpeed;
+    public bool UsePitch;
+    public bool UseYaw;
+
+    [Header("Bullet Settings")]
+    public LaunchSpeedMode LaunchSpeedMode = LaunchSpeedMode.Fixed;
+    public float LaunchSpeed = 10f;
 
     [Header("Strategies")]
-    public ShootStrategyType shootStrategy;
-    public List<AimStrategyType> aimStrategies;
-    public TargetStrategyType targetStrategy;
-    public BulletMoveType bulletMoveType;
-    public BulletHitType bulletHitType;
+    public ShootStrategyType ShootStrategy;
+    public List<AimStrategyType> AimStrategies;
+    public TargetStrategyType TargetStrategy;
+    public BulletMoveType BulletMoveType;
+    public BulletHitType BulletHitType;
 
     [Header("Upgrade Levels")]
-    public UpgradeLevel[] upgradeLevels;
+    public UpgradeLevel[] UpgradeLevels;
 
     [Header("Base Effect Chances")]
-    public List<WeaponEffectChance> baseEffectChances;
+    public List<WeaponEffectChance> BaseEffectChances;
 
     [Header("Custom Parameters")]
     public WeaponParameter[] Parameters;
-
 
     public float GetParameter(WeaponParameterType type, float defaultValue = 0f)
     {

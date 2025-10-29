@@ -20,14 +20,14 @@ public class WeaponFactory
         Weapon weapon = _container.InstantiateComponent<Weapon>(go);
 
         // 2. Назначаем стратегии пуль
-        IBulletMoveStrategy move = so.bulletMoveType switch
+        IBulletMoveStrategy move = so.BulletMoveType switch
         {
             BulletMoveType.Straight => new StraightMoveStrategy(),
             BulletMoveType.Arc => new ArcMoveStrategy(),
             _ => new StraightMoveStrategy()
         };
 
-        IBulletHitStrategy hit = so.bulletHitType switch
+        IBulletHitStrategy hit = so.BulletHitType switch
         {
             BulletHitType.Direct => new DirectHitStrategy(),
             BulletHitType.AoE => new AoEHitStrategy(so.GetParameter(WeaponParameterType.AoERadius, 5f)),
@@ -35,19 +35,19 @@ public class WeaponFactory
         };
 
         // 3. Назначаем стратегии поведения
-        var shoot = _strategyResolver.ResolveShoot(so.shootStrategy);
-        var aim = _strategyResolver.ResolveAims(so.aimStrategies);
-        var target = _strategyResolver.ResolveTarget(so.targetStrategy);
+        var shoot = _strategyResolver.ResolveShoot(so.ShootStrategy);
+        var aim = _strategyResolver.ResolveAims(so.AimStrategies);
+        var target = _strategyResolver.ResolveTarget(so.TargetStrategy);
 
         weapon.SetWeaponStrategy(
-            shoot, so.shootStrategy,
-            aim, so.aimStrategies,
-            target, so.targetStrategy
+            shoot, so.ShootStrategy,
+            aim, so.AimStrategies,
+            target, so.TargetStrategy
         );
 
         weapon.SetBulletStrategy(
-            move, so.bulletMoveType,
-            hit, so.bulletHitType
+            move, so.BulletMoveType,
+            hit, so.BulletHitType
         );
 
         var progress = _weaponsService.GetProgressRO(so.WeaponId);

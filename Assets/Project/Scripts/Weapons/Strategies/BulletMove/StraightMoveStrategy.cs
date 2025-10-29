@@ -9,8 +9,5 @@ public class StraightMoveStrategy : IBulletMoveStrategy
         bullet.Rigidbody.linearVelocity = dir * launchSpeed;
     }
 
-    public void UpdateRotation(Bullet bullet)
-    {
-        throw new System.NotImplementedException();
-    }
+    public void UpdateRotation(Bullet bullet) { }
 }

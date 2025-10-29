@@ -22,8 +22,14 @@ MonoBehaviour:
   baseFireRate: 0
   baseHealth: 0
   baseAttackRadius: 0
+  FindTargetRadius: 0
+  AimThreshold: 0
+  YawTurnSpeed: 0
+  PitchTurnSpeed: 0
+  UsePitch: 0
+  UseYaw: 0
   shootStrategy: 0
-  aimStrategy: 0
+  aimStrategies: 
   targetStrategy: 0
   bulletMoveType: 0
   bulletHitType: 0

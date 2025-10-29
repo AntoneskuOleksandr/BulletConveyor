@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -15,26 +14,31 @@ public class WeaponEffectChance
 public class Weapon : MonoBehaviour
 {
     [Header("Weapon Settings")]
-    private float damage;
-    private float health;
-    private float fireRate;
-    private float attackRadius;
-    private float aimThreshold;
-    private float idleReturnDelay = 2f;
-    private float yawTurnSpeed;
-    private float pitchTurnSpeed;
+    private float _damage;
+    private float _health;
+    private float _fireRate;
+    private float _attackRadius;
+    private float _aimThreshold;
+    private float _idleReturnDelay = 2f;
 
-    public float Damage => damage;
-    public float Health => health;
-    public float FireRate => fireRate;
-    public float AttackRadius => attackRadius;
-    public float LaunchSpeed => Mathf.Sqrt(attackRadius * Mathf.Abs(Physics.gravity.y));
-    public float AimThreshold => aimThreshold;
+    private bool _useYaw;
+    private bool _usePitch;
+    private float _yawTurnSpeed;
+    private float _pitchTurnSpeed;
+    private float _launchSpeed;
+
+    public float Damage => _damage;
+    public float Health => _health;
+    public float FireRate => _fireRate;
+    public float AttackRadius => _attackRadius;
+    public float FindTargetRadius => _attackRadius * _data.FindTargetRadiusCoefficient;
+    public float LaunchSpeed => CalculateLaunchSpeed();
+    public float AimThreshold => _aimThreshold;
     public WeaponAttachmentPoints AttachmentPoints => _attachmentPoints;
 
     private WeaponAttachmentPoints _attachmentPoints;
 
-    public WeaponSO Data { get; private set; }
+    private WeaponSO _data;
     public Action OnWeaponDestroyed;
 
     private List<WeaponEffectChance> baseWeaponEffectChances = new();
@@ -99,23 +103,26 @@ public class Weapon : MonoBehaviour
 
     public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
     {
-        Data = so;
-        damage = so.baseDamage;
-        fireRate = so.baseFireRate;
-        health = so.baseHealth;
-        attackRadius = so.baseAttackRadius;
-        aimThreshold = so.AimThreshold;
-        yawTurnSpeed = so.YawTurnSpeed;
-        pitchTurnSpeed = so.PitchTurnSpeed;
+        _data = so;
+        _damage = so.BaseDamage;
+        _fireRate = so.BaseFireRate;
+        _health = so.BaseHealth;
+        _attackRadius = so.BaseAttackRadius;
+        _aimThreshold = so.AimThreshold;
+        _yawTurnSpeed = so.YawTurnSpeed;
+        _pitchTurnSpeed = so.PitchTurnSpeed;
+        _useYaw = so.UseYaw;
+        _usePitch = so.UsePitch;
+        _launchSpeed = so.LaunchSpeed;
 
-        baseWeaponEffectChances.AddRange(so.baseEffectChances);
+        baseWeaponEffectChances.AddRange(so.BaseEffectChances);
 
         for (int i = 0; i < progress.DamageLevel; i++)
-            damage += so.upgradeLevels[i].damageBonus;
+            _damage += so.UpgradeLevels[i].DamageBonus;
         for (int i = 0; i < progress.FireRateLevel; i++)
-            fireRate += so.upgradeLevels[i].fireRateBonus;
+            _fireRate += so.UpgradeLevels[i].FireRateBonus;
         for (int i = 0; i < progress.HealthLevel; i++)
-            health += so.upgradeLevels[i].healthBonus;
+            _health += so.UpgradeLevels[i].HealthBonus;
     }
 
     protected virtual void Start()
@@ -202,10 +209,16 @@ public class Weapon : MonoBehaviour
                 pitchResult = result;
         }
 
-        bool yawReady = ApplyYaw(yawResult);
-        bool pitchReady = ApplyPitch(pitchResult);
+        bool yawReady = true;
+        bool pitchReady = true;
 
-        bool aimed = yawReady && pitchReady;
+        if (_useYaw && yawResult.HasAim && yawResult.ProvidesYaw)
+            yawReady = ApplyYaw(yawResult);
+
+        if (_usePitch && pitchResult.HasAim && pitchResult.ProvidesPitch)
+            pitchReady = ApplyPitch(pitchResult);
+
+        bool aimed = (!_useYaw || yawReady) && (!_usePitch || pitchReady);
 
         if (aimed)
         {
@@ -218,20 +231,23 @@ public class Weapon : MonoBehaviour
         }
     }
 
+
     private void HandleIdleAiming()
     {
         _idleTimer += Time.deltaTime;
-        if (_idleTimer < idleReturnDelay)
+        if (_idleTimer < _idleReturnDelay)
             return;
 
         var result = _idleAimStrategy.ComputeAim(this);
         if (!result.HasAim)
             return;
 
-        ApplyYaw(result);
-        ApplyPitch(result);
-    }
+        if (_useYaw && result.ProvidesYaw)
+            ApplyYaw(result);
 
+        if (_usePitch && result.ProvidesPitch)
+            ApplyPitch(result);
+    }
 
     private bool ApplyYaw(AimResult result)
     {
@@ -242,11 +258,12 @@ public class Weapon : MonoBehaviour
         if (baseRot == null)
             return false;
 
+        // Целевой угол
         Quaternion targetRot = Quaternion.Euler(0f, result.YawDeg, 0f);
-        baseRot.rotation = Quaternion.RotateTowards(
-            baseRot.rotation,
-            targetRot,
-            yawTurnSpeed * Time.deltaTime);
+
+        // Плавность (0.05f - плавно, 0.3f - быстрее)
+        float smoothFactor = 1f - Mathf.Exp(-_yawTurnSpeed * Time.deltaTime);
+        baseRot.rotation = Quaternion.Slerp(baseRot.rotation, targetRot, smoothFactor);
 
         float yawError = Mathf.Abs(Mathf.DeltaAngle(baseRot.eulerAngles.y, result.YawDeg));
         return yawError <= result.AllowedErrorDeg;
@@ -262,10 +279,8 @@ public class Weapon : MonoBehaviour
             return false;
 
         float currentPitch = Mathf.DeltaAngle(0f, barrel.localEulerAngles.x);
-        float newPitch = Mathf.MoveTowardsAngle(
-            currentPitch,
-            result.PitchDeg,
-            pitchTurnSpeed * Time.deltaTime);
+        float smoothFactor = 1f - Mathf.Exp(-_pitchTurnSpeed * Time.deltaTime);
+        float newPitch = Mathf.LerpAngle(currentPitch, result.PitchDeg, smoothFactor);
 
         barrel.localRotation = Quaternion.Euler(newPitch, 0f, 0f);
 
@@ -273,9 +288,10 @@ public class Weapon : MonoBehaviour
         return pitchError <= result.AllowedErrorDeg;
     }
 
+
     public void ResetFireCountdown()
     {
-        _fireCountdown = 1f / fireRate;
+        _fireCountdown = 1f / _fireRate;
     }
 
     public void OnTargetDeath()
@@ -283,14 +299,26 @@ public class Weapon : MonoBehaviour
         _target = null;
     }
 
+    private float CalculateLaunchSpeed()
+    {
+        switch (_data.LaunchSpeedMode)
+        {
+            case LaunchSpeedMode.AutoFromRadius:
+                return Mathf.Sqrt(_attackRadius * Mathf.Abs(Physics.gravity.y));
+            case LaunchSpeedMode.Fixed:
+            default:
+                return _data.LaunchSpeed;
+        }
+    }
+
     public void TakeDamage(float amount)
     {
         if (amount <= 0f) return;
 
-        health -= amount;
-        _weaponStatusCanvas?.UpdateHealthBar(health, Data.baseHealth);
+        _health -= amount;
+        _weaponStatusCanvas?.UpdateHealthBar(_health, _data.BaseHealth);
 
-        if (health <= 0f)
+        if (_health <= 0f)
             OnDestroyed();
     }
 
@@ -310,6 +338,6 @@ public class Weapon : MonoBehaviour
     protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRadius);
+        Gizmos.DrawWireSphere(transform.position, _attackRadius);
     }
 }
