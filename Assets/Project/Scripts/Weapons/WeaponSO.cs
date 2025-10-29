@@ -38,9 +38,9 @@ public class WeaponSO : ScriptableObject
     public int BaseHealth;
 
     [Header("Attack Settings")]
-    public float MaxAttackRadius = 20f;
-    public float MinAttackRadius = 5f;
-    public float FindTargetRadiusCoefficient = 1.5f;
+    public float MaxAttackRadius;
+    public float MinAttackRadius;
+    public float FindTargetRadiusCoefficient;
 
     [Header("Aiming Settings")]
     public float AimThreshold;
