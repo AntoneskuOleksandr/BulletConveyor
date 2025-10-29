@@ -20,7 +20,7 @@ MonoBehaviour:
   BaseDamage: 25
   BaseFireRate: 0.5
   BaseHealth: 100
-  MaxAttackRadius: 0
+  MaxAttackRadius: 20
   MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
   AimThreshold: 1

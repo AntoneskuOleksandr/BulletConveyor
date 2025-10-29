@@ -8,7 +8,7 @@ public class ShotgunShootStrategy : IShootStrategy
     [Inject] private EffectFactory _effectFactory;
 
     private const int PELLET_COUNT = 2;
-    private const float SPREAD_ANGLE = 15f;
+    private const float SPREAD_ANGLE = 5f;
 
     public bool TryShoot(Weapon weapon)
     {
@@ -18,26 +18,25 @@ public class ShotgunShootStrategy : IShootStrategy
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
         if (firePoint == null) return false;
 
-        // Базовое направление выстрела
         Vector3 baseDir = (weapon.Target.HitTransform.position - firePoint.position).normalized;
 
-        // Создаём пули
         for (int i = 0; i < PELLET_COUNT; i++)
         {
             Bullet bullet = _bulletManager.TryGetBullet(weapon);
             if (bullet == null) continue;
 
             bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-            bullet.Init(weapon, _effectChanceManager, _effectFactory);
 
-            // добавляем лёгкий разброс
             Quaternion spreadRot = Quaternion.Euler(
                 Random.Range(-SPREAD_ANGLE, SPREAD_ANGLE),
                 Random.Range(-SPREAD_ANGLE, SPREAD_ANGLE),
                 0f
             );
 
-            bullet.transform.forward = spreadRot * baseDir;
+            bullet.transform.position = firePoint.position;
+            bullet.transform.rotation = Quaternion.LookRotation(spreadRot * baseDir);
+
+            bullet.Init(weapon, _effectChanceManager, _effectFactory);
         }
 
         weapon.ResetFireCountdown();

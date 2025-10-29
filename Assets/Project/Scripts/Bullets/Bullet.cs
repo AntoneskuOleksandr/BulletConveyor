@@ -75,9 +75,6 @@ public class Bullet : MonoBehaviour
         Damage = weapon.Damage;
         _target = weapon.Target.transform;
 
-        transform.position = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint).position;
-        transform.rotation = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint).rotation;
-
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
         _collider.enabled = true;
