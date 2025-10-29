@@ -19,7 +19,8 @@ MonoBehaviour:
   BaseDamage: 0
   BaseFireRate: 0.25
   BaseHealth: 200
-  BaseAttackRadius: 20
+  MaxAttackRadius: 30
+  MinAttackRadius: 15
   FindTargetRadiusCoefficient: 1.25
   AimThreshold: 1
   YawTurnSpeed: 2
@@ -37,6 +38,4 @@ MonoBehaviour:
   BaseEffectChances: []
   Parameters:
   - Type: 0
-    Value: 5
-  - Type: 1
     Value: 5

@@ -13,6 +13,27 @@ public class NearestTargetStrategy : ITargetStrategy
             return null;
         }
 
-        return _enemyManager.GetNearestEnemy(weapon, weapon.MinAttackRadius, weapon.FindTargetRadius) ?? null;
+        float shortestDistance = Mathf.Infinity;
+        Enemy nearestEnemy = null;
+
+        foreach (Enemy enemy in _enemyManager.Enemies)
+        {
+            if (enemy == null)
+                continue;
+
+            float distanceToEnemy = Vector3.Distance(weapon.transform.position, enemy.HitTransform.position);
+
+            // игнорируем врагов вне радиуса действия
+            if (distanceToEnemy < weapon.MinAttackRadius || distanceToEnemy > weapon.MaxAttackRadius)
+                continue;
+
+            if (distanceToEnemy < shortestDistance)
+            {
+                shortestDistance = distanceToEnemy;
+                nearestEnemy = enemy;
+            }
+        }
+
+        return nearestEnemy;
     }
 }
