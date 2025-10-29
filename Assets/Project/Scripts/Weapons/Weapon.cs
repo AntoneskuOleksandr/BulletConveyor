@@ -25,7 +25,6 @@ public class Weapon : MonoBehaviour
     private bool _usePitch;
     private float _yawTurnSpeed;
     private float _pitchTurnSpeed;
-    private float _launchSpeed;
 
     public float Damage => _damage;
     public float Health => _health;
@@ -113,7 +112,6 @@ public class Weapon : MonoBehaviour
         _pitchTurnSpeed = so.PitchTurnSpeed;
         _useYaw = so.UseYaw;
         _usePitch = so.UsePitch;
-        _launchSpeed = so.LaunchSpeed;
 
         baseWeaponEffectChances.AddRange(so.BaseEffectChances);
 
@@ -304,7 +302,10 @@ public class Weapon : MonoBehaviour
         switch (_data.LaunchSpeedMode)
         {
             case LaunchSpeedMode.AutoFromRadius:
-                return Mathf.Sqrt(_attackRadius * Mathf.Abs(Physics.gravity.y));
+                {
+                    Vector3 fromWeaponToFirePoint = _attachmentPoints.Get(WeaponAttachmentType.FirePoint).position - transform.position;
+                    return Mathf.Sqrt((_attackRadius - fromWeaponToFirePoint.magnitude) * Mathf.Abs(Physics.gravity.y));
+                }
             case LaunchSpeedMode.Fixed:
             default:
                 return _data.LaunchSpeed;

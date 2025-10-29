@@ -5,19 +5,24 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class Bullet : MonoBehaviour
 {
+    public float Damage { get; private set; }
+    public Transform Target => _target;
+    public Rigidbody Rigidbody => _rigidbody;
+    public Collider Collider => _collider;
+
+    private Weapon _weapon;
     private Transform _target;
     private Rigidbody _rigidbody;
     private Collider _collider;
+
+    private EffectChanceManager _effectChanceManager;
+    private EffectFactory _effectFactory;
 
     private IBulletMoveStrategy _moveStrategy;
     private IBulletHitStrategy _hitStrategy;
 
     private readonly List<IOnHitEffect> _effects = new();
     private BulletVisual _visual;
-    public float Damage { get; private set; }
-    public Transform Target => _target;
-    public Rigidbody Rigidbody => _rigidbody;
-    public Collider Collider => _collider;
 
     private void Awake()
     {
@@ -42,17 +47,36 @@ public class Bullet : MonoBehaviour
 
     public void ApplyEffects(Enemy enemy)
     {
-        foreach (var effect in _effects)
-            effect.Apply(this, enemy);
+        if (_weapon == null) return;
+
+        // Получаем все доступные эффекты и их шансы
+        var allChances = _effectChanceManager.GetAllChancesForWeapon(_weapon);
+
+        foreach (var pair in allChances)
+        {
+            var effectType = pair.Key;
+            float chance = pair.Value;
+
+            if (Random.value <= chance)
+            {
+                var effect = _effectFactory.CreateEffect(effectType);
+                effect?.Apply(this, enemy);
+            }
+        }
     }
 
-    public void Init(float damage, float launchSpeed, Transform spawnPoint, Transform target)
-    {
-        Damage = damage;
-        _target = target;
 
-        transform.position = spawnPoint.position;
-        transform.rotation = spawnPoint.rotation;
+    public void Init(Weapon weapon, EffectChanceManager effectChanceManager, EffectFactory effectFactory)
+    {
+        _weapon = weapon;
+        _effectChanceManager = effectChanceManager;
+        _effectFactory = effectFactory;
+
+        Damage = weapon.Damage;
+        _target = weapon.Target.transform;
+
+        transform.position = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint).position;
+        transform.rotation = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint).rotation;
 
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
@@ -62,7 +86,7 @@ public class Bullet : MonoBehaviour
         _visual?.OnSpawn();
         SetVisual(Color.green);
 
-        _moveStrategy?.Launch(this, target, launchSpeed);
+        _moveStrategy?.Launch(this, _target, weapon.LaunchSpeed);
     }
 
     private void OnTriggerEnter(Collider other)

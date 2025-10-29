@@ -3,6 +3,8 @@ using Zenject;
 public class BasicShootStrategy : IShootStrategy
 {
     [Inject] private BulletManager _bulletManager;
+    [Inject] private EffectChanceManager _effectChanceManager;
+    [Inject] private EffectFactory _effectFactory;
 
     public bool TryShoot(Weapon weapon)
     {
@@ -13,11 +15,7 @@ public class BasicShootStrategy : IShootStrategy
         if (bullet == null) return false;
 
         bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(
-            weapon.Damage,
-            weapon.LaunchSpeed,
-            weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint),
-            weapon.Target.HitTransform);
+        bullet.Init(weapon, _effectChanceManager, _effectFactory);
 
         weapon.ResetFireCountdown();
         return true;

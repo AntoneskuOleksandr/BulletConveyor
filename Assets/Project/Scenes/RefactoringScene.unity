@@ -2844,8 +2844,8 @@ MonoBehaviour:
   totalWaves: 3
   waveDuration: 600
   timeBetweenWaves: 5
-  minEnemyCount: 1
-  maxEnemyCount: 1
+  minEnemyCount: 5
+  maxEnemyCount: 5
   enemyIncrementPerWave: 0
 --- !u!4 &1354856230
 Transform:

@@ -31,8 +31,6 @@ public class BallisticAimStrategy : IAimStrategy
 
         float targetThetaDeg = -theta * Mathf.Rad2Deg;
 
-        Debug.Log("targetThetaDeg: " + targetThetaDeg);
-
         return new AimResult
         {
             HasAim = true,

@@ -16,44 +16,29 @@ MonoBehaviour:
   WeaponGO: {fileID: 537084489268377665, guid: 7a8bf8822dfee0743ad74eea85eb9d51, type: 3}
   RequiredLevel: 1
   WeaponType: 1
-  BulletType: 1
-  baseDamage: 30
-  baseFireRate: 0.33333334
-  baseHealth: 150
-  baseAttackRadius: 15
-  FindTargetRadius: 0
+  BaseDamage: 0
+  BaseFireRate: 0.25
+  BaseHealth: 200
+  BaseAttackRadius: 20
+  FindTargetRadiusCoefficient: 1.25
   AimThreshold: 1
   YawTurnSpeed: 2
   PitchTurnSpeed: 3
   UsePitch: 1
   UseYaw: 1
-  shootStrategy: 0
-  aimStrategies: 0000000001000000
-  targetStrategy: 0
-  bulletMoveType: 1
-  bulletHitType: 1
-  upgradeLevels:
-  - cost: 1
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 2
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 3
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 4
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 5
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  baseEffectChances: []
+  LaunchSpeedMode: 1
+  LaunchSpeed: 10
+  ShootStrategy: 0
+  AimStrategies: 0000000001000000
+  TargetStrategy: 0
+  BulletMoveType: 1
+  BulletHitType: 1
+  UpgradeLevels: []
+  BaseEffectChances:
+  - effectType: 0
+    chance: 0.5
+  - effectType: 2
+    chance: 0.5
   Parameters:
   - Type: 0
-    Value: 5
+    Value: 100

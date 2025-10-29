@@ -32,7 +32,6 @@ public class WeaponSO : ScriptableObject
     public GameObject WeaponGO;
     public int RequiredLevel;
     public WeaponType WeaponType;
-    public BulletType BulletType;
 
     [Header("Base Stats")]
     public int BaseDamage;
