@@ -11,6 +11,11 @@ public class EnemyManager : MonoBehaviour
 
     [Inject] private PlayerRuntimeManager _playerRuntimeManager;
 
+    private void Awake()
+    {
+        Enemies = new List<Enemy>();
+    }
+
     public void RegisterEnemies(List<Enemy> enemies)
     {
         Enemies.AddRange(enemies);

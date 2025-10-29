@@ -20,15 +20,16 @@ MonoBehaviour:
   BaseDamage: 25
   BaseFireRate: 0.5
   BaseHealth: 100
-  BaseAttackRadius: 15
+  MaxAttackRadius: 0
+  MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
   AimThreshold: 1
   YawTurnSpeed: 3
   PitchTurnSpeed: 0
-  UsePitch: 0
   UseYaw: 1
-  LaunchSpeedMode: 1
-  LaunchSpeed: 5
+  UsePitch: 0
+  LaunchSpeedMode: 0
+  LaunchSpeed: 10
   ShootStrategy: 0
   AimStrategies: 00000000
   TargetStrategy: 0

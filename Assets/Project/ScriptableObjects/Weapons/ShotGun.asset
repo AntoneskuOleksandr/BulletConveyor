@@ -16,18 +16,18 @@ MonoBehaviour:
   WeaponGO: {fileID: 4828056898913149767, guid: 2e7e4dd9444a0bd4b880337ea7a9bbf6,
     type: 3}
   RequiredLevel: 2
-  WeaponType: 0
-  BaseDamage: 0
-  BaseFireRate: 0
-  BaseHealth: 0
-  MaxAttackRadius: 20
-  MinAttackRadius: 5
+  WeaponType: 2
+  BaseDamage: 35
+  BaseFireRate: 0.33333334
+  BaseHealth: 75
+  MaxAttackRadius: 100
+  MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
-  AimThreshold: 0
-  YawTurnSpeed: 0
+  AimThreshold: 1
+  YawTurnSpeed: 2
   PitchTurnSpeed: 0
+  UseYaw: 1
   UsePitch: 0
-  UseYaw: 0
   LaunchSpeedMode: 0
   LaunchSpeed: 10
   ShootStrategy: 0

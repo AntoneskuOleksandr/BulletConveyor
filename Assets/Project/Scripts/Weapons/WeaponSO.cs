@@ -46,8 +46,8 @@ public class WeaponSO : ScriptableObject
     public float AimThreshold;
     public float YawTurnSpeed;
     public float PitchTurnSpeed;
-    public bool UsePitch;
     public bool UseYaw;
+    public bool UsePitch;
 
     [Header("Bullet Settings")]
     public LaunchSpeedMode LaunchSpeedMode = LaunchSpeedMode.Fixed;

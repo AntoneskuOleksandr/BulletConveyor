@@ -31,19 +31,18 @@ public class Weapon : MonoBehaviour
     public float Damage => _damage;
     public float Health => _health;
     public float FireRate => _fireRate;
+    public float FireCountdown => _fireCountdown;
     public float MaxAttackRadius => _maxAttackRadius;
     public float MinAttackRadius => _minAttackRadius;
     public float FindTargetRadius => _maxAttackRadius * _data.FindTargetRadiusCoefficient;
     public float LaunchSpeed => CalculateLaunchSpeed();
     public float AimThreshold => _aimThreshold;
+    public Enemy Target => _target;
     public WeaponAttachmentPoints AttachmentPoints => _attachmentPoints;
-
-    private WeaponAttachmentPoints _attachmentPoints;
-
-    private WeaponSO _data;
     public Action OnWeaponDestroyed;
 
     private List<WeaponEffectChance> baseWeaponEffectChances = new();
+    private WeaponAttachmentPoints _attachmentPoints;
 
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
@@ -52,11 +51,10 @@ public class Weapon : MonoBehaviour
     private WeaponStatusCanvas _weaponStatusCanvas;
     private WeaponHitZone _weaponHitZone;
 
+    private WeaponSO _data;
     private Enemy _target;
-    public Enemy Target => _target;
 
     private float _fireCountdown;
-    public float FireCountdown => _fireCountdown;
 
     private float _targetRefreshRate = 1f;
     private float _targetRefreshTimer = 0f;
@@ -199,7 +197,7 @@ public class Weapon : MonoBehaviour
         AimResult pitchResult = AimResult.Empty;
 
         float distance = Vector3.Distance(_target.transform.position, transform.position);
-        if (distance < MinAttackRadius || distance > MaxAttackRadius)
+        if (distance < MinAttackRadius || distance > FindTargetRadius)
             return;
 
         foreach (var aim in _aimStrategies)
