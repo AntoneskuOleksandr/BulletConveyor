@@ -1,5 +1,6 @@
 public enum WeaponType
 {
     MachineGun,
-    Artillery
+    Artillery,
+    Shotgun,
 }

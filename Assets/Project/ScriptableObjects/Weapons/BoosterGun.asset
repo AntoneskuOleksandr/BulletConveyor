@@ -12,47 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: BoosterGun
   m_EditorClassIdentifier: 
-  WeaponId: 2
+  WeaponId: 5
   WeaponGO: {fileID: 8826503268357994785, guid: 6a18870c6db6a00449f8ecd6e91ebe71,
     type: 3}
-  RequiredLevel: 2
+  RequiredLevel: 5
   WeaponType: 0
-  BulletType: 0
-  baseDamage: 0
-  baseFireRate: 0
-  baseHealth: 0
-  baseAttackRadius: 0
-  FindTargetRadius: 0
+  BaseDamage: 0
+  BaseFireRate: 0
+  BaseHealth: 0
+  MaxAttackRadius: 20
+  MinAttackRadius: 5
+  FindTargetRadiusCoefficient: 1.5
   AimThreshold: 0
   YawTurnSpeed: 0
   PitchTurnSpeed: 0
   UsePitch: 0
   UseYaw: 0
-  shootStrategy: 0
-  aimStrategies: 
-  targetStrategy: 0
-  bulletMoveType: 0
-  bulletHitType: 0
-  upgradeLevels:
-  - cost: 1
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 2
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 3
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 4
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 5
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  baseEffectChances: []
+  LaunchSpeedMode: 0
+  LaunchSpeed: 10
+  ShootStrategy: 0
+  AimStrategies: 
+  TargetStrategy: 0
+  BulletMoveType: 0
+  BulletHitType: 0
+  UpgradeLevels: []
+  BaseEffectChances: []
   Parameters: []
