@@ -7,9 +7,6 @@ public class ShotgunShootStrategy : IShootStrategy
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
 
-    private const int PELLET_COUNT = 2;
-    private const float SPREAD_ANGLE = 5f;
-
     public bool TryShoot(Weapon weapon)
     {
         if (weapon.FireCountdown > 0f) return false;
@@ -20,16 +17,18 @@ public class ShotgunShootStrategy : IShootStrategy
 
         Vector3 baseDir = (weapon.Target.HitTransform.position - firePoint.position).normalized;
 
-        for (int i = 0; i < PELLET_COUNT; i++)
+        for (int i = 0; i < weapon.Data.GetParameter(WeaponParameterType.PelletCount); i++)
         {
             Bullet bullet = _bulletManager.TryGetBullet(weapon);
             if (bullet == null) continue;
 
             bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
 
+            float spreadAngle = weapon.Data.GetParameter(WeaponParameterType.SpreadAngle);
+
             Quaternion spreadRot = Quaternion.Euler(
-                Random.Range(-SPREAD_ANGLE, SPREAD_ANGLE),
-                Random.Range(-SPREAD_ANGLE, SPREAD_ANGLE),
+                Random.Range(-spreadAngle, spreadAngle),
+                Random.Range(-spreadAngle, spreadAngle),
                 0f
             );
 

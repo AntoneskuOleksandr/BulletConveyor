@@ -28,13 +28,14 @@ public class Weapon : MonoBehaviour
     private float _yawTurnSpeed;
     private float _pitchTurnSpeed;
 
+    public WeaponSO Data;
     public float Damage => _damage;
     public float Health => _health;
     public float FireRate => _fireRate;
     public float FireCountdown => _fireCountdown;
     public float MaxAttackRadius => _maxAttackRadius;
     public float MinAttackRadius => _minAttackRadius;
-    public float FindTargetRadius => _maxAttackRadius * _data.FindTargetRadiusCoefficient;
+    public float FindTargetRadius => _maxAttackRadius * Data.FindTargetRadiusCoefficient;
     public float LaunchSpeed => CalculateLaunchSpeed();
     public float AimThreshold => _aimThreshold;
     public Enemy Target => _target;
@@ -51,7 +52,6 @@ public class Weapon : MonoBehaviour
     private WeaponStatusCanvas _weaponStatusCanvas;
     private WeaponHitZone _weaponHitZone;
 
-    private WeaponSO _data;
     private Enemy _target;
 
     private float _fireCountdown;
@@ -103,7 +103,7 @@ public class Weapon : MonoBehaviour
 
     public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)
     {
-        _data = so;
+        Data = so;
         _damage = so.BaseDamage;
         _fireRate = so.BaseFireRate;
         _health = so.BaseHealth;
@@ -302,7 +302,7 @@ public class Weapon : MonoBehaviour
 
     private float CalculateLaunchSpeed()
     {
-        switch (_data.LaunchSpeedMode)
+        switch (Data.LaunchSpeedMode)
         {
             case LaunchSpeedMode.AutoFromRadius:
                 {
@@ -311,7 +311,7 @@ public class Weapon : MonoBehaviour
                 }
             case LaunchSpeedMode.Fixed:
             default:
-                return _data.LaunchSpeed;
+                return Data.LaunchSpeed;
         }
     }
 
@@ -320,7 +320,7 @@ public class Weapon : MonoBehaviour
         if (amount <= 0f) return;
 
         _health -= amount;
-        _weaponStatusCanvas?.UpdateHealthBar(_health, _data.BaseHealth);
+        _weaponStatusCanvas?.UpdateHealthBar(_health, Data.BaseHealth);
 
         if (_health <= 0f)
             OnDestroyed();
@@ -345,6 +345,6 @@ public class Weapon : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, _maxAttackRadius);
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _data.MinAttackRadius);
+        Gizmos.DrawWireSphere(transform.position, Data.MinAttackRadius);
     }
 }

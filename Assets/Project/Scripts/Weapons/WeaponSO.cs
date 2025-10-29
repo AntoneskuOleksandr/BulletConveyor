@@ -13,7 +13,9 @@ public class UpgradeLevel
 
 public enum WeaponParameterType
 {
-    AoERadius
+    AoERadius,
+    PelletCount,
+    SpreadAngle,
 }
 
 [Serializable]
@@ -76,6 +78,8 @@ public class WeaponSO : ScriptableObject
             if (p.Type == type)
                 return p.Value;
         }
+
+        Debug.LogWarning($"Parameter of type {type} not found in weapon {name}. Returning default value {defaultValue}.");
         return defaultValue;
     }
 }

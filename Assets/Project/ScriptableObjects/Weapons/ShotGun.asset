@@ -20,7 +20,7 @@ MonoBehaviour:
   BaseDamage: 35
   BaseFireRate: 0.33333334
   BaseHealth: 75
-  MaxAttackRadius: 100
+  MaxAttackRadius: 10
   MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
   AimThreshold: 1
@@ -37,4 +37,8 @@ MonoBehaviour:
   BulletHitType: 0
   UpgradeLevels: []
   BaseEffectChances: []
-  Parameters: []
+  Parameters:
+  - Type: 1
+    Value: 2
+  - Type: 2
+    Value: 5
