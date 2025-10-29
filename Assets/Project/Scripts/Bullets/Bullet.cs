@@ -82,6 +82,7 @@ public class Bullet : MonoBehaviour
         _rigidbody.useGravity = false;
         _collider.enabled = true;
         _collider.isTrigger = true;
+        gameObject.isStatic = false;
 
         _visual?.OnSpawn();
         SetVisual(Color.green);
