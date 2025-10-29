@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 public class StrategyResolver
 {
@@ -9,6 +8,7 @@ public class StrategyResolver
 
     public StrategyResolver(
         BasicShootStrategy basicShoot,
+        ShotgunShootStrategy shotgunShoot,
         BasicAimStrategy basicAim,
         BallisticAimStrategy ballisticAim,
         NearestTargetStrategy nearestTarget)
@@ -16,6 +16,7 @@ public class StrategyResolver
         _shootStrategies = new Dictionary<ShootStrategyType, IShootStrategy>
         {
             { ShootStrategyType.Basic, basicShoot },
+            {ShootStrategyType.Shotgun, shotgunShoot },
         };
 
         _aimStrategies = new Dictionary<AimStrategyType, IAimStrategy>
