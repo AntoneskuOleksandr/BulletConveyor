@@ -2,25 +2,13 @@
 
 public class BallisticAimStrategy : IAimStrategy
 {
-    private const int MAX_ITERATIONS = 3;
-    private float currentThetaDeg;
-    private bool initialized = false;
-
-    public bool TryAim(Weapon weapon)
+    public AimResult ComputeAim(Weapon weapon)
     {
-        Transform baseRot = weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation);
-        Transform barrelRot = weapon.AttachmentPoints.Get(WeaponAttachmentType.BarrelRotation);
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
         Transform target = weapon.Target.HitTransform;
 
-        if (!baseRot || !barrelRot || !firePoint || !target)
-            return false;
-
-        if (!initialized)
-        {
-            currentThetaDeg = Mathf.DeltaAngle(0f, barrelRot.localEulerAngles.x);
-            initialized = true;
-        }
+        if (!firePoint || !target)
+            return AimResult.Empty;
 
         float g = Mathf.Abs(Physics.gravity.y);
         float v = weapon.LaunchSpeed;
@@ -33,31 +21,26 @@ public class BallisticAimStrategy : IAimStrategy
 
         float D = Mathf.Pow(v, 4) - g * (g * x0 * x0 + 2 * y0 * v * v);
         if (D < 0f)
-            return false;
+            return AimResult.Empty;
 
         float theta = 0f;
         float delta = 0.001f;
 
-        for (int i = 0; i < MAX_ITERATIONS; i++)
-        {
-            float f = x0 * Mathf.Tan(theta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta) * Mathf.Cos(theta)) - y0;
-            float f2 = x0 * Mathf.Tan(theta + delta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta + delta) * Mathf.Cos(theta + delta)) - y0;
-            theta -= f * delta / (f2 - f);
-        }
+        float f = x0 * Mathf.Tan(theta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta) * Mathf.Cos(theta)) - y0;
+        float f2 = x0 * Mathf.Tan(theta + delta) - (g * x0 * x0) / (2 * v * v * Mathf.Cos(theta + delta) * Mathf.Cos(theta + delta)) - y0;
+        theta -= f * delta / (f2 - f);
 
         float targetThetaDeg = -theta * Mathf.Rad2Deg;
 
-        currentThetaDeg = Mathf.MoveTowardsAngle(
-            currentThetaDeg,
-            targetThetaDeg,
-            weapon.Data.GetParameter(WeaponParameterType.RotationSpeed) * Time.deltaTime
-        );
+        Debug.Log("targetThetaDeg: " + targetThetaDeg);
 
-        barrelRot.localRotation = Quaternion.Euler(currentThetaDeg, 0f, 0f);
-
-        float angleDiff = Mathf.Abs(Mathf.DeltaAngle(currentThetaDeg, targetThetaDeg));
-        bool isAimed = angleDiff <= weapon.AimThreshold;
-
-        return isAimed;
+        return new AimResult
+        {
+            HasAim = true,
+            ProvidesYaw = false,
+            ProvidesPitch = true,
+            PitchDeg = targetThetaDeg,
+            AllowedErrorDeg = weapon.AimThreshold
+        };
     }
 }

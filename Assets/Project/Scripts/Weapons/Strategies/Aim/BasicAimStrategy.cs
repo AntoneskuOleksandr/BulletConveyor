@@ -2,25 +2,29 @@ using UnityEngine;
 
 public class BasicAimStrategy : IAimStrategy
 {
-    public bool TryAim(Weapon weapon)
+    public AimResult ComputeAim(Weapon weapon)
     {
-        var target = weapon.Target;
+        var baseRot = weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation);
+        var target = weapon.Target?.HitTransform;
 
-        // Вектор на цель
-        Vector3 dir = target.HitTransform.position - weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).position;
+        if (!baseRot || !target)
+            return AimResult.Empty;
+
+        Vector3 dir = target.position - baseRot.position;
         dir.y = 0f;
-        if (dir == Vector3.zero) return false;
 
-        // Текущий и целевой поворот
-        Quaternion lookRotation = Quaternion.LookRotation(dir);
-        weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation = Quaternion.Lerp(
-            weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation,
-            lookRotation,
-            Time.deltaTime * weapon.TurnSpeed
-        );
+        if (dir.sqrMagnitude < 0.0001f)
+            return AimResult.Empty;
 
-        // --- Проверяем угол ---
-        float angle = Quaternion.Angle(weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation, lookRotation);
-        return angle <= weapon.AimThreshold;
+        float yawDeg = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+
+        return new AimResult
+        {
+            HasAim = true,
+            ProvidesYaw = true,
+            ProvidesPitch = false,
+            YawDeg = yawDeg,
+            AllowedErrorDeg = weapon.AimThreshold
+        };
     }
 }

@@ -21,6 +21,9 @@ MonoBehaviour:
   baseFireRate: 0.33333334
   baseHealth: 150
   baseAttackRadius: 30
+  AimThreshold: 1
+  YawTurnSpeed: 10
+  PitchTurnSpeed: 30
   shootStrategy: 0
   aimStrategies: 0000000001000000
   targetStrategy: 0
@@ -51,5 +54,3 @@ MonoBehaviour:
   Parameters:
   - Type: 0
     Value: 5
-  - Type: 1
-    Value: 17.16

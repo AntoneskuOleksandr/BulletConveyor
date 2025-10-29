@@ -14,7 +14,7 @@ public class UpgradeLevel
 public enum WeaponParameterType
 {
     AoERadius,
-    RotationSpeed,
+    MinAttackRadius,
 }
 
 [Serializable]
@@ -34,12 +34,14 @@ public class WeaponSO : ScriptableObject
     public WeaponType WeaponType;
     public BulletType BulletType;
 
-
     [Header("Base Stats")]
     public int baseDamage;
     public float baseFireRate;
     public int baseHealth;
     public float baseAttackRadius;
+    public float AimThreshold;
+    public float YawTurnSpeed;
+    public float PitchTurnSpeed;
 
     [Header("Strategies")]
     public ShootStrategyType shootStrategy;

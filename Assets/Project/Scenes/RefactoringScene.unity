@@ -2843,7 +2843,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalWaves: 1
   waveDuration: 30
-  timeBetweenWaves: 3
+  timeBetweenWaves: 5
   minEnemyCount: 1
   maxEnemyCount: 1
   enemyIncrementPerWave: 0

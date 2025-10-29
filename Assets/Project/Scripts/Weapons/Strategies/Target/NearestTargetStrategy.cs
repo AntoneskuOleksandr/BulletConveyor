@@ -13,6 +13,6 @@ public class NearestTargetStrategy : ITargetStrategy
             return null;
         }
 
-        return _enemyManager.GetNearestEnemy(weapon, weapon.AttackRadius) ?? null;
+        return _enemyManager.GetNearestEnemy(weapon, weapon.AttackRadius * 2) ?? null;
     }
 }

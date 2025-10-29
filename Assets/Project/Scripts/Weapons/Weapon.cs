@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -14,21 +15,20 @@ public class WeaponEffectChance
 public class Weapon : MonoBehaviour
 {
     [Header("Weapon Settings")]
-    [SerializeField] private float turnSpeed = 3f;
-    [SerializeField] private float aimThreshold = 2f;
-    [SerializeField] private float idleReturnDelay = 2f;
-
     private float damage;
     private float health;
     private float fireRate;
     private float attackRadius;
+    private float aimThreshold;
+    private float idleReturnDelay = 2f;
+    private float yawTurnSpeed;
+    private float pitchTurnSpeed;
 
     public float Damage => damage;
     public float Health => health;
     public float FireRate => fireRate;
     public float AttackRadius => attackRadius;
     public float LaunchSpeed => Mathf.Sqrt(attackRadius * Mathf.Abs(Physics.gravity.y));
-    public float TurnSpeed => turnSpeed;
     public float AimThreshold => aimThreshold;
     public WeaponAttachmentPoints AttachmentPoints => _attachmentPoints;
 
@@ -55,8 +55,6 @@ public class Weapon : MonoBehaviour
     private float _targetRefreshRate = 1f;
     private float _targetRefreshTimer = 0f;
 
-    private Transform _baseRotation;
-    private Quaternion _initialRotation;
     private float _idleTimer = 0f;
 
     [Header("Strategy Info (Read Only at inspector)")]
@@ -73,7 +71,8 @@ public class Weapon : MonoBehaviour
     private IBulletHitStrategy _bulletHitStrategy;
 
     private IShootStrategy _shootStrategy;
-    private List<IAimStrategy> _aimStrategies = new List<IAimStrategy>();
+    private List<IAimStrategy> _aimStrategies = new();
+    private IdleAimStrategy _idleAimStrategy = new IdleAimStrategy();
     private ITargetStrategy _targetStrategy;
 
     public void SetWeaponStrategy(IShootStrategy shoot, ShootStrategyType shootType,
@@ -105,6 +104,9 @@ public class Weapon : MonoBehaviour
         fireRate = so.baseFireRate;
         health = so.baseHealth;
         attackRadius = so.baseAttackRadius;
+        aimThreshold = so.AimThreshold;
+        yawTurnSpeed = so.YawTurnSpeed;
+        pitchTurnSpeed = so.PitchTurnSpeed;
 
         baseWeaponEffectChances.AddRange(so.baseEffectChances);
 
@@ -143,9 +145,6 @@ public class Weapon : MonoBehaviour
             Debug.LogError($"[Weapon] {gameObject.name}  WeaponHitZone is null");
         if (_attachmentPoints == null)
             Debug.LogError($"[Weapon] {gameObject.name}  _attachmentPoints is null");
-
-        if (AttachmentPoints.Get(WeaponAttachmentType.BaseRotation) != null)
-            _initialRotation = AttachmentPoints.Get(WeaponAttachmentType.BaseRotation).rotation;
     }
 
     protected virtual void OnDisable()
@@ -156,65 +155,122 @@ public class Weapon : MonoBehaviour
 
     protected void Update()
     {
-        _targetRefreshTimer -= Time.deltaTime;
-        if (_targetRefreshTimer <= 0f)
-        {
-            _targetRefreshTimer = _targetRefreshRate;
-            _target = _targetStrategy?.FindTarget(this);
-        }
+        UpdateTarget();
 
         if (_target != null && _target.IsAlive)
         {
             _idleTimer = 0f;
-
-            bool aimed = true;
-            if (_aimStrategies == null || _aimStrategies.Count == 0)
-                aimed = false;
-            else
-            {
-                // вызываем все aim стратегии по очереди.
-                // Если любая из них вернёт false — считаем, что не готово
-                foreach (var aim in _aimStrategies)
-                {
-                    if (aim == null) continue;
-                    bool res = aim.TryAim(this);
-                    if (!res)
-                        aimed = false;
-                }
-            }
-
-            //Debug.Log($"[Weapon] {_aimStrategies.Count} aim strategies processed. Aimed: {aimed}");
-
-            if (aimed)
-            {
-                if (_shootStrategy?.TryShoot(this) == true)
-                {
-                    var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
-                    var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
-                    _weaponVisual?.PlayShotEffect(colorWeights);
-                }
-            }
+            HandleAimingAndShooting();
         }
         else
         {
-            HandleIdleRotation();
+            HandleIdleAiming();
         }
 
         if (_fireCountdown > 0f)
             _fireCountdown -= Time.deltaTime;
     }
 
-    private void HandleIdleRotation()
+    private void UpdateTarget()
+    {
+        _targetRefreshTimer -= Time.deltaTime;
+        if (_targetRefreshTimer <= 0f)
+        {
+            _targetRefreshTimer = _targetRefreshRate;
+            _target = _targetStrategy?.FindTarget(this);
+        }
+    }
+
+    private void HandleAimingAndShooting()
+    {
+        if (_aimStrategies == null || _aimStrategies.Count == 0)
+            return;
+
+        AimResult yawResult = AimResult.Empty;
+        AimResult pitchResult = AimResult.Empty;
+
+        foreach (var aim in _aimStrategies)
+        {
+            if (aim == null) continue;
+            var result = aim.ComputeAim(this);
+            if (!result.HasAim) continue;
+
+            if (result.ProvidesYaw)
+                yawResult = result;
+
+            if (result.ProvidesPitch)
+                pitchResult = result;
+        }
+
+        bool yawReady = ApplyYaw(yawResult);
+        bool pitchReady = ApplyPitch(pitchResult);
+
+        bool aimed = yawReady && pitchReady;
+
+        if (aimed)
+        {
+            if (_shootStrategy?.TryShoot(this) == true)
+            {
+                var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
+                var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
+                _weaponVisual?.PlayShotEffect(colorWeights);
+            }
+        }
+    }
+
+    private void HandleIdleAiming()
     {
         _idleTimer += Time.deltaTime;
-        if (_idleTimer >= idleReturnDelay && _baseRotation != null)
-        {
-            _baseRotation.rotation = Quaternion.Lerp(
-                _baseRotation.rotation,
-                _initialRotation,
-                Time.deltaTime * turnSpeed
-            );
-        }
+        if (_idleTimer < idleReturnDelay)
+            return;
+
+        var result = _idleAimStrategy.ComputeAim(this);
+        if (!result.HasAim)
+            return;
+
+        ApplyYaw(result);
+        ApplyPitch(result);
+    }
+
+
+    private bool ApplyYaw(AimResult result)
+    {
+        if (!result.HasAim || !result.ProvidesYaw)
+            return false;
+
+        var baseRot = AttachmentPoints.Get(WeaponAttachmentType.BaseRotation);
+        if (baseRot == null)
+            return false;
+
+        Quaternion targetRot = Quaternion.Euler(0f, result.YawDeg, 0f);
+        baseRot.rotation = Quaternion.RotateTowards(
+            baseRot.rotation,
+            targetRot,
+            yawTurnSpeed * Time.deltaTime);
+
+        float yawError = Mathf.Abs(Mathf.DeltaAngle(baseRot.eulerAngles.y, result.YawDeg));
+        return yawError <= result.AllowedErrorDeg;
+    }
+
+    private bool ApplyPitch(AimResult result)
+    {
+        if (!result.HasAim || !result.ProvidesPitch)
+            return false;
+
+        var barrel = AttachmentPoints.Get(WeaponAttachmentType.BarrelRotation);
+        if (barrel == null)
+            return false;
+
+        float currentPitch = Mathf.DeltaAngle(0f, barrel.localEulerAngles.x);
+        float newPitch = Mathf.MoveTowardsAngle(
+            currentPitch,
+            result.PitchDeg,
+            pitchTurnSpeed * Time.deltaTime);
+
+        barrel.localRotation = Quaternion.Euler(newPitch, 0f, 0f);
+
+        float pitchError = Mathf.Abs(Mathf.DeltaAngle(currentPitch, result.PitchDeg));
+        return pitchError <= result.AllowedErrorDeg;
     }
 
     public void ResetFireCountdown()
@@ -232,13 +288,10 @@ public class Weapon : MonoBehaviour
         if (amount <= 0f) return;
 
         health -= amount;
-
         _weaponStatusCanvas?.UpdateHealthBar(health, Data.baseHealth);
 
         if (health <= 0f)
-        {
             OnDestroyed();
-        }
     }
 
     private void OnDestroyed()
@@ -248,10 +301,8 @@ public class Weapon : MonoBehaviour
         _aimStrategies = null;
         _targetStrategy = null;
 
-        var colls = GetComponents<Collider>();
-        foreach (var c in colls) c.enabled = false;
-
-        //if (_weaponVisual != null) _weaponVisual.PlayDestroyEffect();
+        foreach (var c in GetComponents<Collider>())
+            c.enabled = false;
 
         OnWeaponDestroyed?.Invoke();
     }
