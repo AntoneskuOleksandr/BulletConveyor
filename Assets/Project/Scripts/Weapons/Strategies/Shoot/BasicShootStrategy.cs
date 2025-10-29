@@ -1,3 +1,4 @@
+using UnityEngine;
 using Zenject;
 
 public class BasicShootStrategy : IShootStrategy
@@ -14,9 +15,12 @@ public class BasicShootStrategy : IShootStrategy
         Bullet bullet = _bulletManager.TryGetBullet(weapon);
         if (bullet == null) return false;
 
-        bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(weapon, _effectChanceManager, _effectFactory);
+        Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
 
+        bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
+        bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint.forward);
+
+        weapon.ResetFireCountdown();
         weapon.ResetFireCountdown();
         return true;
     }

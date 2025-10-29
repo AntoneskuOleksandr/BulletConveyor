@@ -32,10 +32,7 @@ public class ShotgunShootStrategy : IShootStrategy
                 0f
             );
 
-            bullet.transform.position = firePoint.position;
-            bullet.transform.rotation = Quaternion.LookRotation(spreadRot * baseDir);
-
-            bullet.Init(weapon, _effectChanceManager, _effectFactory);
+            bullet.Init(weapon, _effectChanceManager, _effectFactory, (spreadRot * baseDir).normalized);
         }
 
         weapon.ResetFireCountdown();

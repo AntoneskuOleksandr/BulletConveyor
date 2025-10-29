@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject.SpaceFighter;
 
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 [DisallowMultipleComponent]
@@ -49,7 +50,6 @@ public class Bullet : MonoBehaviour
     {
         if (_weapon == null) return;
 
-        // Получаем все доступные эффекты и их шансы
         var allChances = _effectChanceManager.GetAllChancesForWeapon(_weapon);
 
         foreach (var pair in allChances)
@@ -65,8 +65,7 @@ public class Bullet : MonoBehaviour
         }
     }
 
-
-    public void Init(Weapon weapon, EffectChanceManager effectChanceManager, EffectFactory effectFactory)
+    public void Init(Weapon weapon, EffectChanceManager effectChanceManager, EffectFactory effectFactory, Vector3 direction)
     {
         _weapon = weapon;
         _effectChanceManager = effectChanceManager;
@@ -74,6 +73,9 @@ public class Bullet : MonoBehaviour
 
         Damage = weapon.Damage;
         _target = weapon.Target.transform;
+
+        transform.position = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint).position;
+        transform.rotation = Quaternion.LookRotation(direction);
 
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;

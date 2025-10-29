@@ -29,7 +29,7 @@ MonoBehaviour:
   UseYaw: 1
   UsePitch: 0
   LaunchSpeedMode: 0
-  LaunchSpeed: 10
+  LaunchSpeed: 25
   ShootStrategy: 1
   AimStrategies: 00000000
   TargetStrategy: 0
