@@ -34,11 +34,7 @@ MonoBehaviour:
   BulletMoveType: 1
   BulletHitType: 1
   UpgradeLevels: []
-  BaseEffectChances:
-  - effectType: 0
-    chance: 0.5
-  - effectType: 2
-    chance: 0.5
+  BaseEffectChances: []
   Parameters:
   - Type: 0
     Value: 100
