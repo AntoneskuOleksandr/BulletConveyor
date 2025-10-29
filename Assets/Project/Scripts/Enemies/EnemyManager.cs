@@ -32,7 +32,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public Enemy GetNearestEnemy(Weapon weapon, float radius)
+    public Enemy GetNearestEnemy(Weapon weapon, float minRadius, float maxRadius)
     {
         float shortestDistance = Mathf.Infinity;
         Enemy nearestEnemy = null;
@@ -45,7 +45,7 @@ public class EnemyManager : MonoBehaviour
             float distanceToEnemy = Vector3.Distance(weapon.transform.position, enemy.HitTransform.position);
 
             // игнорируем врагов вне радиуса действия
-            if (distanceToEnemy > radius)
+            if (distanceToEnemy < minRadius || distanceToEnemy > maxRadius)
                 continue;
 
             if (distanceToEnemy < shortestDistance)

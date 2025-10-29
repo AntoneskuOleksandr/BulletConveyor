@@ -13,8 +13,7 @@ public class UpgradeLevel
 
 public enum WeaponParameterType
 {
-    AoERadius,
-    MinAttackRadius,
+    AoERadius
 }
 
 [Serializable]
@@ -37,8 +36,11 @@ public class WeaponSO : ScriptableObject
     public int BaseDamage;
     public float BaseFireRate;
     public int BaseHealth;
-    public float BaseAttackRadius;
-    public float FindTargetRadiusCoefficient;
+
+    [Header("Attack Settings")]
+    public float MaxAttackRadius = 20f;
+    public float MinAttackRadius = 5f;
+    public float FindTargetRadiusCoefficient = 1.5f;
 
     [Header("Aiming Settings")]
     public float AimThreshold;

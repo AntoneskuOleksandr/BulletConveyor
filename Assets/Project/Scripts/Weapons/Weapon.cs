@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -17,7 +18,8 @@ public class Weapon : MonoBehaviour
     private float _damage;
     private float _health;
     private float _fireRate;
-    private float _attackRadius;
+    private float _maxAttackRadius;
+    private float _minAttackRadius;
     private float _aimThreshold;
     private float _idleReturnDelay = 2f;
 
@@ -29,8 +31,9 @@ public class Weapon : MonoBehaviour
     public float Damage => _damage;
     public float Health => _health;
     public float FireRate => _fireRate;
-    public float AttackRadius => _attackRadius;
-    public float FindTargetRadius => _attackRadius * _data.FindTargetRadiusCoefficient;
+    public float MaxAttackRadius => _maxAttackRadius;
+    public float MinAttackRadius => _minAttackRadius;
+    public float FindTargetRadius => _maxAttackRadius * _data.FindTargetRadiusCoefficient;
     public float LaunchSpeed => CalculateLaunchSpeed();
     public float AimThreshold => _aimThreshold;
     public WeaponAttachmentPoints AttachmentPoints => _attachmentPoints;
@@ -106,7 +109,8 @@ public class Weapon : MonoBehaviour
         _damage = so.BaseDamage;
         _fireRate = so.BaseFireRate;
         _health = so.BaseHealth;
-        _attackRadius = so.BaseAttackRadius;
+        _maxAttackRadius = so.MaxAttackRadius;
+        _minAttackRadius = so.MinAttackRadius;
         _aimThreshold = so.AimThreshold;
         _yawTurnSpeed = so.YawTurnSpeed;
         _pitchTurnSpeed = so.PitchTurnSpeed;
@@ -194,6 +198,10 @@ public class Weapon : MonoBehaviour
         AimResult yawResult = AimResult.Empty;
         AimResult pitchResult = AimResult.Empty;
 
+        float distance = Vector3.Distance(_target.transform.position, transform.position);
+        if (distance < MinAttackRadius || distance > MaxAttackRadius)
+            return;
+
         foreach (var aim in _aimStrategies)
         {
             if (aim == null) continue;
@@ -229,7 +237,6 @@ public class Weapon : MonoBehaviour
         }
     }
 
-
     private void HandleIdleAiming()
     {
         _idleTimer += Time.deltaTime;
@@ -256,10 +263,8 @@ public class Weapon : MonoBehaviour
         if (baseRot == null)
             return false;
 
-        // Целевой угол
         Quaternion targetRot = Quaternion.Euler(0f, result.YawDeg, 0f);
 
-        // Плавность (0.05f - плавно, 0.3f - быстрее)
         float smoothFactor = 1f - Mathf.Exp(-_yawTurnSpeed * Time.deltaTime);
         baseRot.rotation = Quaternion.Slerp(baseRot.rotation, targetRot, smoothFactor);
 
@@ -304,7 +309,7 @@ public class Weapon : MonoBehaviour
             case LaunchSpeedMode.AutoFromRadius:
                 {
                     Vector3 fromWeaponToFirePoint = _attachmentPoints.Get(WeaponAttachmentType.FirePoint).position - transform.position;
-                    return Mathf.Sqrt((_attackRadius - fromWeaponToFirePoint.magnitude) * Mathf.Abs(Physics.gravity.y));
+                    return Mathf.Sqrt((_maxAttackRadius - fromWeaponToFirePoint.magnitude) * Mathf.Abs(Physics.gravity.y));
                 }
             case LaunchSpeedMode.Fixed:
             default:
@@ -336,9 +341,12 @@ public class Weapon : MonoBehaviour
         OnWeaponDestroyed?.Invoke();
     }
 
-    protected virtual void OnDrawGizmosSelected()
+    protected void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _attackRadius);
+        Gizmos.DrawWireSphere(transform.position, _maxAttackRadius);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, _data.MinAttackRadius);
     }
 }
