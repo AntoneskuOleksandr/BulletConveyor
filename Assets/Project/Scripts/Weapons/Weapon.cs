@@ -28,7 +28,7 @@ public class Weapon : MonoBehaviour
     private float _yawTurnSpeed;
     private float _pitchTurnSpeed;
 
-    public WeaponSO Data;
+    public WeaponSO Data { get; private set; }
     public float Damage => _damage;
     public float Health => _health;
     public float FireRate => _fireRate;
