@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum WeaponAttachmentType
 {
-    BaseRotation,   
+    BaseRotation,
     BarrelRotation,
     FirePoint,
 }
@@ -40,4 +40,14 @@ public class WeaponAttachmentPoints : MonoBehaviour
         Debug.LogWarning($"[WeaponAttachmentPoints] Attachment of type {type} not found on {gameObject.name}");
         return null;
     }
+
+    public List<Transform> GetAll(WeaponAttachmentType type)
+    {
+        var list = new List<Transform>();
+        foreach (var entry in attachments)
+            if (entry.type == type && entry.transform != null)
+                list.Add(entry.transform);
+        return list;
+    }
+
 }

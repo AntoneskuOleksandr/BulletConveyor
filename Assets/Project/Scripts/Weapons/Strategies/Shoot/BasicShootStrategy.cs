@@ -18,7 +18,7 @@ public class BasicShootStrategy : IShootStrategy
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
 
         bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint.forward);
+        bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint);
 
         weapon.ResetFireCountdown();
         weapon.ResetFireCountdown();

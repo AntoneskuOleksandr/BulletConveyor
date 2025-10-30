@@ -9,6 +9,7 @@ public class StrategyResolver
     public StrategyResolver(
         BasicShootStrategy basicShoot,
         ShotgunShootStrategy shotgunShoot,
+        PeashooterShootStrategy peashooterShoot,
         BasicAimStrategy basicAim,
         BallisticAimStrategy ballisticAim,
         NearestTargetStrategy nearestTarget)
@@ -17,6 +18,7 @@ public class StrategyResolver
         {
             { ShootStrategyType.Basic, basicShoot },
             {ShootStrategyType.Shotgun, shotgunShoot },
+            {ShootStrategyType.Peashooter, peashooterShoot },
         };
 
         _aimStrategies = new Dictionary<AimStrategyType, IAimStrategy>

@@ -16,6 +16,8 @@ public enum WeaponParameterType
     AoERadius,
     PelletCount,
     SpreadAngle,
+    PowerfulShotEvery,
+    PowerShotMultiplier
 }
 
 [Serializable]

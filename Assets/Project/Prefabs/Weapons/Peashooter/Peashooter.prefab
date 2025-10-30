@@ -130,6 +130,8 @@ MonoBehaviour:
     transform: {fileID: 4047469241293314578}
   - type: 2
     transform: {fileID: 6656178815318905935}
+  - type: 2
+    transform: {fileID: 8066226383419407797}
 --- !u!114 &7909617778457846412
 MonoBehaviour:
   m_ObjectHideFlags: 0

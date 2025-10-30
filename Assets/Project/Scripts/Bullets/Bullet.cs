@@ -65,17 +65,17 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    public void Init(Weapon weapon, EffectChanceManager effectChanceManager, EffectFactory effectFactory, Vector3 direction)
+    public void Init(Weapon weapon, EffectChanceManager effectChanceManager, EffectFactory effectFactory,
+        Transform spawnTransform, float damageMultiplier = 1f)
     {
         _weapon = weapon;
         _effectChanceManager = effectChanceManager;
         _effectFactory = effectFactory;
 
-        Damage = weapon.Damage;
+        Damage = weapon.Damage * damageMultiplier;
         _target = weapon.Target.transform;
 
-        transform.position = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint).position;
-        transform.rotation = Quaternion.LookRotation(direction);
+        transform.SetPositionAndRotation(spawnTransform.position, spawnTransform.rotation);
 
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
