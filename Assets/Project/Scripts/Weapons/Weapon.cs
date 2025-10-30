@@ -62,7 +62,7 @@ public class Weapon : MonoBehaviour
     private float _idleTimer = 0f;
 
     [Header("Strategy Info (Read Only at inspector)")]
-    [SerializeField] private ShootStrategyType shootStrategyType;
+    [SerializeField] private List<ShootStrategyType> shootStrategyTypes;
     [SerializeField] private List<AimStrategyType> aimStrategyTypes;
     [SerializeField] private TargetStrategyType targetStrategyType;
     [SerializeField] private BulletMoveType bulletMoveType;
@@ -74,20 +74,21 @@ public class Weapon : MonoBehaviour
     private IBulletMoveStrategy _bulletMoveStrategy;
     private IBulletHitStrategy _bulletHitStrategy;
 
-    private IShootStrategy _shootStrategy;
+    private List<IShootStrategy> _shootStrategies = new();
     private List<IAimStrategy> _aimStrategies = new();
     private IdleAimStrategy _idleAimStrategy = new IdleAimStrategy();
     private ITargetStrategy _targetStrategy;
 
-    public void SetWeaponStrategy(IShootStrategy shoot, ShootStrategyType shootType,
+    public void SetWeaponStrategy(
+        List<IShootStrategy> shoots, List<ShootStrategyType> shootTypes,
         List<IAimStrategy> aims, List<AimStrategyType> aimTypes,
         ITargetStrategy target, TargetStrategyType targetType)
     {
-        _shootStrategy = shoot;
+        _shootStrategies = shoots;
         _aimStrategies = aims;
         _targetStrategy = target;
 
-        shootStrategyType = shootType;
+        shootStrategyTypes = shootTypes;
         aimStrategyTypes = aimTypes;
         targetStrategyType = targetType;
     }
@@ -226,11 +227,14 @@ public class Weapon : MonoBehaviour
 
         if (aimed)
         {
-            if (_shootStrategy?.TryShoot(this) == true)
+            foreach (var shoot in _shootStrategies)
             {
-                var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
-                var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
-                _weaponVisual?.PlayShotEffect(colorWeights);
+                if (shoot?.TryShoot(this) == true)
+                {
+                    var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
+                    var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
+                    _weaponVisual?.PlayShotEffect(colorWeights);
+                }
             }
         }
     }
@@ -329,7 +333,7 @@ public class Weapon : MonoBehaviour
     private void OnDestroyed()
     {
         _target = null;
-        _shootStrategy = null;
+        _shootStrategies = null;
         _aimStrategies = null;
         _targetStrategy = null;
 

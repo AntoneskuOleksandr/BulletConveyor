@@ -30,7 +30,7 @@ MonoBehaviour:
   UsePitch: 0
   LaunchSpeedMode: 0
   LaunchSpeed: 10
-  ShootStrategy: 0
+  ShootStraties: 00000000
   AimStrategies: 00000000
   TargetStrategy: 0
   BulletMoveType: 0

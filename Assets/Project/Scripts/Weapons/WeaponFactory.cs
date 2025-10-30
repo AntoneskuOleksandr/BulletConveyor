@@ -35,12 +35,12 @@ public class WeaponFactory
         };
 
         // 3. Назначаем стратегии поведения
-        var shoot = _strategyResolver.ResolveShoot(so.ShootStrategy);
+        var shoot = _strategyResolver.ResolveShoots(so.ShootStraties);
         var aim = _strategyResolver.ResolveAims(so.AimStrategies);
         var target = _strategyResolver.ResolveTarget(so.TargetStrategy);
 
         weapon.SetWeaponStrategy(
-            shoot, so.ShootStrategy,
+            shoot, so.ShootStraties,
             aim, so.AimStrategies,
             target, so.TargetStrategy
         );
