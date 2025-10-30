@@ -7,7 +7,7 @@ public class StrategyInstaller : MonoInstaller
         // Shoot strategies
         Container.Bind<BasicShootStrategy>().AsSingle();
         Container.Bind<ShotgunShootStrategy>().AsSingle();
-        Container.Bind<PeashooterShootStrategy>().AsSingle();
+        Container.Bind<MultiBarrelShootStrategy>().AsSingle();
 
         // Aim strategies
         Container.Bind<BasicAimStrategy>().AsSingle();

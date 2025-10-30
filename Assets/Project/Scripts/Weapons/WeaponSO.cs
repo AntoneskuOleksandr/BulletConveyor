@@ -17,6 +17,7 @@ public enum WeaponParameterType
     PelletCount,
     SpreadAngle,
     PowerfulShotEvery,
+    ShootSimultaneously, // 1 - simultaneously, 0 - sequentially
     PowerShotMultiplier
 }
 

@@ -1,1 +1,1 @@
-public enum ShootStrategyType { Basic, Shotgun, Peashooter}
+public enum ShootStrategyType { Basic, Shotgun, MultiBarrel }
