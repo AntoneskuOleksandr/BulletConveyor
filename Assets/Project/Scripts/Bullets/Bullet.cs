@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject.SpaceFighter;
 
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 [DisallowMultipleComponent]
@@ -36,7 +35,6 @@ public class Bullet : MonoBehaviour
     {
         _moveStrategy?.UpdateRotation(this);
     }
-
 
     public void SetStrategies(IBulletMoveStrategy move, IBulletHitStrategy hit)
     {
