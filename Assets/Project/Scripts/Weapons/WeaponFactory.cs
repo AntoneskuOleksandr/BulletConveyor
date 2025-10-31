@@ -6,12 +6,14 @@ public class WeaponFactory
     private readonly DiContainer _container;
     private readonly WeaponsService _weaponsService;
     private readonly StrategyResolver _strategyResolver;
+    private readonly WeaponModifierResolver _modifierResolver;
 
-    public WeaponFactory(DiContainer container, WeaponsService weaponsService, StrategyResolver resolver)
+    public WeaponFactory(DiContainer container, WeaponsService weaponsService, StrategyResolver strategyResolver, WeaponModifierResolver modifierResolver)
     {
         _container = container;
         _weaponsService = weaponsService;
-        _strategyResolver = resolver;
+        _strategyResolver = strategyResolver;
+        _modifierResolver = modifierResolver;
     }
 
     public Weapon AddWeaponComponent(GameObject go, WeaponSO so)
@@ -35,13 +37,14 @@ public class WeaponFactory
         };
 
         // 3. Назначаем стратегии поведения
-        var shoot = _strategyResolver.ResolveShoots(so.ShootStraties);
+        var shoot = _strategyResolver.ResolveShoot(so.ShootStrategy);
         var aim = _strategyResolver.ResolveAims(so.AimStrategies);
         var target = _strategyResolver.ResolveTarget(so.TargetStrategy);
+        var modifiers = _modifierResolver.ResolveModifiers(so.Modifiers);
 
         weapon.SetWeaponStrategy(
-            shoot, so.ShootStraties,
             aim, so.AimStrategies,
+            shoot, so.ShootStrategy,
             target, so.TargetStrategy
         );
 
@@ -49,6 +52,8 @@ public class WeaponFactory
             move, so.BulletMoveType,
             hit, so.BulletHitType
         );
+
+        weapon.SetWeaponModifiers(modifiers, so.Modifiers);
 
         var progress = _weaponsService.GetProgressRO(so.WeaponId);
         weapon.InitializeFromSO(so, progress);

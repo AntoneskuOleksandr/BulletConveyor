@@ -404,6 +404,7 @@ Transform:
   - {fileID: 1194942070999550868}
   - {fileID: 7800399360220354263}
   - {fileID: 5747118669370848465}
+  - {fileID: 8409564940143377748}
   m_Father: {fileID: 5209367928283593213}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2365438309019821985
@@ -1048,6 +1049,8 @@ MonoBehaviour:
     transform: {fileID: 2317063573829216233}
   - type: 2
     transform: {fileID: 5747118669370848465}
+  - type: 2
+    transform: {fileID: 8409564940143377748}
 --- !u!1 &4903298634864497974
 GameObject:
   m_ObjectHideFlags: 0
@@ -1504,7 +1507,7 @@ Transform:
   m_GameObject: {fileID: 5747118669370848466}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15199995, y: 1.141, z: 1.3080001}
+  m_LocalPosition: {x: 0.1004, y: 1.1595, z: 1.2367}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1982,6 +1985,37 @@ Transform:
   - {fileID: 3218116633595976763}
   - {fileID: 6269341845573164291}
   m_Father: {fileID: 7800399360220354263}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7855474851730280548
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8409564940143377748}
+  m_Layer: 0
+  m_Name: FirePoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8409564940143377748
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7855474851730280548}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.208, y: 1.1595, z: 1.2367}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2317063573829216233}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7931814728329161723
 GameObject:

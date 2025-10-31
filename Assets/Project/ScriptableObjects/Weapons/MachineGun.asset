@@ -30,11 +30,16 @@ MonoBehaviour:
   UsePitch: 0
   LaunchSpeedMode: 0
   LaunchSpeed: 10
-  ShootStraties: 00000000
   AimStrategies: 00000000
+  ShootStrategy: 0
   TargetStrategy: 0
   BulletMoveType: 0
   BulletHitType: 0
+  Modifiers: 00000000
   UpgradeLevels: []
   BaseEffectChances: []
-  Parameters: []
+  Parameters:
+  - Type: 3
+    Value: 2
+  - Type: 5
+    Value: 3

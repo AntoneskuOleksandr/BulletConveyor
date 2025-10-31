@@ -63,14 +63,14 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    public void Init(Weapon weapon, EffectChanceManager effectChanceManager, EffectFactory effectFactory,
-        Transform spawnTransform, float damageMultiplier = 1f)
+    public void Init(Weapon weapon, EffectChanceManager chanceManager, EffectFactory effectFactory,
+        Transform spawnTransform, BulletInitData data)
     {
         _weapon = weapon;
-        _effectChanceManager = effectChanceManager;
+        _effectChanceManager = chanceManager;
         _effectFactory = effectFactory;
 
-        Damage = weapon.Damage * damageMultiplier;
+        Damage = data.Damage;
         _target = weapon.Target.transform;
 
         transform.SetPositionAndRotation(spawnTransform.position, spawnTransform.rotation);
@@ -90,6 +90,7 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         _hitStrategy?.Hit(this, other);
+        _weapon.NotifyBulletHit(this, other);
         _visual?.OnDespawn();
         Destroy(gameObject);
     }

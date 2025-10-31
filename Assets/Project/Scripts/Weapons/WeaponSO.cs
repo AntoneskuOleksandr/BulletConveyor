@@ -55,15 +55,19 @@ public class WeaponSO : ScriptableObject
     public bool UsePitch;
 
     [Header("Bullet Settings")]
+    [Min(1)] public int MinBulletsToShoot = 1;
     public LaunchSpeedMode LaunchSpeedMode = LaunchSpeedMode.Fixed;
     public float LaunchSpeed = 10f;
 
     [Header("Strategies")]
-    public List<ShootStrategyType> ShootStraties;
     public List<AimStrategyType> AimStrategies;
+    public ShootStrategyType ShootStrategy;
     public TargetStrategyType TargetStrategy;
     public BulletMoveType BulletMoveType;
     public BulletHitType BulletHitType;
+
+    [Header("Modifiers")]
+    public List<WeaponModifierType> Modifiers;
 
     [Header("Upgrade Levels")]
     public UpgradeLevel[] UpgradeLevels;

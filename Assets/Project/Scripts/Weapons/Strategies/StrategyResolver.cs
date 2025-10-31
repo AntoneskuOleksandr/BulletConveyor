@@ -33,18 +33,7 @@ public class StrategyResolver
         };
     }
 
-    public List<IShootStrategy> ResolveShoots(IEnumerable<ShootStrategyType> types)
-    {
-        var list = new List<IShootStrategy>();
-        foreach (var t in types)
-        {
-            if (_shootStrategies.TryGetValue(t, out var s))
-                list.Add(s);
-            else
-                throw new KeyNotFoundException($"AimStrategy not registered: {t}");
-        }
-        return list;
-    }
+    public IShootStrategy ResolveShoot(ShootStrategyType type) => _shootStrategies[type];
 
     public ITargetStrategy ResolveTarget(TargetStrategyType type) => _targetStrategies[type];
 
