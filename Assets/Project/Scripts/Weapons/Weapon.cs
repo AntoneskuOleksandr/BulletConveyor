@@ -143,7 +143,6 @@ public class Weapon : MonoBehaviour
 
     public BulletInitData BuildBulletInitData()
     {
-        Debug.Log("Building BulletInitData");
         BulletInitData data = new BulletInitData
         {
             Damage = _damage,
