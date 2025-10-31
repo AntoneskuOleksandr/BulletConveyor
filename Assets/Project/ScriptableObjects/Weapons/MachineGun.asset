@@ -35,7 +35,7 @@ MonoBehaviour:
   TargetStrategy: 0
   BulletMoveType: 0
   BulletHitType: 0
-  Modifiers: 
+  Modifiers: 00000000
   UpgradeLevels: []
   BaseEffectChances: []
   Parameters:

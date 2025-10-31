@@ -17,21 +17,24 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
 
     public void OnBeforeShoot(Weapon weapon)
     {
-        Debug.Log($"[EveryNthDamageBoostModifier] OnBeforeShoot _counter: {_counter}, _n: {_n}");
-        _counter++;
-        if (_counter > _n)
-            _counter = 1;
+        Debug.Log($"[EveryNthDamageBoostModifier] OnBeforeShoot");
     }
 
     public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data)
     {
-        Debug.Log($"[EveryNthDamageBoostModifier] OnBeforeBulletInit _counter: {_counter}, _n: {_n}");
+        _counter++;
+        if (_counter > _n)
+            _counter = 1;
+
         if (_counter == _n)
         {
             data.Damage *= _multiplier;
             Debug.Log($"[{weapon.name}] PowerShot x{_multiplier}");
         }
+
+        Debug.Log($"[EveryNthDamageBoostModifier] OnBeforeBulletInit _counter: {_counter}, _n: {_n}");
     }
+
 
     public void OnBulletInit(Weapon weapon, Bullet bullet)
     {
@@ -39,7 +42,7 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
     }
     public void OnAfterShoot(Weapon weapon, List<Bullet> bullets)
     {
-        Debug.Log("[EveryNthDamageBoostModifier] OnAfterShoot");
+        Debug.Log($"[EveryNthDamageBoostModifier] OnAfterShoot _counter: {_counter}, _n: {_n}\")");
     }
     public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit)
     {

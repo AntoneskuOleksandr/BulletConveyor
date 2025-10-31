@@ -274,13 +274,13 @@ public class Weapon : MonoBehaviour
         if (!aimed)
             return;
 
-        var firedBullets = new List<Bullet>();
+        bool canShoot = _shootStrategy.IsCanShoot(this);
 
-        bool shot = _shootStrategy?.TryShoot(this, firedBullets) == true;
-
-        if (shot)
+        if (canShoot)
         {
             NotifyBeforeShoot();
+
+            var firedBullets = _shootStrategy.Shoot(this);
 
             var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
             var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);

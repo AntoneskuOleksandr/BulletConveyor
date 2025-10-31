@@ -8,22 +8,45 @@ public class ShotgunShootStrategy : IShootStrategy
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
 
-    public bool TryShoot(Weapon weapon, List<Bullet> spawnedBullets)
+    public bool IsCanShoot(Weapon weapon)
     {
         if (weapon.FireCountdown > 0f) return false;
         if (weapon.Target == null) return false;
 
+        return _bulletManager.AvailableCount >= weapon.Data.MinBulletsToShoot;
+    }
+
+    public List<Bullet> Shoot(Weapon weapon)
+    {
+        if (weapon.FireCountdown > 0f) return null;
+        if (weapon.Target == null) return null;
+
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
-        if (firePoint == null) return false;
+        if (firePoint == null) return null;
 
         Vector3 baseDir = (weapon.Target.HitTransform.position - firePoint.position).normalized;
-        int pelletCount = Mathf.RoundToInt(weapon.Data.GetParameter(WeaponParameterType.PelletCount, 1));
         float spreadAngle = weapon.Data.GetParameter(WeaponParameterType.SpreadAngle, 3f);
 
-        for (int i = 0; i < pelletCount; i++)
+        List<Bullet> firedBullets = new List<Bullet>();
+
+        int pelletCount = Mathf.RoundToInt(weapon.Data.GetParameter(WeaponParameterType.PelletCount, 1));
+        int minBulletsToShoot = weapon.Data.MinBulletsToShoot;
+        int available = _bulletManager.AvailableCount;
+
+        if (available < minBulletsToShoot)
         {
-            Bullet bullet = _bulletManager.TryGetBullet(weapon);
+            Debug.LogError($"[ShotgunShootStrategy] Not enough bullets to shoot (available {available}, need at least {minBulletsToShoot})");
+            return null;
+        }
+
+        int bulletsToShoot = Mathf.Min(pelletCount, available);
+
+        for (int i = 0; i < bulletsToShoot; i++)
+        {
+            Bullet bullet = _bulletManager.GetBullet();
             if (bullet == null) continue;
+
+            firedBullets.Add(bullet);
 
             BulletInitData data = weapon.BuildBulletInitData();
 
@@ -38,10 +61,9 @@ public class ShotgunShootStrategy : IShootStrategy
             bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
             bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint, data);
             weapon.NotifyBulletInit(bullet);
-            spawnedBullets.Add(bullet);
         }
 
         weapon.ResetFireCountdown();
-        return true;
+        return firedBullets;
     }
 }

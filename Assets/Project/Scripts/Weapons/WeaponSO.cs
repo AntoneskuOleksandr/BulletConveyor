@@ -55,6 +55,7 @@ public class WeaponSO : ScriptableObject
     public bool UsePitch;
 
     [Header("Bullet Settings")]
+    [Min(1)] public int MinBulletsToShoot = 1;
     public LaunchSpeedMode LaunchSpeedMode = LaunchSpeedMode.Fixed;
     public float LaunchSpeed = 10f;
 
