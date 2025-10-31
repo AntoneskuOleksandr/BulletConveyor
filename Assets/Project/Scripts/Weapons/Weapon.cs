@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -68,6 +67,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] private BulletMoveType bulletMoveType;
     [SerializeField] private BulletHitType bulletHitType;
 
+    [Header("Weapon Modifiers (Read Only at inspector)")]
+    [SerializeField] private List<WeaponModifierType> weaponModifierTypes;
+
     public IBulletMoveStrategy BulletMoveStrategy => _bulletMoveStrategy;
     public IBulletHitStrategy BulletHitStrategy => _bulletHitStrategy;
 
@@ -78,6 +80,8 @@ public class Weapon : MonoBehaviour
     private List<IAimStrategy> _aimStrategies = new();
     private IdleAimStrategy _idleAimStrategy = new IdleAimStrategy();
     private ITargetStrategy _targetStrategy;
+
+    private List<IWeaponModifier> _weaponModifiers = new();
 
     public void SetWeaponStrategy(
         List<IShootStrategy> shoots, List<ShootStrategyType> shootTypes,
@@ -100,6 +104,12 @@ public class Weapon : MonoBehaviour
         _bulletHitStrategy = hit;
         bulletMoveType = moveType;
         bulletHitType = hitType;
+    }
+
+    public void SetWeaponModifiers(List<IWeaponModifier> modifiers, List<WeaponModifierType> weaponModifierTypes)
+    {
+        _weaponModifiers = modifiers;
+        this.weaponModifierTypes = weaponModifierTypes;
     }
 
     public virtual void InitializeFromSO(WeaponSO so, WeaponProgressRO progress)

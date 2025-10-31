@@ -65,6 +65,9 @@ public class WeaponSO : ScriptableObject
     public BulletMoveType BulletMoveType;
     public BulletHitType BulletHitType;
 
+    [Header("Modifiers")]
+    public List<WeaponModifierType> Modifiers;
+
     [Header("Upgrade Levels")]
     public UpgradeLevel[] UpgradeLevels;
 
