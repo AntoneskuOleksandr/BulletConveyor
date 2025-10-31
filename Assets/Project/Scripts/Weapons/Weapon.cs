@@ -271,21 +271,25 @@ public class Weapon : MonoBehaviour
         bool pitchReady = !_usePitch || ApplyPitch(pitchResult);
         bool aimed = yawReady && pitchReady;
 
-        if (aimed)
+        if (!aimed)
+            return;
+
+        var firedBullets = new List<Bullet>();
+
+        bool shot = _shootStrategy?.TryShoot(this, firedBullets) == true;
+
+        if (shot)
         {
             NotifyBeforeShoot();
-            var firedBullets = new List<Bullet>();
 
-            if (_shootStrategy?.TryShoot(this, firedBullets) == true)
-            {
-                var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
-                var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
-                _weaponVisual?.PlayShotEffect(colorWeights);
-            }
+            var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
+            var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
+            _weaponVisual?.PlayShotEffect(colorWeights);
 
             NotifyAfterShoot(firedBullets);
         }
     }
+
 
     private void HandleIdleAiming()
     {
