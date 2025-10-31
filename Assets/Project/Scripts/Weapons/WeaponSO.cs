@@ -59,8 +59,8 @@ public class WeaponSO : ScriptableObject
     public float LaunchSpeed = 10f;
 
     [Header("Strategies")]
-    public List<ShootStrategyType> ShootStraties;
     public List<AimStrategyType> AimStrategies;
+    public ShootStrategyType ShootStrategy;
     public TargetStrategyType TargetStrategy;
     public BulletMoveType BulletMoveType;
     public BulletHitType BulletHitType;

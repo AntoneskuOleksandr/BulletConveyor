@@ -18,10 +18,14 @@ public class WeaponModifierResolver
         var list = new List<IWeaponModifier>();
         foreach (var t in types)
         {
-            if (_weaponModifiers.TryGetValue(t, out var s))
-                list.Add(s);
-            else
-                throw new KeyNotFoundException($"IWeaponModifier not registered: {t}");
+            switch (t)
+            {
+                case WeaponModifierType.ModifyEveryNShot:
+                    list.Add(new EveryNthDamageBoostModifier());
+                    break;
+                default:
+                    throw new KeyNotFoundException($"Modifier not implemented: {t}");
+            }
         }
         return list;
     }

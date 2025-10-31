@@ -7,22 +7,42 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
     private float _multiplier;
     private int _counter;
 
-    public void Initialize(Weapon weapon) { }
-
-    public void OnBeforeShoot(Weapon weapon) { }
-
-    public void OnAfterShoot(Weapon weapon, List<Bullet> bullets) { }
-
-    public void OnBulletInit(Weapon weapon, Bullet bullet)
+    public void Initialize(Weapon weapon)
     {
+        Debug.Log("[EveryNthDamageBoostModifier] Initialize");
+        _n = Mathf.Max(1, (int)weapon.Data.GetParameter(WeaponParameterType.PowerfulShotEvery));
+        _multiplier = Mathf.Max(1f, weapon.Data.GetParameter(WeaponParameterType.PowerShotMultiplier));
+        _counter = 0;
+    }
+
+    public void OnBeforeShoot(Weapon weapon)
+    {
+        Debug.Log($"[EveryNthDamageBoostModifier] OnBeforeShoot _counter: {_counter}, _n: {_n}");
         _counter++;
-        if (_counter >= _n)
+        if (_counter > _n)
+            _counter = 1;
+    }
+
+    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data)
+    {
+        Debug.Log($"[EveryNthDamageBoostModifier] OnBeforeBulletInit _counter: {_counter}, _n: {_n}");
+        if (_counter == _n)
         {
-            _counter = 0;
-            //bullet.SetDamage(bullet.Damage * _multiplier);
-            Debug.Log($"[{weapon.name}] Boosted bullet x{_multiplier}");
+            data.Damage *= _multiplier;
+            Debug.Log($"[{weapon.name}] PowerShot x{_multiplier}");
         }
     }
 
-    public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit) { }
+    public void OnBulletInit(Weapon weapon, Bullet bullet)
+    {
+        Debug.Log("[EveryNthDamageBoostModifier] OnBulletInit");
+    }
+    public void OnAfterShoot(Weapon weapon, List<Bullet> bullets)
+    {
+        Debug.Log("[EveryNthDamageBoostModifier] OnAfterShoot");
+    }
+    public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit)
+    {
+        Debug.Log("[EveryNthDamageBoostModifier] OnBulletHit");
+    }
 }

@@ -38,4 +38,8 @@ MonoBehaviour:
   Modifiers: 00000000
   UpgradeLevels: []
   BaseEffectChances: []
-  Parameters: []
+  Parameters:
+  - Type: 3
+    Value: 2
+  - Type: 5
+    Value: 3

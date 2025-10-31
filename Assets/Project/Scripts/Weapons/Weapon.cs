@@ -61,8 +61,8 @@ public class Weapon : MonoBehaviour
     private float _idleTimer = 0f;
 
     [Header("Strategy Info (Read Only at inspector)")]
-    [SerializeField] private List<ShootStrategyType> shootStrategyTypes;
     [SerializeField] private List<AimStrategyType> aimStrategyTypes;
+    [SerializeField] private ShootStrategyType shootStrategyType;
     [SerializeField] private TargetStrategyType targetStrategyType;
     [SerializeField] private BulletMoveType bulletMoveType;
     [SerializeField] private BulletHitType bulletHitType;
@@ -76,24 +76,26 @@ public class Weapon : MonoBehaviour
     private IBulletMoveStrategy _bulletMoveStrategy;
     private IBulletHitStrategy _bulletHitStrategy;
 
-    private List<IShootStrategy> _shootStrategies = new();
     private List<IAimStrategy> _aimStrategies = new();
     private IdleAimStrategy _idleAimStrategy = new IdleAimStrategy();
+
+    private IShootStrategy _shootStrategy;
     private ITargetStrategy _targetStrategy;
+
 
     private List<IWeaponModifier> _weaponModifiers = new();
 
     public void SetWeaponStrategy(
-        List<IShootStrategy> shoots, List<ShootStrategyType> shootTypes,
         List<IAimStrategy> aims, List<AimStrategyType> aimTypes,
+        IShootStrategy shoot, ShootStrategyType shootType,
         ITargetStrategy target, TargetStrategyType targetType)
     {
-        _shootStrategies = shoots;
         _aimStrategies = aims;
+        _shootStrategy = shoot;
         _targetStrategy = target;
 
-        shootStrategyTypes = shootTypes;
         aimStrategyTypes = aimTypes;
+        shootStrategyType = shootType;
         targetStrategyType = targetType;
     }
 
@@ -134,7 +136,26 @@ public class Weapon : MonoBehaviour
             _fireRate += so.UpgradeLevels[i].FireRateBonus;
         for (int i = 0; i < progress.HealthLevel; i++)
             _health += so.UpgradeLevels[i].HealthBonus;
+
+        foreach (var modifier in _weaponModifiers)
+            modifier.Initialize(this);
     }
+
+    public BulletInitData BuildBulletInitData()
+    {
+        Debug.Log("Building BulletInitData");
+        BulletInitData data = new BulletInitData
+        {
+            Damage = _damage,
+            LaunchSpeed = LaunchSpeed
+        };
+
+        foreach (var m in _weaponModifiers)
+            m.OnBeforeBulletInit(this, ref data);
+
+        return data;
+    }
+
 
     protected virtual void Start()
     {
@@ -189,6 +210,31 @@ public class Weapon : MonoBehaviour
             _fireCountdown -= Time.deltaTime;
     }
 
+    public void NotifyBeforeShoot()
+    {
+        foreach (var m in _weaponModifiers)
+            m.OnBeforeShoot(this);
+    }
+
+    public void NotifyAfterShoot(List<Bullet> bullets)
+    {
+        foreach (var m in _weaponModifiers)
+            m.OnAfterShoot(this, bullets);
+    }
+
+    public void NotifyBulletInit(Bullet bullet)
+    {
+        foreach (var m in _weaponModifiers)
+            m.OnBulletInit(this, bullet);
+    }
+
+    public void NotifyBulletHit(Bullet bullet, Collider hit)
+    {
+        foreach (var m in _weaponModifiers)
+            m.OnBulletHit(this, bullet, hit);
+    }
+
+
     private void UpdateTarget()
     {
         _targetRefreshTimer -= Time.deltaTime;
@@ -217,35 +263,27 @@ public class Weapon : MonoBehaviour
             var result = aim.ComputeAim(this);
             if (!result.HasAim) continue;
 
-            if (result.ProvidesYaw)
-                yawResult = result;
-
-            if (result.ProvidesPitch)
-                pitchResult = result;
+            if (result.ProvidesYaw) yawResult = result;
+            if (result.ProvidesPitch) pitchResult = result;
         }
 
-        bool yawReady = true;
-        bool pitchReady = true;
-
-        if (_useYaw && yawResult.HasAim && yawResult.ProvidesYaw)
-            yawReady = ApplyYaw(yawResult);
-
-        if (_usePitch && pitchResult.HasAim && pitchResult.ProvidesPitch)
-            pitchReady = ApplyPitch(pitchResult);
-
-        bool aimed = (!_useYaw || yawReady) && (!_usePitch || pitchReady);
+        bool yawReady = !_useYaw || ApplyYaw(yawResult);
+        bool pitchReady = !_usePitch || ApplyPitch(pitchResult);
+        bool aimed = yawReady && pitchReady;
 
         if (aimed)
         {
-            foreach (var shoot in _shootStrategies)
+            NotifyBeforeShoot();
+            var firedBullets = new List<Bullet>();
+
+            if (_shootStrategy?.TryShoot(this, firedBullets) == true)
             {
-                if (shoot?.TryShoot(this) == true)
-                {
-                    var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
-                    var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
-                    _weaponVisual?.PlayShotEffect(colorWeights);
-                }
+                var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
+                var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
+                _weaponVisual?.PlayShotEffect(colorWeights);
             }
+
+            NotifyAfterShoot(firedBullets);
         }
     }
 
@@ -343,7 +381,7 @@ public class Weapon : MonoBehaviour
     private void OnDestroyed()
     {
         _target = null;
-        _shootStrategies = null;
+        _shootStrategy = null;
         _aimStrategies = null;
         _targetStrategy = null;
 

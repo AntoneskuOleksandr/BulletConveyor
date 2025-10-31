@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -9,7 +10,7 @@ public class MultiBarrelShootStrategy : IShootStrategy
 
     private int _currentBarrelIndex = 0;
 
-    public bool TryShoot(Weapon weapon)
+    public bool TryShoot(Weapon weapon, List<Bullet> spawnedBullets)
     {
         if (weapon.FireCountdown > 0f) return false;
         if (weapon.Target == null) return false;
@@ -26,13 +27,12 @@ public class MultiBarrelShootStrategy : IShootStrategy
         if (shootSimultaneously)
         {
             foreach (var firePoint in firePoints)
-                SpawnBullet(weapon, firePoint);
+                SpawnBullet(weapon, firePoint, spawnedBullets);
         }
         else
         {
             var firePoint = firePoints[_currentBarrelIndex];
-            SpawnBullet(weapon, firePoint);
-
+            SpawnBullet(weapon, firePoint, spawnedBullets);
             _currentBarrelIndex = (_currentBarrelIndex + 1) % firePoints.Count;
         }
 
@@ -40,12 +40,17 @@ public class MultiBarrelShootStrategy : IShootStrategy
         return true;
     }
 
-    private void SpawnBullet(Weapon weapon, Transform firePoint)
+    private void SpawnBullet(Weapon weapon, Transform firePoint, List<Bullet> spawnedBullets)
     {
         Bullet bullet = _bulletManager.TryGetBullet(weapon);
         if (bullet == null) return;
 
+        BulletInitData data = weapon.BuildBulletInitData();
+
         bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint);
+        bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint, data);
+        weapon.NotifyBulletInit(bullet);
+
+        spawnedBullets.Add(bullet);
     }
 }
