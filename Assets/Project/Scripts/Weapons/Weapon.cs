@@ -146,7 +146,9 @@ public class Weapon : MonoBehaviour
         BulletInitData data = new BulletInitData
         {
             Damage = _damage,
-            LaunchSpeed = LaunchSpeed
+            LaunchSpeed = LaunchSpeed,
+            HasOverrideForward = false,
+            OverrideForward = Vector3.zero,
         };
 
         foreach (var m in _weaponModifiers)

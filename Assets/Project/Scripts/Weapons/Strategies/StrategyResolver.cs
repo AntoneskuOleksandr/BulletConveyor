@@ -8,7 +8,6 @@ public class StrategyResolver
 
     public StrategyResolver(
         BasicShootStrategy basicShoot,
-        ShotgunShootStrategy shotgunShoot,
         MultiBarrelShootStrategy multiBarrelShootStrategy,
         BasicAimStrategy basicAim,
         BallisticAimStrategy ballisticAim,
@@ -17,7 +16,6 @@ public class StrategyResolver
         _shootStrategies = new Dictionary<ShootStrategyType, IShootStrategy>
         {
             { ShootStrategyType.Basic, basicShoot },
-            {ShootStrategyType.Shotgun, shotgunShoot },
             {ShootStrategyType.MultiBarrel, multiBarrelShootStrategy },
         };
 

@@ -64,7 +64,7 @@ public class Bullet : MonoBehaviour
     }
 
     public void Init(Weapon weapon, EffectChanceManager chanceManager, EffectFactory effectFactory,
-        Transform spawnTransform, BulletInitData data)
+    Transform spawnTransform, BulletInitData data)
     {
         _weapon = weapon;
         _effectChanceManager = chanceManager;
@@ -73,7 +73,12 @@ public class Bullet : MonoBehaviour
         Damage = data.Damage;
         _target = weapon.Target.transform;
 
-        transform.SetPositionAndRotation(spawnTransform.position, spawnTransform.rotation);
+        transform.position = spawnTransform.position;
+
+        if (data.HasOverrideForward)
+            transform.rotation = Quaternion.LookRotation(data.OverrideForward, Vector3.up);
+        else
+            transform.rotation = spawnTransform.rotation;
 
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
@@ -87,9 +92,10 @@ public class Bullet : MonoBehaviour
         _moveStrategy?.Launch(this, _target, weapon.LaunchSpeed);
     }
 
+
     private void OnTriggerEnter(Collider other)
     {
-        _hitStrategy?.Hit(this, other);
+        _hitStrategy?.Hit(_weapon, this, other);
         _weapon.NotifyBulletHit(this, other);
         _visual?.OnDespawn();
         Destroy(gameObject);

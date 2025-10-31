@@ -78,7 +78,7 @@ public class WeaponSO : ScriptableObject
     [Header("Custom Parameters")]
     public WeaponParameter[] Parameters;
 
-    public float GetParameter(WeaponParameterType type, float defaultValue = 0f)
+    public float GetParameter(WeaponParameterType type)
     {
         foreach (var p in Parameters)
         {
@@ -86,8 +86,7 @@ public class WeaponSO : ScriptableObject
                 return p.Value;
         }
 
-        Debug.LogWarning($"Parameter of type {type} not found in weapon {name}. Returning default value {defaultValue}.");
-        return defaultValue;
+        return 0;
     }
 }
 

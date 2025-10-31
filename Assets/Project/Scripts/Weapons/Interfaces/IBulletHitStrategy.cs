@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IBulletHitStrategy
 {
-    void Hit(Bullet bullet, Collider other);
+    void Hit(Weapon weapon, Bullet bullet, Collider other);
 }

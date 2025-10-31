@@ -32,7 +32,7 @@ public class WeaponFactory
         IBulletHitStrategy hit = so.BulletHitType switch
         {
             BulletHitType.Direct => new DirectHitStrategy(),
-            BulletHitType.AoE => new AoEHitStrategy(so.GetParameter(WeaponParameterType.AoERadius, 5f)),
+            BulletHitType.AoE => new AoEHitStrategy(),
             _ => new DirectHitStrategy()
         };
 

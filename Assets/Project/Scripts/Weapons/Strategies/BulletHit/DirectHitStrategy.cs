@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DirectHitStrategy : IBulletHitStrategy
 {
-    public void Hit(Bullet bullet, Collider other)
+    public void Hit(Weapon weapon, Bullet bullet, Collider other)
     {
         if (!other.CompareTag("Enemy")) return;
 

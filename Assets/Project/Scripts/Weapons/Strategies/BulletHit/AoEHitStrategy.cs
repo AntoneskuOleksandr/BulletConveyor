@@ -2,16 +2,9 @@ using UnityEngine;
 
 public class AoEHitStrategy : IBulletHitStrategy
 {
-    private readonly float _radius;
-
-    public AoEHitStrategy(float radius)
+    public void Hit(Weapon weapon, Bullet bullet, Collider other)
     {
-        _radius = radius;
-    }
-
-    public void Hit(Bullet bullet, Collider other)
-    {
-        Collider[] hits = Physics.OverlapSphere(bullet.transform.position, _radius);
+        Collider[] hits = Physics.OverlapSphere(bullet.transform.position, weapon.Data.GetParameter(WeaponParameterType.AoERadius));
         foreach (var hit in hits)
         {
             if (!hit.CompareTag("Enemy")) continue;
