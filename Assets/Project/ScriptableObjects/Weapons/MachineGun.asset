@@ -28,6 +28,7 @@ MonoBehaviour:
   PitchTurnSpeed: 0
   UseYaw: 1
   UsePitch: 0
+  MinBulletsToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 10
   AimStrategies: 00000000
@@ -35,7 +36,7 @@ MonoBehaviour:
   TargetStrategy: 0
   BulletMoveType: 0
   BulletHitType: 0
-  Modifiers: 00000000
+  Modifiers: 
   UpgradeLevels: []
   BaseEffectChances: []
   Parameters:
