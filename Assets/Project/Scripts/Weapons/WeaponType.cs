@@ -4,4 +4,5 @@ public enum WeaponType
     Artillery,
     Shotgun,
     Peashooter,
+    Twins
 }
