@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(Collider), typeof(Rigidbody))]
 public class WeaponHitZone : MonoBehaviour
 {
     [SerializeField] private bool killEnemyOnContact = true;
@@ -9,8 +9,10 @@ public class WeaponHitZone : MonoBehaviour
     public void Initialize(Weapon weapon)
     {
         _weapon = weapon;
-        Collider collider = GetComponent<Collider>();
-        collider.isTrigger = true;
+        foreach (var col in GetComponentsInChildren<Collider>())
+        {
+            col.isTrigger = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other)

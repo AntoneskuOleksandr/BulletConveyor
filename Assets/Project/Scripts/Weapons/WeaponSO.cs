@@ -49,10 +49,16 @@ public class WeaponSO : ScriptableObject
 
     [Header("Aiming Settings")]
     public float AimThreshold;
-    public float YawTurnSpeed;
-    public float PitchTurnSpeed;
+
+    // Yaw
     public bool UseYaw;
+    public float YawTurnSpeed;
+    // Pitch
     public bool UsePitch;
+    public float PitchTurnSpeed;
+    public float MinPitchAngle;
+    public float MaxPitchAngle;
+    public float DefaultPitchAngle;
 
     [Header("Bullet Settings")]
     [Min(1)] public int MinBulletsToShoot = 1;

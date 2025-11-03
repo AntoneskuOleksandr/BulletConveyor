@@ -11,7 +11,7 @@ public class IdleAimStrategy : IAimStrategy
             ProvidesYaw = true,
             ProvidesPitch = true,
             YawDeg = 0,
-            PitchDeg = -45f,
+            PitchDeg = weapon.Data.DefaultPitchAngle,
             AllowedErrorDeg = 1f
         };
     }
