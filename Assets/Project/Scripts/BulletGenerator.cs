@@ -18,6 +18,7 @@ public class BulletGenerator : MonoBehaviour
 
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
+    [SerializeField] private int debugBulletsCount = 3;
 
     private BoardManager _boardManager;
     public GameObject blocksPool;
@@ -66,7 +67,7 @@ public class BulletGenerator : MonoBehaviour
 
             if (debugMode)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < debugBulletsCount; i++)
                 {
                     GenerateBullet(null);
                 }
