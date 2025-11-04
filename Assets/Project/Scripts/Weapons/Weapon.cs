@@ -141,7 +141,7 @@ public class Weapon : MonoBehaviour
             modifier.Initialize(this);
     }
 
-    public BulletInitData BuildBulletInitData()
+    private BulletInitData BuildBulletInitData()
     {
         BulletInitData data = new BulletInitData
         {
@@ -151,12 +151,33 @@ public class Weapon : MonoBehaviour
             OverrideForward = Vector3.zero,
         };
 
-        foreach (var m in _weaponModifiers)
-            m.OnBeforeBulletInit(this, ref data);
-
         return data;
     }
 
+    public IEnumerable<BulletInitData> BuildExpandedBulletInitData()
+    {
+        var baseData = BuildBulletInitData();
+
+        List<BulletInitData> result = new List<BulletInitData> { baseData };
+
+        foreach (var m in _weaponModifiers)
+        {
+            var expanded = m.Expand(this, baseData);
+            if (expanded != null)
+                result.AddRange(expanded);
+        }
+
+        for (int i = 0; i < result.Count; i++)
+        {
+            BulletInitData data = result[i];
+            foreach (var m in _weaponModifiers)
+                m.OnBeforeBulletInit(this, ref data);
+
+            result[i] = data;
+        }
+
+        return result;
+    }
 
     protected virtual void Start()
     {

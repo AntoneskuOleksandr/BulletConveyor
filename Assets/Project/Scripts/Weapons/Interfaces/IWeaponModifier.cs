@@ -9,4 +9,5 @@ public interface IWeaponModifier
     void OnBulletInit(Weapon weapon, Bullet bullet);
     void OnAfterShoot(Weapon weapon, List<Bullet> bullets);
     void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit);
+    IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData);
 }

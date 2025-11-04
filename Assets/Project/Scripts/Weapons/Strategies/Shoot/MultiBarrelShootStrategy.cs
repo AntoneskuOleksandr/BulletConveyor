@@ -39,29 +39,18 @@ public class MultiBarrelShootStrategy : IShootStrategy
 
         if (shootSimultaneously)
         {
-            // Simultaneous shooting from all barrels
             foreach (var firePoint in firePoints)
             {
-                if (available <= 0) break;
-                available--;
+                if (_bulletManager.AvailableCount <= 0)
+                    break;
 
-                Bullet bullet = SpawnBullet(weapon, firePoint);
-                if (bullet != null)
-                    bullets.Add(bullet);
+                SpawnBulletsFromFirePoint(weapon, firePoint, bullets);
             }
         }
         else
         {
-            // Sequential shooting from barrels
-            if (firePoints.Count == 0)
-                return null;
-
             var firePoint = firePoints[_currentBarrelIndex];
-
-            Bullet bullet = SpawnBullet(weapon, firePoint);
-            if (bullet != null)
-                bullets.Add(bullet);
-
+            SpawnBulletsFromFirePoint(weapon, firePoint, bullets);
             _currentBarrelIndex = (_currentBarrelIndex + 1) % firePoints.Count;
         }
 
@@ -74,17 +63,21 @@ public class MultiBarrelShootStrategy : IShootStrategy
         return null;
     }
 
-    private Bullet SpawnBullet(Weapon weapon, Transform firePoint)
+    private void SpawnBulletsFromFirePoint(Weapon weapon, Transform firePoint, List<Bullet> bullets)
     {
-        Bullet bullet = _bulletManager.GetBullet();
-        if (bullet == null) return null;
+        foreach (var data in weapon.BuildExpandedBulletInitData())
+        {
+            if (_bulletManager.AvailableCount <= 0)
+                break;
 
-        BulletInitData data = weapon.BuildBulletInitData();
+            Bullet bullet = _bulletManager.GetBullet();
+            if (bullet == null)
+                break;
 
-        bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint, data);
-        weapon.NotifyBulletInit(bullet);
-
-        return bullet;
+            bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
+            bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint, data);
+            weapon.NotifyBulletInit(bullet);
+            bullets.Add(bullet);
+        }
     }
 }

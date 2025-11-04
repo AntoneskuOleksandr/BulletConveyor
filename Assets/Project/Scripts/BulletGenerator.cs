@@ -16,6 +16,9 @@ public class BulletGenerator : MonoBehaviour
     [SerializeField] private float pulseAnimationDuration = 0.2f;
     [SerializeField] private float animationStrength = 0.2f;
 
+    [Header("Debug")]
+    [SerializeField] private bool debugMode = false;
+
     private BoardManager _boardManager;
     public GameObject blocksPool;
 
@@ -61,6 +64,13 @@ public class BulletGenerator : MonoBehaviour
 
             blocksPool.transform.DOMoveY(-animationStrength, pulseAnimationDuration).SetLoops(2, LoopType.Yoyo);
 
+            if (debugMode)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    GenerateBullet(null);
+                }
+            }
             foreach (BlockParent block in _boardManager.Blocks)
             {
                 for (int i = 0; i < block.bulletsToGenerate; i++)
@@ -73,7 +83,10 @@ public class BulletGenerator : MonoBehaviour
 
     private void GenerateBullet(BlockParent block)
     {
-        Vector3 spawnPosition = block.transform.position;
+        Vector3 spawnPosition = this.transform.position;
+        if (block != null)
+            spawnPosition = block.transform.position;
+
         GameObject bullet = bulletPool.Get();
         bullet.transform.position = spawnPosition;
         bullet.transform.Rotate(0f, -90f, 0f);

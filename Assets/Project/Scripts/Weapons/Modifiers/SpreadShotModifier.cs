@@ -45,4 +45,9 @@ public class SpreadShotModifier : IWeaponModifier
     public void OnBulletInit(Weapon weapon, Bullet bullet) { }
     public void OnAfterShoot(Weapon weapon, List<Bullet> bullets) { }
     public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit) { }
+
+    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData)
+    {
+        return null;
+    }
 }

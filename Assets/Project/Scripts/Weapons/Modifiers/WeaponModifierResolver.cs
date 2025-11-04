@@ -15,6 +15,9 @@ public class WeaponModifierResolver
                 case WeaponModifierType.SpreadShot:
                     list.Add(new SpreadShotModifier());
                     break;
+                case WeaponModifierType.MultiPellet:
+                    list.Add(new MultiPelletModifier());
+                    break;
                 default:
                     throw new KeyNotFoundException($"Modifier not implemented: {t}");
             }

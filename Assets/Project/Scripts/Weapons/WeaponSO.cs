@@ -17,7 +17,9 @@ public enum WeaponParameterType
     SpreadAngle = 1,
     PowerfulShotEvery = 2,
     ShootSimultaneously = 3, // 1 - simultaneously, 0 - sequentially
-    PowerShotMultiplier = 4
+    PowerShotMultiplier = 4,
+    PelletsPerShot = 5,
+    PelletDamageMultiplier = 6
 }
 
 [Serializable]

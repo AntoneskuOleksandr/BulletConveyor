@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
 public class BasicShootStrategy : IShootStrategy
@@ -18,16 +17,19 @@ public class BasicShootStrategy : IShootStrategy
 
     public List<Bullet> Shoot(Weapon weapon)
     {
-        BulletInitData data = weapon.BuildBulletInitData();
-        Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
+        List<Bullet> firedBullets = new List<Bullet>();
+        foreach (var data in weapon.BuildExpandedBulletInitData())
+        {
+            Bullet bullet = _bulletManager.GetBullet();
+            if (bullet == null) break;
 
-        Bullet bullet = _bulletManager.GetBullet();
-
-        bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(weapon, _effectChanceManager, _effectFactory, firePoint, data);
-        weapon.NotifyBulletInit(bullet);
+            bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
+            bullet.Init(weapon, _effectChanceManager, _effectFactory, weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint), data);
+            weapon.NotifyBulletInit(bullet);
+            firedBullets.Add(bullet);
+        }
 
         weapon.ResetFireCountdown();
-        return new List<Bullet> { bullet };
+        return firedBullets;
     }
 }
