@@ -46,6 +46,7 @@ public class Weapon : MonoBehaviour
 
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
+    [Inject] private BulletManager _bulletManager;
 
     private WeaponVisual _weaponVisual;
     private WeaponStatusCanvas _weaponStatusCanvas;
@@ -156,28 +157,42 @@ public class Weapon : MonoBehaviour
 
     public IEnumerable<BulletInitData> BuildExpandedBulletInitData()
     {
-        var baseData = BuildBulletInitData();
+        // Если пул пуст — сразу выходим
+        if (_bulletManager.AvailableCount <= 0)
+            yield break;
 
-        List<BulletInitData> result = new List<BulletInitData> { baseData };
+        var baseData = BuildBulletInitData();
+        yield return ProcessInitData(baseData);
+
+        int available = _bulletManager.AvailableCount - 1;
 
         foreach (var m in _weaponModifiers)
         {
+            if (available <= 0)
+                yield break;
+
             var expanded = m.Expand(this, baseData);
-            if (expanded != null)
-                result.AddRange(expanded);
+            if (expanded == null)
+                continue;
+
+            foreach (var data in expanded)
+            {
+                if (available <= 0)
+                    yield break;
+
+                yield return ProcessInitData(data);
+                available--;
+            }
         }
 
-        for (int i = 0; i < result.Count; i++)
+        BulletInitData ProcessInitData(BulletInitData data)
         {
-            BulletInitData data = result[i];
             foreach (var m in _weaponModifiers)
                 m.OnBeforeBulletInit(this, ref data);
-
-            result[i] = data;
+            return data;
         }
-
-        return result;
     }
+
 
     protected virtual void Start()
     {

@@ -528,6 +528,7 @@ MonoBehaviour:
   pulseAnimationDuration: 0.2
   animationStrength: 0.2
   debugMode: 1
+  debugBulletsCount: 1
   blocksPool: {fileID: 1859149344}
 --- !u!1 &200065108
 GameObject:
