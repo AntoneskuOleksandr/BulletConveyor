@@ -24,10 +24,13 @@ MonoBehaviour:
   MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
   AimThreshold: 1
-  YawTurnSpeed: 2
-  PitchTurnSpeed: 0
   UseYaw: 1
+  YawTurnSpeed: 2
   UsePitch: 0
+  PitchTurnSpeed: 0
+  MinPitchAngle: 0
+  MaxPitchAngle: 0
+  DefaultPitchAngle: 0
   MinBulletsToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 25
@@ -36,11 +39,11 @@ MonoBehaviour:
   TargetStrategy: 0
   BulletMoveType: 0
   BulletHitType: 0
-  Modifiers: 00000000
+  Modifiers: 01000000
   UpgradeLevels: []
   BaseEffectChances: []
   Parameters:
+  - Type: 3
+    Value: 1
   - Type: 1
-    Value: 2
-  - Type: 2
-    Value: 90
+    Value: 15

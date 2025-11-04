@@ -13,12 +13,11 @@ public class UpgradeLevel
 
 public enum WeaponParameterType
 {
-    AoERadius,
-    PelletCount,
-    SpreadAngle,
-    PowerfulShotEvery,
-    ShootSimultaneously, // 1 - simultaneously, 0 - sequentially
-    PowerShotMultiplier
+    AoERadius = 0,
+    SpreadAngle = 1,
+    PowerfulShotEvery = 2,
+    ShootSimultaneously = 3, // 1 - simultaneously, 0 - sequentially
+    PowerShotMultiplier = 4
 }
 
 [Serializable]
@@ -92,7 +91,7 @@ public class WeaponSO : ScriptableObject
                 return p.Value;
         }
 
-        Debug.LogWarning($"Parameter of type {type} not found in weapon {name}. Make sure it is added in the inspector.");
+        Debug.LogWarning($"[{name}] Missing parameter: {type}. Add it in WeaponSO -> Parameters list.", this);
         return 0;
     }
 }
