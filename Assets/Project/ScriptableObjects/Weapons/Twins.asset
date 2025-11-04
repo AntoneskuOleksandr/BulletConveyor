@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: Twins
   m_EditorClassIdentifier: 
   WeaponId: 7
-  WeaponGO: {fileID: 3123527133054526702, guid: 895ec5a4fa1894e45a4fc08e553905ca,
+  WeaponGO: {fileID: 2547590158879548526, guid: 895ec5a4fa1894e45a4fc08e553905ca,
     type: 3}
   RequiredLevel: 7
   WeaponType: 4
   BaseDamage: 5
-  BaseFireRate: 1
+  BaseFireRate: 3
   BaseHealth: 150
   MaxAttackRadius: 25
   MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1
-  AimThreshold: 1
+  AimThreshold: 3
   UseYaw: 1
   YawTurnSpeed: 1
   UsePitch: 1
@@ -33,7 +33,7 @@ MonoBehaviour:
   DefaultPitchAngle: 0
   MinBulletsToShoot: 1
   LaunchSpeedMode: 0
-  LaunchSpeed: 10
+  LaunchSpeed: 25
   AimStrategies: 00000000
   ShootStrategy: 1
   TargetStrategy: 0

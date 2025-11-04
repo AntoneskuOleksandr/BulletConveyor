@@ -4,22 +4,23 @@ public class BasicAimStrategy : IAimStrategy
 {
     public AimResult ComputeAim(Weapon weapon)
     {
-        Transform baseRot = weapon.Data.UseYaw
+        var baseRot = weapon.Data.UseYaw
             ? weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation)
             : null;
-        Transform barrelRot = weapon.Data.UsePitch
-            ? weapon.AttachmentPoints.Get(WeaponAttachmentType.BarrelRotation)
+        var barrels = weapon.Data.UsePitch
+            ? weapon.AttachmentPoints.GetAll(WeaponAttachmentType.BarrelRotation)
             : null;
-        Transform target = weapon.Target?.HitTransform;
+        var target = weapon.Target?.HitTransform;
 
         if (target == null)
             return AimResult.Empty;
         if (weapon.Data.UseYaw && baseRot == null)
             return AimResult.Empty;
-        if (weapon.Data.UsePitch && barrelRot == null)
+        if (weapon.Data.UsePitch && (barrels == null || barrels.Count == 0))
             return AimResult.Empty;
 
         float yawDeg = 0f;
+
         if (weapon.Data.UseYaw)
         {
             Vector3 dir = target.position - baseRot.position;
@@ -29,15 +30,23 @@ public class BasicAimStrategy : IAimStrategy
             yawDeg = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
         }
 
-        float pitchDeg = 0f;
+        float totalPitch = 0f;
+        int count = 0;
+
         if (weapon.Data.UsePitch)
         {
-            Vector3 d = target.position - barrelRot.position;
-            float xz = new Vector3(d.x, 0f, d.z).magnitude;
-            float y = d.y;
-            float pitchRad = Mathf.Atan2(y, xz);
-            pitchDeg = -pitchRad * Mathf.Rad2Deg;
+            foreach (var barrel in barrels)
+            {
+                Vector3 d = target.position - barrel.position;
+                float xz = new Vector3(d.x, 0f, d.z).magnitude;
+                float y = d.y;
+                float pitchRad = Mathf.Atan2(y, xz);
+                totalPitch += -pitchRad * Mathf.Rad2Deg;
+                count++;
+            }
         }
+
+        float pitchDeg = (count > 0) ? totalPitch / count : 0f;
 
         return new AimResult
         {

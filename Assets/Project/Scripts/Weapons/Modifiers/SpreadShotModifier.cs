@@ -4,26 +4,37 @@ using System.Collections.Generic;
 public class SpreadShotModifier : IWeaponModifier
 {
     private float _spreadAngle;
+    private int _firePointIndex;
 
     public void Initialize(Weapon weapon)
     {
         _spreadAngle = weapon.Data.GetParameter(WeaponParameterType.SpreadAngle);
+        _firePointIndex = 0;
     }
 
-    public void OnBeforeShoot(Weapon weapon) { }
+    public void OnBeforeShoot(Weapon weapon)
+    {
+        _firePointIndex = 0;
+    }
 
     public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data)
     {
-        Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
-        if (firePoint == null || weapon.Target == null) return;
+        var firePoints = weapon.AttachmentPoints.GetAll(WeaponAttachmentType.FirePoint);
+        if (firePoints == null || firePoints.Count == 0 || weapon.Target == null)
+            return;
 
-        Vector3 baseDir = (weapon.Target.HitTransform.position - firePoint.position).normalized;
+        Transform firePoint = firePoints[_firePointIndex % firePoints.Count];
+        _firePointIndex++;
 
-        Quaternion spreadRot = Quaternion.Euler(
-            Random.Range(-_spreadAngle, _spreadAngle),
-            Random.Range(-_spreadAngle, _spreadAngle),
-            0f
-        );
+        Transform target = weapon.Target.HitTransform;
+        if (target == null)
+            return;
+
+        Vector3 baseDir = (target.position - firePoint.position).normalized;
+
+        float randomYaw = Random.Range(-_spreadAngle, _spreadAngle);
+        float randomPitch = Random.Range(-_spreadAngle, _spreadAngle);
+        Quaternion spreadRot = Quaternion.Euler(randomPitch, randomYaw, 0f);
 
         Vector3 finalDir = (spreadRot * baseDir).normalized;
 

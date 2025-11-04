@@ -332,19 +332,28 @@ public class Weapon : MonoBehaviour
         if (!result.HasAim || !result.ProvidesPitch)
             return false;
 
-        var barrel = AttachmentPoints.Get(WeaponAttachmentType.BarrelRotation);
-        if (barrel == null)
+        var barrels = AttachmentPoints.GetAll(WeaponAttachmentType.BarrelRotation);
+        if (barrels == null || barrels.Count == 0)
             return false;
 
-        float currentPitch = Mathf.DeltaAngle(0f, barrel.localEulerAngles.x);
-        float smoothFactor = 1f - Mathf.Exp(-_pitchTurnSpeed * Time.deltaTime);
-        float newPitch = Mathf.LerpAngle(currentPitch, result.PitchDeg, smoothFactor);
+        bool allReady = true;
 
-        barrel.localRotation = Quaternion.Euler(newPitch, 0f, 0f);
+        foreach (var barrel in barrels)
+        {
+            float currentPitch = Mathf.DeltaAngle(0f, barrel.localEulerAngles.x);
+            float smoothFactor = 1f - Mathf.Exp(-_pitchTurnSpeed * Time.deltaTime);
+            float newPitch = Mathf.LerpAngle(currentPitch, result.PitchDeg, smoothFactor);
 
-        float pitchError = Mathf.Abs(Mathf.DeltaAngle(currentPitch, result.PitchDeg));
-        return pitchError <= result.AllowedErrorDeg;
+            barrel.localRotation = Quaternion.Euler(newPitch, 0f, 0f);
+
+            float pitchError = Mathf.Abs(Mathf.DeltaAngle(currentPitch, result.PitchDeg));
+            if (pitchError > result.AllowedErrorDeg)
+                allReady = false;
+        }
+
+        return allReady;
     }
+
 
 
     public void ResetFireCountdown()
