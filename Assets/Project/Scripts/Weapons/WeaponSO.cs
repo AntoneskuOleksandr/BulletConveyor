@@ -92,6 +92,7 @@ public class WeaponSO : ScriptableObject
                 return p.Value;
         }
 
+        Debug.LogWarning($"Parameter of type {type} not found in weapon {name}. Make sure it is added in the inspector.");
         return 0;
     }
 }
