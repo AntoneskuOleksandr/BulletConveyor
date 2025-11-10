@@ -157,14 +157,13 @@ public class Weapon : MonoBehaviour
 
     public IEnumerable<BulletInitData> BuildExpandedBulletInitData()
     {
-        // Если пул пуст — сразу выходим
         if (_bulletManager.AvailableCount <= 0)
             yield break;
 
         var baseData = BuildBulletInitData();
         yield return ProcessInitData(baseData);
 
-        int available = _bulletManager.AvailableCount - 1;
+        int available = _bulletManager.AvailableCount;
 
         foreach (var m in _weaponModifiers)
         {

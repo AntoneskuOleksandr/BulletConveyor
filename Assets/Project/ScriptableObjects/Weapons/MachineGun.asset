@@ -44,7 +44,7 @@ MonoBehaviour:
   BaseEffectChances: []
   Parameters:
   - Type: 5
-    Value: 2
+    Value: 3
   - Type: 6
     Value: 1
   - Type: 1

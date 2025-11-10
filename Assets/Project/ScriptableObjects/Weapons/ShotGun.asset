@@ -20,7 +20,7 @@ MonoBehaviour:
   BaseDamage: 35
   BaseFireRate: 0.33333334
   BaseHealth: 75
-  MaxAttackRadius: 10
+  MaxAttackRadius: 100
   MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
   AimThreshold: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
   MinPitchAngle: 0
   MaxPitchAngle: 0
   DefaultPitchAngle: 0
-  MinBulletsToShoot: 1
+  MinBulletsToShoot: 2
   LaunchSpeedMode: 0
   LaunchSpeed: 25
   AimStrategies: 00000000
@@ -39,15 +39,15 @@ MonoBehaviour:
   TargetStrategy: 0
   BulletMoveType: 0
   BulletHitType: 0
-  Modifiers: 02000000
+  Modifiers: 0200000001000000
   UpgradeLevels: []
   BaseEffectChances: []
   Parameters:
   - Type: 3
     Value: 1
   - Type: 1
-    Value: 15
+    Value: 3
   - Type: 5
-    Value: 2
+    Value: 5
   - Type: 6
     Value: 1
