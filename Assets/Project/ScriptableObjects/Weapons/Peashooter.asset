@@ -24,10 +24,13 @@ MonoBehaviour:
   MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
   AimThreshold: 1
-  YawTurnSpeed: 3
-  PitchTurnSpeed: 0
   UseYaw: 1
+  YawTurnSpeed: 3
   UsePitch: 0
+  PitchTurnSpeed: 0
+  MinPitchAngle: 0
+  MaxPitchAngle: 0
+  DefaultPitchAngle: 0
   MinBulletsToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 10
@@ -40,9 +43,9 @@ MonoBehaviour:
   UpgradeLevels: []
   BaseEffectChances: []
   Parameters:
-  - Type: 4
-    Value: 0
   - Type: 3
+    Value: 0
+  - Type: 2
     Value: 2
-  - Type: 5
+  - Type: 4
     Value: 2

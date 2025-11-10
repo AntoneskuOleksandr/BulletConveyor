@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider), typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody))]
 public class WeaponHitZone : MonoBehaviour
 {
     [SerializeField] private bool killEnemyOnContact = true;
