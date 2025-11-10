@@ -67,8 +67,6 @@ public class BulletGenerator : MonoBehaviour
         if (spawnOnceOnStart)
             yield break;
 
-        Debug.Log("Bullet Generation Started. Spawn Once On Start: " + spawnOnceOnStart);
-
         while (true)
         {
             yield return new WaitForSeconds(spawnInterval);
