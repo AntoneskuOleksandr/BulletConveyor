@@ -19,6 +19,7 @@ public class BulletGenerator : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
     [SerializeField] private int debugBulletsCount = 3;
+    [SerializeField] private bool spawnOnceOnStart = false;
 
     private BoardManager _boardManager;
     public GameObject blocksPool;
@@ -53,10 +54,21 @@ public class BulletGenerator : MonoBehaviour
             defaultCapacity: 10,
             maxSize: 100
         );
+
+        if (spawnOnceOnStart)
+        {
+            for (int i = 0; i < debugBulletsCount; i++)
+                GenerateBullet(null);
+        }
     }
 
     public IEnumerator StartBulletGeneration()
     {
+        if (spawnOnceOnStart)
+            yield break;
+
+        Debug.Log("Bullet Generation Started. Spawn Once On Start: " + spawnOnceOnStart);
+
         while (true)
         {
             yield return new WaitForSeconds(spawnInterval);

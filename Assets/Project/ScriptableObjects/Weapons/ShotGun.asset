@@ -23,7 +23,7 @@ MonoBehaviour:
   MaxAttackRadius: 100
   MinAttackRadius: 0
   FindTargetRadiusCoefficient: 1.5
-  AimThreshold: 1
+  AimThreshold: 3
   UseYaw: 1
   YawTurnSpeed: 2
   UsePitch: 0
@@ -31,7 +31,7 @@ MonoBehaviour:
   MinPitchAngle: 0
   MaxPitchAngle: 0
   DefaultPitchAngle: 0
-  MinBulletsToShoot: 2
+  MinBulletsToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 25
   AimStrategies: 00000000
@@ -44,10 +44,10 @@ MonoBehaviour:
   BaseEffectChances: []
   Parameters:
   - Type: 3
-    Value: 1
+    Value: 0
   - Type: 1
     Value: 3
   - Type: 5
-    Value: 5
+    Value: 2
   - Type: 6
-    Value: 1
+    Value: 0.2

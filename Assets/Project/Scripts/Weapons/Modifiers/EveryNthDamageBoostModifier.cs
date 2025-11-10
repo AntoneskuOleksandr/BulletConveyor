@@ -16,23 +16,24 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
 
     public void OnBeforeShoot(Weapon weapon) { }
 
-    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data)
+    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data, Transform firePoint)
     {
         _counter++;
         if (_counter > _n)
             _counter = 1;
 
         if (_counter == _n)
+        {
             data.Damage *= _multiplier;
+        }
     }
-
 
     public void OnBulletInit(Weapon weapon, Bullet bullet) { }
     public void OnAfterShoot(Weapon weapon, List<Bullet> bullets) { }
     public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit) { }
 
-    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData)
+    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData, Transform firePoint)
     {
-        throw new System.NotImplementedException();
+        yield break;
     }
 }

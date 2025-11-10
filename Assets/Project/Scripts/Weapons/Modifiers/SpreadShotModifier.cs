@@ -1,43 +1,39 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class SpreadShotModifier : IWeaponModifier
 {
     private float _spreadAngle;
-    private int _firePointIndex;
 
     public void Initialize(Weapon weapon)
     {
         _spreadAngle = weapon.Data.GetParameter(WeaponParameterType.SpreadAngle);
-        _firePointIndex = 0;
     }
 
-    public void OnBeforeShoot(Weapon weapon)
-    {
-        _firePointIndex = 0;
-    }
+    public void OnBeforeShoot(Weapon weapon) { }
 
-    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data)
+    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data, Transform firePoint)
     {
-        var firePoints = weapon.AttachmentPoints.GetAll(WeaponAttachmentType.FirePoint);
-        if (firePoints == null || firePoints.Count == 0 || weapon.Target == null)
+        if (firePoint == null)
             return;
 
-        Transform firePoint = firePoints[_firePointIndex % firePoints.Count];
-        _firePointIndex++;
+        // –ассчитываем базовое направление Ч от firePoint к цели (если есть)
+        Vector3 baseDir;
+        if (weapon.Target != null && weapon.Target.HitTransform != null)
+        {
+            baseDir = (weapon.Target.HitTransform.position - firePoint.position).normalized;
+        }
+        else
+        {
+            baseDir = firePoint.forward;
+        }
 
-        Transform target = weapon.Target.HitTransform;
-        if (target == null)
-            return;
-
-        Vector3 baseDir = (target.position - firePoint.position).normalized;
-
-        float randomYaw = Random.Range(-_spreadAngle, _spreadAngle);
-        float randomPitch = Random.Range(-_spreadAngle, _spreadAngle);
-        Quaternion spreadRot = Quaternion.Euler(randomPitch, randomYaw, 0f);
+        // ƒобавл€ем случайный разброс
+        float yaw = Random.Range(-_spreadAngle, _spreadAngle);
+        float pitch = Random.Range(-_spreadAngle, _spreadAngle);
+        Quaternion spreadRot = Quaternion.Euler(pitch, yaw, 0f);
 
         Vector3 finalDir = (spreadRot * baseDir).normalized;
-
         data.OverrideForward = finalDir;
         data.HasOverrideForward = true;
     }
@@ -46,8 +42,8 @@ public class SpreadShotModifier : IWeaponModifier
     public void OnAfterShoot(Weapon weapon, List<Bullet> bullets) { }
     public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit) { }
 
-    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData)
+    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData, Transform firePoint)
     {
-        return null;
+        yield break;
     }
 }

@@ -155,43 +155,44 @@ public class Weapon : MonoBehaviour
         return data;
     }
 
-    public IEnumerable<BulletInitData> BuildExpandedBulletInitData()
+    public IEnumerable<BulletInitData> BuildExpandedBulletInitData(Transform firePoint, int maxCount = int.MaxValue)
     {
         if (_bulletManager.AvailableCount <= 0)
             yield break;
 
         var baseData = BuildBulletInitData();
-        yield return ProcessInitData(baseData);
+        yield return ProcessInitData(baseData, firePoint);
 
         int available = _bulletManager.AvailableCount;
+        int spawned = 1;
 
         foreach (var m in _weaponModifiers)
         {
-            if (available <= 0)
+            if (available <= 0 || spawned >= maxCount)
                 yield break;
 
-            var expanded = m.Expand(this, baseData);
+            var expanded = m.Expand(this, baseData, firePoint);
             if (expanded == null)
                 continue;
 
             foreach (var data in expanded)
             {
-                if (available <= 0)
+                if (available <= 0 || spawned >= maxCount)
                     yield break;
 
-                yield return ProcessInitData(data);
+                yield return ProcessInitData(data, firePoint);
+                spawned++;
                 available--;
             }
         }
 
-        BulletInitData ProcessInitData(BulletInitData data)
+        BulletInitData ProcessInitData(BulletInitData data, Transform fp)
         {
             foreach (var m in _weaponModifiers)
-                m.OnBeforeBulletInit(this, ref data);
+                m.OnBeforeBulletInit(this, ref data, fp);
             return data;
         }
     }
-
 
     protected virtual void Start()
     {

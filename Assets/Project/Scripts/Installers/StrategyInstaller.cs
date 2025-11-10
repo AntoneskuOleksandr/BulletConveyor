@@ -23,7 +23,7 @@ public class StrategyInstaller : MonoInstaller
         Container.Bind<DirectHitStrategy>().AsSingle();
         Container.Bind<AoEHitStrategy>().AsSingle();
 
-        //Resolver
+        //Resolvers
         Container.Bind<StrategyResolver>().AsSingle();
     }
 }

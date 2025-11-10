@@ -228,7 +228,6 @@ MonoBehaviour:
   _monoInstallers:
   - {fileID: 1824812358}
   - {fileID: 1824812356}
-  - {fileID: 1824812359}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -519,7 +518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf64f5a43b5f87c44a0d440ffd70c0f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 0.75
+  spawnInterval: 5
   spawnOffset: 0.33333334
   conveyor: {fileID: 672262507}
   bulletPrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
@@ -528,7 +527,8 @@ MonoBehaviour:
   pulseAnimationDuration: 0.2
   animationStrength: 0.2
   debugMode: 1
-  debugBulletsCount: 1
+  debugBulletsCount: 5
+  spawnOnceOnStart: 1
   blocksPool: {fileID: 1859149344}
 --- !u!1 &200065108
 GameObject:
@@ -2846,7 +2846,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalWaves: 3
   waveDuration: 600
-  timeBetweenWaves: 5
+  timeBetweenWaves: 1
   minEnemyCount: 5
   maxEnemyCount: 5
   enemyIncrementPerWave: 0
@@ -3472,7 +3472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b021efe1e90bb04c8b76c71a6f8b3f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 20
   conveyorTextureSpeed: 0.3225
   direction: {x: 0, y: 0, z: 1}
   texture: {fileID: 0}
@@ -3560,7 +3560,6 @@ GameObject:
   - component: {fileID: 1824812357}
   - component: {fileID: 1824812356}
   - component: {fileID: 1824812358}
-  - component: {fileID: 1824812359}
   m_Layer: 0
   m_Name: GameplayInstaller
   m_TagString: Untagged
@@ -3626,18 +3625,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae2d80e98220a8b428c632fc79af27ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1824812359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1824812355}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a153cbfe174c4d4d95279781ddc9566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1859149344

@@ -65,6 +65,8 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<BulletsStack>().FromInstance(bulletsStack).AsSingle();
         Container.Bind<BulletManager>().AsSingle();
         Container.Bind<EffectChanceManager>().AsSingle();
+        Container.Bind<WeaponFireController>().AsSingle();
+        Container.Bind<WeaponModifierResolver>().AsSingle();
 
         //Effects Managers
         Container.Bind<EffectFactory>().FromInstance(effectFactory).AsSingle();

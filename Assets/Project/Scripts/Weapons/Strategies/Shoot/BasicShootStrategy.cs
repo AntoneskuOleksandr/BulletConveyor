@@ -4,8 +4,7 @@ using Zenject;
 public class BasicShootStrategy : IShootStrategy
 {
     [Inject] private BulletManager _bulletManager;
-    [Inject] private EffectChanceManager _effectChanceManager;
-    [Inject] private EffectFactory _effectFactory;
+    [Inject] private WeaponFireController _fireController;
 
     public bool IsCanShoot(Weapon weapon)
     {
@@ -17,19 +16,16 @@ public class BasicShootStrategy : IShootStrategy
 
     public List<Bullet> Shoot(Weapon weapon)
     {
-        List<Bullet> firedBullets = new List<Bullet>();
-        foreach (var data in weapon.BuildExpandedBulletInitData())
-        {
-            Bullet bullet = _bulletManager.GetBullet();
-            if (bullet == null) break;
+        var firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
+        if (firePoint == null)
+            return null;
 
-            bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-            bullet.Init(weapon, _effectChanceManager, _effectFactory, weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint), data);
-            weapon.NotifyBulletInit(bullet);
-            firedBullets.Add(bullet);
-        }
+        var bulletData = weapon.BuildExpandedBulletInitData(firePoint);
+        var firedBullets = _fireController.SpawnBullets(weapon, firePoint, bulletData);
 
-        weapon.ResetFireCountdown();
+        if (firedBullets.Count > 0)
+            weapon.ResetFireCountdown();
+
         return firedBullets;
     }
 }
