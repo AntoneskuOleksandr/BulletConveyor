@@ -7,12 +7,12 @@ public class SpreadShotModifier : IWeaponModifier
 
     public void Initialize(Weapon weapon)
     {
-        _spreadAngle = weapon.Data.GetParameter(WeaponParameterType.SpreadAngle);
+        _spreadAngle = weapon.Data.GetParameter<float>(WeaponParameterType.SpreadAngle);
     }
 
     public void OnBeforeShoot(Weapon weapon) { }
 
-    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data, Transform firePoint)
+    public void OnBeforeProjectileInit(Weapon weapon, ref ProjectileInitData data, Transform firePoint)
     {
         if (firePoint == null)
             return;
@@ -28,7 +28,6 @@ public class SpreadShotModifier : IWeaponModifier
             baseDir = firePoint.forward;
         }
 
-        // Добавляем случайный разброс
         float yaw = Random.Range(-_spreadAngle, _spreadAngle);
         float pitch = Random.Range(-_spreadAngle, _spreadAngle);
         Quaternion spreadRot = Quaternion.Euler(pitch, yaw, 0f);
@@ -38,11 +37,11 @@ public class SpreadShotModifier : IWeaponModifier
         data.HasOverrideForward = true;
     }
 
-    public void OnBulletInit(Weapon weapon, Bullet bullet) { }
-    public void OnAfterShoot(Weapon weapon, List<Bullet> bullets) { }
-    public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit) { }
+    public void OnProjectileInit(Weapon weapon, ProjectileBase projectile) { }
+    public void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles) { }
+    public void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit) { }
 
-    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData, Transform firePoint)
+    public IEnumerable<ProjectileInitData> Expand(Weapon weapon, ProjectileInitData baseData, Transform firePoint)
     {
         yield break;
     }

@@ -30,14 +30,14 @@ MonoBehaviour:
   MinPitchAngle: 0
   MaxPitchAngle: 0
   DefaultPitchAngle: 0
-  MinBulletsToShoot: 1
+  MinProjectilesToShoot: 1
   LaunchSpeedMode: 1
   LaunchSpeed: 10
   AimStrategies: 0000000001000000
   ShootStrategy: 0
   TargetStrategy: 0
-  BulletMoveType: 1
-  BulletHitType: 1
+  ProjectileMoveType: 1
+  ProjectileHitType: 1
   Modifiers: 
   UpgradeLevels: []
   BaseEffectChances: []

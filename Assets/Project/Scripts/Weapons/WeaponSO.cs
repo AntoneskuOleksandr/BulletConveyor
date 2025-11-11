@@ -19,14 +19,22 @@ public enum WeaponParameterType
     ShootSimultaneously = 3, // 1 - simultaneously, 0 - sequentially
     PowerShotMultiplier = 4,
     PelletsPerShot = 5,
-    PelletDamageMultiplier = 6
+    PelletDamageMultiplier = 6,
+    LifeTime = 7,
+    BeamWidth = 8,
+    Length = 9,
+    PierceCount = 10,
+    Color = 11,
+    TickInterval = 12
 }
 
-[Serializable]
-public class WeaponParameter
+public enum WeaponParameterValueType
 {
-    public WeaponParameterType Type;
-    public float Value;
+    Float,
+    Int,
+    Bool,
+    Color,
+    Vector3
 }
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Scriptable Objects/Weapon")]
@@ -61,8 +69,8 @@ public class WeaponSO : ScriptableObject
     public float MaxPitchAngle;
     public float DefaultPitchAngle;
 
-    [Header("Bullet Settings")]
-    [Min(1)] public int MinBulletsToShoot = 1;
+    [Header("Projectile Settings")]
+    [Min(1)] public int MinProjectilesToShoot = 1;
     public LaunchSpeedMode LaunchSpeedMode = LaunchSpeedMode.Fixed;
     public float LaunchSpeed = 10f;
 
@@ -70,8 +78,8 @@ public class WeaponSO : ScriptableObject
     public List<AimStrategyType> AimStrategies;
     public ShootStrategyType ShootStrategy;
     public TargetStrategyType TargetStrategy;
-    public BulletMoveType BulletMoveType;
-    public BulletHitType BulletHitType;
+    public ProjectileMoveType ProjectileMoveType;
+    public ProjectileHitType ProjectileHitType;
 
     [Header("Modifiers")]
     public List<WeaponModifierType> Modifiers;
@@ -85,16 +93,17 @@ public class WeaponSO : ScriptableObject
     [Header("Custom Parameters")]
     public WeaponParameter[] Parameters;
 
-    public float GetParameter(WeaponParameterType type)
+    public T GetParameter<T>(WeaponParameterType type)
     {
         foreach (var p in Parameters)
         {
             if (p.Type == type)
-                return p.Value;
+                return p.GetValue<T>();
         }
 
-        Debug.LogWarning($"[{name}] Missing parameter: {type}. Add it in WeaponSO -> Parameters list.", this);
-        return 0;
+        Debug.LogWarning($"[{name}] Missing parameter: {type}");
+        return default;
     }
+
 }
 

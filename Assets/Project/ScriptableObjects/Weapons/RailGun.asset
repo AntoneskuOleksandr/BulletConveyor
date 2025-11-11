@@ -13,40 +13,75 @@ MonoBehaviour:
   m_Name: RailGun
   m_EditorClassIdentifier: 
   WeaponId: 4
-  WeaponGO: {fileID: 9119458496086393018, guid: 8651b846820e0da469d7eac898b86e4a,
+  WeaponGO: {fileID: 4620421170449132950, guid: 8651b846820e0da469d7eac898b86e4a,
     type: 3}
   RequiredLevel: 4
-  WeaponType: 0
-  BulletType: 0
-  baseDamage: 0
-  baseFireRate: 0
-  baseHealth: 0
-  baseAttackRadius: 0
-  shootStrategy: 0
-  aimStrategy: 0
-  targetStrategy: 0
-  bulletMoveType: 0
-  bulletHitType: 0
-  upgradeLevels:
-  - cost: 1
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 2
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 3
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 4
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 5
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  baseEffectChances: []
-  Parameters: []
+  WeaponType: 5
+  BaseDamage: 5
+  BaseFireRate: 0.5
+  BaseHealth: 100
+  MaxAttackRadius: 20
+  MinAttackRadius: 0
+  FindTargetRadiusCoefficient: 1.5
+  AimThreshold: 1
+  UseYaw: 1
+  YawTurnSpeed: 3
+  UsePitch: 0
+  PitchTurnSpeed: 0
+  MinPitchAngle: 0
+  MaxPitchAngle: 0
+  DefaultPitchAngle: 0
+  MinProjectilesToShoot: 1
+  LaunchSpeedMode: 0
+  LaunchSpeed: 15
+  AimStrategies: 00000000
+  ShootStrategy: 0
+  TargetStrategy: 0
+  ProjectileMoveType: 3
+  ProjectileHitType: 0
+  Modifiers: 
+  UpgradeLevels: []
+  BaseEffectChances: []
+  Parameters:
+  - Type: 7
+    ValueType: 0
+    FloatValue: 1
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 8
+    ValueType: 0
+    FloatValue: 0.1
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 9
+    ValueType: 0
+    FloatValue: 250
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 10
+    ValueType: 1
+    FloatValue: 0
+    IntValue: 3
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 11
+    ValueType: 3
+    FloatValue: 0
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 1, g: 0.9295865, b: 0, a: 1}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 12
+    ValueType: 0
+    FloatValue: 0.1
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}

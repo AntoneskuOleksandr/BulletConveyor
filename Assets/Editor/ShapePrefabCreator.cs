@@ -301,7 +301,7 @@ public class ShapePrefabCreator : EditorWindow
         textRect.anchorMax = new Vector2(1, 1);
         textRect.pivot = new Vector2(1, 0.5f);
 
-        blockParent.bulletsCountText = tmp;
+        blockParent.ProjectilesCountText = tmp;
 
         // »конка
         GameObject iconGO = new GameObject("BulletIcon");

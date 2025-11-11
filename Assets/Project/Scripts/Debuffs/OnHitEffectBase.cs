@@ -9,5 +9,5 @@ public abstract class OnHitEffectBase : IOnHitEffect
         _so = so;
     }
 
-    public abstract void Apply(Bullet bullet, Enemy target);
+    public abstract void Apply(ProjectileBase projectile, Enemy target);
 }

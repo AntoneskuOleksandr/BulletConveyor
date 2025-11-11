@@ -61,7 +61,7 @@ public class BlockManager : MonoBehaviour
             IncreaseBlockPrice();
         }
 
-        parent.bulletsToGenerate += 0;
+        parent.projectilesToGenerate += 0;
         parent.rank = blockToCreateIndex;
 
         LastCreatedBlock = parent;

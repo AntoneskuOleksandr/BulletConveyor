@@ -22,17 +22,19 @@ public class WeaponFactory
         Weapon weapon = _container.InstantiateComponent<Weapon>(go);
 
         // 2. Назначаем стратегии пуль
-        IBulletMoveStrategy move = so.BulletMoveType switch
+        IProjectileMoveStrategy move = so.ProjectileMoveType switch
         {
-            BulletMoveType.Straight => new StraightMoveStrategy(),
-            BulletMoveType.Arc => new ArcMoveStrategy(),
+            ProjectileMoveType.Straight => new StraightMoveStrategy(),
+            ProjectileMoveType.Arc => new ArcMoveStrategy(),
+            ProjectileMoveType.BeamInstant => new BeamInstantMoveStrategy(),
+            ProjectileMoveType.BeamContinuous => new BeamContinuousMoveStrategy(),
             _ => new StraightMoveStrategy()
         };
 
-        IBulletHitStrategy hit = so.BulletHitType switch
+        IProjectileHitStrategy hit = so.ProjectileHitType switch
         {
-            BulletHitType.Direct => new DirectHitStrategy(),
-            BulletHitType.AoE => new AoEHitStrategy(),
+            ProjectileHitType.Direct => new DirectHitStrategy(),
+            ProjectileHitType.AoE => new AoEHitStrategy(),
             _ => new DirectHitStrategy()
         };
 
@@ -48,9 +50,9 @@ public class WeaponFactory
             target, so.TargetStrategy
         );
 
-        weapon.SetBulletStrategy(
-            move, so.BulletMoveType,
-            hit, so.BulletHitType
+        weapon.SetProjectileStrategy(
+            move, so.ProjectileMoveType,
+            hit, so.ProjectileHitType
         );
 
         weapon.SetWeaponModifiers(modifiers, so.Modifiers);

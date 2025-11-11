@@ -8,18 +8,18 @@ public class MultiPelletModifier : IWeaponModifier
 
     public void Initialize(Weapon weapon)
     {
-        _pelletCount = Mathf.Max(1, Mathf.RoundToInt(weapon.Data.GetParameter(WeaponParameterType.PelletsPerShot)));
-        _damageMultiplier = weapon.Data.GetParameter(WeaponParameterType.PelletDamageMultiplier);
+        _pelletCount = Mathf.Max(1, Mathf.RoundToInt(weapon.Data.GetParameter<int>(WeaponParameterType.PelletsPerShot)));
+        _damageMultiplier = weapon.Data.GetParameter<float>(WeaponParameterType.PelletDamageMultiplier);
     }
 
-    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData, Transform firePoint)
+    public IEnumerable<ProjectileInitData> Expand(Weapon weapon, ProjectileInitData baseData, Transform firePoint)
     {
         if (_pelletCount <= 1)
             yield break;
 
         for (int i = 0; i < _pelletCount - 1; i++)
         {
-            BulletInitData clone = baseData;
+            ProjectileInitData clone = baseData;
             clone.Damage *= _damageMultiplier;
             yield return clone;
         }
@@ -27,11 +27,11 @@ public class MultiPelletModifier : IWeaponModifier
 
     public void OnBeforeShoot(Weapon weapon) { }
 
-    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data, Transform firePoint) { }
+    public void OnBeforeProjectileInit(Weapon weapon, ref ProjectileInitData data, Transform firePoint) { }
 
-    public void OnBulletInit(Weapon weapon, Bullet bullet) { }
+    public void OnProjectileInit(Weapon weapon, ProjectileBase projectile) { }
 
-    public void OnAfterShoot(Weapon weapon, List<Bullet> bullets) { }
+    public void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles) { }
 
-    public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit) { }
+    public void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit) { }
 }

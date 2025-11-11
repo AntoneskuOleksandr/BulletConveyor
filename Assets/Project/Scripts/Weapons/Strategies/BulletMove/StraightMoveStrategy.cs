@@ -1,14 +1,22 @@
 using UnityEngine;
 
-public class StraightMoveStrategy : IBulletMoveStrategy
+public class StraightMoveStrategy : IProjectileMoveStrategy
 {
-    public void Launch(Bullet bullet, Transform target, float launchSpeed)
+    public void Launch(Weapon weapon, ProjectileBase projectile, ProjectileInitData data)
     {
-        Vector3 dir = bullet.transform.forward.normalized;
+        Vector3 dir = projectile.transform.forward;
 
-        bullet.Rigidbody.useGravity = false;
-        bullet.Rigidbody.linearVelocity = dir * launchSpeed;
+        if (projectile.Rigidbody != null)
+        {
+            projectile.Rigidbody.isKinematic = false;
+            projectile.Rigidbody.useGravity = false;
+            projectile.Rigidbody.linearVelocity = dir * data.LaunchSpeed;
+        }
     }
 
-    public void UpdateRotation(Bullet bullet) { }
+    public void Update(Weapon weapon, ProjectileBase projectile, float deltaTime)
+    {
+        if (projectile.Rigidbody == null)
+            projectile.transform.position += projectile.transform.forward * projectile.Data.LaunchSpeed * deltaTime;
+    }
 }

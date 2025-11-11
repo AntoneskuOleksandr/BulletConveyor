@@ -5,9 +5,9 @@ public interface IWeaponModifier
 {
     void Initialize(Weapon weapon);
     void OnBeforeShoot(Weapon weapon);
-    void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data, Transform firePoint);
-    void OnBulletInit(Weapon weapon, Bullet bullet);
-    void OnAfterShoot(Weapon weapon, List<Bullet> bullets);
-    void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit);
-    IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData, Transform firePoint);
+    void OnBeforeProjectileInit(Weapon weapon, ref ProjectileInitData data, Transform firePoint);
+    void OnProjectileInit(Weapon weapon, ProjectileBase projectile);
+    void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles);
+    void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit);
+    IEnumerable<ProjectileInitData> Expand(Weapon weapon, ProjectileInitData baseData, Transform firePoint);
 }
