@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     [Inject] private TileManager _tileManager;
     [Inject] private TileGenerator _tileGenerator;
-    [Inject] private BulletGenerator _bulletGenerator;
+    [Inject] private ProjectileGenerator _bulletGenerator;
     [Inject] private WaveManager _waveManager;
     [Inject] private WeaponManager _weaponManager;
     [Inject] private UIManager _uiManager;
@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
             _weaponManager.InitializeWeapons();
             _bulletGenerator.Initialize();
 
-            StartCoroutine(_bulletGenerator.StartBulletGeneration());
+            StartCoroutine(_bulletGenerator.StartProjectileGeneration());
 
             _weaponManager.OnAllWeaponsDestroyed += () => StartCoroutine(Lose());
             _waveManager.OnWaveCompleted += wave =>
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
         _bulletGenerator.Initialize();
         _waveManager.StartWaves();
 
-        StartCoroutine(_bulletGenerator.StartBulletGeneration());
+        StartCoroutine(_bulletGenerator.StartProjectileGeneration());
 
         _weaponManager.OnAllWeaponsDestroyed += () => StartCoroutine(Lose());
         _waveManager.OnWaveCompleted += wave =>

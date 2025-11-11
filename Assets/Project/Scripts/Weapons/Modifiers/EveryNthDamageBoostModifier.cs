@@ -9,14 +9,14 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
 
     public void Initialize(Weapon weapon)
     {
-        _n = Mathf.Max(1, (int)weapon.Data.GetParameter(WeaponParameterType.PowerfulShotEvery));
-        _multiplier = Mathf.Max(1f, weapon.Data.GetParameter(WeaponParameterType.PowerShotMultiplier));
+        _n = Mathf.Max(1, weapon.Data.GetParameter<int>(WeaponParameterType.PowerfulShotEvery));
+        _multiplier = Mathf.Max(1f, weapon.Data.GetParameter<float>(WeaponParameterType.PowerShotMultiplier));
         _counter = 0;
     }
 
     public void OnBeforeShoot(Weapon weapon) { }
 
-    public void OnBeforeBulletInit(Weapon weapon, ref BulletInitData data, Transform firePoint)
+    public void OnBeforeProjectileInit(Weapon weapon, ref ProjectileInitData data, Transform firePoint)
     {
         _counter++;
         if (_counter > _n)
@@ -28,11 +28,11 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
         }
     }
 
-    public void OnBulletInit(Weapon weapon, Bullet bullet) { }
-    public void OnAfterShoot(Weapon weapon, List<Bullet> bullets) { }
-    public void OnBulletHit(Weapon weapon, Bullet bullet, Collider hit) { }
+    public void OnProjectileInit(Weapon weapon, ProjectileBase projectile) { }
+    public void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles) { }
+    public void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit) { }
 
-    public IEnumerable<BulletInitData> Expand(Weapon weapon, BulletInitData baseData, Transform firePoint)
+    public IEnumerable<ProjectileInitData> Expand(Weapon weapon, ProjectileInitData baseData, Transform firePoint)
     {
         yield break;
     }

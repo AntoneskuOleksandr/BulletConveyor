@@ -521,13 +521,13 @@ MonoBehaviour:
   spawnInterval: 1
   spawnOffset: 0.33333334
   conveyor: {fileID: 672262507}
-  bulletPrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
+  projectilePrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
     type: 3}
-  bulletAnimationDuration: 1
+  projectileAnimationDuration: 1
   pulseAnimationDuration: 0.2
   animationStrength: 0.2
   debugMode: 1
-  debugBulletsCount: 1
+  debugProjectilesCount: 3
   spawnOnceOnStart: 0
   blocksPool: {fileID: 1859149344}
 --- !u!1 &200065108
@@ -1360,7 +1360,7 @@ GameObject:
   - component: {fileID: 672262507}
   - component: {fileID: 174477905}
   m_Layer: 0
-  m_Name: BulletGenerator
+  m_Name: ProjectileGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2237,8 +2237,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091264116}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14, y: 0, z: 42}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 26.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2661,8 +2661,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1261121445}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16.5, y: 0, z: 30}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 26.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2879,7 +2879,7 @@ GameObject:
   - component: {fileID: 1356500596}
   - component: {fileID: 1356500595}
   m_Layer: 10
-  m_Name: BulletStack
+  m_Name: ProjectileStack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2894,15 +2894,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1356500594}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5211b8246379b124b91703594831ffaa, type: 3}
+  m_Script: {fileID: 11500000, guid: 015581488a9a9cb42a9f0c19a37c6006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   stackPosition: {fileID: 632593281}
-  stackOffset: 0.225
+  stackOffset: 0.2
   rowsCount: 4
   conveyor: {fileID: 1703783472}
-  bulletsCounter: {fileID: 7262064367849225799}
-  bullets: []
+  projectilesCounter: {fileID: 7262064367849225799}
+  projectiles: []
 --- !u!65 &1356500596
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3591,8 +3591,8 @@ MonoBehaviour:
   blockManager: {fileID: 834766779}
   mergePlatformsManager: {fileID: 834766778}
   weaponManager: {fileID: 1182419445}
-  bulletGenerator: {fileID: 174477905}
-  bulletsStack: {fileID: 1356500595}
+  projectileGenerator: {fileID: 174477905}
+  projectilesStack: {fileID: 1356500595}
   effectFactory: {fileID: 1349853964}
   effectRulesConfigSO: {fileID: 11400000, guid: 5fd853ec1d3f7df419f4700d6fd9f5bc,
     type: 2}
@@ -17668,7 +17668,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &7262064368234449606
 MonoBehaviour:
   m_ObjectHideFlags: 0

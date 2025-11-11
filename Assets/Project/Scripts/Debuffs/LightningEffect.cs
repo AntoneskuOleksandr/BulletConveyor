@@ -29,7 +29,7 @@ public class LightningEffect : IOnHitEffect
         _lightningManager = lightningManager;
     }
 
-    public void Apply(Bullet bullet, Enemy initialTarget)
+    public void Apply(ProjectileBase projectile, Enemy initialTarget)
     {
         if (initialTarget == null) return;
         _lightningManager.StartCoroutine(DoLightningChain(initialTarget));

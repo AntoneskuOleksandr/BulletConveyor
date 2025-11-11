@@ -1,16 +1,16 @@
 using UnityEngine;
 
-public class DirectHitStrategy : IBulletHitStrategy
+public class DirectHitStrategy : IProjectileHitStrategy
 {
-    public void Hit(Weapon weapon, Bullet bullet, Collider other)
+    public void Hit(Weapon weapon, ProjectileBase projectile, Collider other)
     {
         if (!other.CompareTag("Enemy")) return;
 
         Enemy enemy = other.GetComponent<Enemy>();
         if (enemy != null)
         {
-            enemy.TakeDamage(bullet.Damage);
-            bullet.ApplyEffects(enemy);
+            enemy.TakeDamage(projectile.Damage);
+            projectile.ApplyEffects(enemy);
         }
     }
 }

@@ -1,27 +1,26 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
 public class MultiBarrelShootStrategy : IShootStrategy
 {
-    [Inject] private WeaponFireController _fireController;
-    [Inject] private BulletManager _bulletManager;
+    [Inject] private ProjectileManager _bulletManager;
+    [Inject] private ProjectileInitializer _projectileInitializer;
 
     private int _currentBarrelIndex;
 
     public bool IsCanShoot(Weapon weapon) =>
         weapon.FireCountdown <= 0f &&
         weapon.Target != null &&
-        _bulletManager.AvailableCount >= weapon.Data.MinBulletsToShoot;
+        _bulletManager.AvailableCount >= weapon.Data.MinProjectilesToShoot;
 
-    public List<Bullet> Shoot(Weapon weapon)
+    public List<ProjectileBase> Shoot(Weapon weapon)
     {
         var firePoints = weapon.AttachmentPoints.GetAll(WeaponAttachmentType.FirePoint);
         if (firePoints == null || firePoints.Count == 0)
             return null;
 
-        var firedBullets = new List<Bullet>();
-        bool shootSimultaneously = weapon.Data.GetParameter(WeaponParameterType.ShootSimultaneously) > 0.5f;
+        var firedProjectiles = new List<ProjectileBase>();
+        bool shootSimultaneously = weapon.Data.GetParameter<bool>(WeaponParameterType.ShootSimultaneously);
 
         if (shootSimultaneously)
         {
@@ -41,10 +40,10 @@ public class MultiBarrelShootStrategy : IShootStrategy
                     continue;
 
                 var fp = firePoints[i];
-                var bulletData = weapon.BuildExpandedBulletInitData(fp, desiredCount);
-                var fired = _fireController.SpawnBullets(weapon, fp, bulletData);
+                var bulletData = weapon.BuildExpandedProjectileInitData(fp, desiredCount);
+                var fired = _projectileInitializer.InitializeProjectiles(weapon, fp, bulletData);
 
-                firedBullets.AddRange(fired);
+                firedProjectiles.AddRange(fired);
             }
         }
         else
@@ -54,16 +53,16 @@ public class MultiBarrelShootStrategy : IShootStrategy
             if (available <= 0)
                 return null;
 
-            var bulletData = weapon.BuildExpandedBulletInitData(fp, available);
-            var fired = _fireController.SpawnBullets(weapon, fp, bulletData);
-            firedBullets.AddRange(fired);
+            var bulletData = weapon.BuildExpandedProjectileInitData(fp, available);
+            var fired = _projectileInitializer.InitializeProjectiles(weapon, fp, bulletData);
+            firedProjectiles.AddRange(fired);
 
             _currentBarrelIndex = (_currentBarrelIndex + 1) % firePoints.Count;
         }
 
-        if (firedBullets.Count > 0)
+        if (firedProjectiles.Count > 0)
             weapon.ResetFireCountdown();
 
-        return firedBullets;
+        return firedProjectiles;
     }
 }

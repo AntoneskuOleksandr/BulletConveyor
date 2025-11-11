@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct BulletInitData
+public struct ProjectileInitData
 {
     public float Damage;
     public float LaunchSpeed;

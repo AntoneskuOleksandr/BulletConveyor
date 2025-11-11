@@ -4,21 +4,21 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Zenject;
 
-public class BulletGenerator : MonoBehaviour
+public class ProjectileGenerator : MonoBehaviour
 {
     [SerializeField] private float spawnInterval = 1f;
     [SerializeField] private float spawnOffset = 1f;
     [SerializeField] private Transform conveyor;
-    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private GameObject projectilePrefab;
 
     [Header("Animations")]
-    [SerializeField] private float bulletAnimationDuration = 1f;
+    [SerializeField] private float projectileAnimationDuration = 1f;
     [SerializeField] private float pulseAnimationDuration = 0.2f;
     [SerializeField] private float animationStrength = 0.2f;
 
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
-    [SerializeField] private int debugBulletsCount = 3;
+    [SerializeField] private int debugProjectilesCount = 3;
     [SerializeField] private bool spawnOnceOnStart = false;
 
     private BoardManager _boardManager;
@@ -26,8 +26,8 @@ public class BulletGenerator : MonoBehaviour
 
     private int index = 0;
 
-    private GameObject bulletsFolder;
-    private ObjectPool<GameObject> bulletPool;
+    private GameObject projectilesFolder;
+    private ObjectPool<GameObject> projectilePool;
 
     [Inject]
     public void Construct(BoardManager boardManager)
@@ -37,19 +37,19 @@ public class BulletGenerator : MonoBehaviour
 
     public void Initialize()
     {
-        bulletsFolder = new GameObject("Bullets");
+        projectilesFolder = new GameObject("Projectiles");
 
-        bulletPool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(bulletPrefab),
-            actionOnGet: bullet =>
+        projectilePool = new ObjectPool<GameObject>(
+            createFunc: () => Instantiate(projectilePrefab),
+            actionOnGet: projectile =>
             {
-                bullet.SetActive(true);
+                projectile.SetActive(true);
             },
-            actionOnRelease: bullet =>
+            actionOnRelease: projectile =>
             {
-                bullet.SetActive(false);
+                projectile.SetActive(false);
             },
-            actionOnDestroy: bullet => Destroy(bullet),
+            actionOnDestroy: projectile => Destroy(projectile),
             collectionCheck: false,
             defaultCapacity: 10,
             maxSize: 100
@@ -57,12 +57,12 @@ public class BulletGenerator : MonoBehaviour
 
         if (spawnOnceOnStart)
         {
-            for (int i = 0; i < debugBulletsCount; i++)
-                GenerateBullet(null);
+            for (int i = 0; i < debugProjectilesCount; i++)
+                GenerateProjectile(null);
         }
     }
 
-    public IEnumerator StartBulletGeneration()
+    public IEnumerator StartProjectileGeneration()
     {
         if (spawnOnceOnStart)
             yield break;
@@ -77,36 +77,36 @@ public class BulletGenerator : MonoBehaviour
 
             if (debugMode)
             {
-                for (int i = 0; i < debugBulletsCount; i++)
+                for (int i = 0; i < debugProjectilesCount; i++)
                 {
-                    GenerateBullet(null);
+                    GenerateProjectile(null);
                 }
             }
             foreach (BlockParent block in _boardManager.Blocks)
             {
-                for (int i = 0; i < block.bulletsToGenerate; i++)
+                for (int i = 0; i < block.projectilesToGenerate; i++)
                 {
-                    GenerateBullet(block);
+                    GenerateProjectile(block);
                 }
             }
         }
     }
 
-    private void GenerateBullet(BlockParent block)
+    private void GenerateProjectile(BlockParent block)
     {
         Vector3 spawnPosition = this.transform.position;
         if (block != null)
             spawnPosition = block.transform.position;
 
-        GameObject bullet = bulletPool.Get();
-        bullet.transform.position = spawnPosition;
-        bullet.transform.Rotate(0f, -90f, 0f);
-        bullet.transform.parent = bulletsFolder.transform;
+        GameObject projectile = projectilePool.Get();
+        projectile.transform.position = spawnPosition;
+        projectile.transform.Rotate(0f, -90f, 0f);
+        projectile.transform.parent = projectilesFolder.transform;
 
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
-        bullet.transform.DOMove(conveyor.position + new Vector3(0, 0f, index * spawnOffset), bulletAnimationDuration).OnComplete(() =>
+        projectile.transform.DOMove(conveyor.position + new Vector3(0, 0f, index * spawnOffset), projectileAnimationDuration).OnComplete(() =>
         {
             rb.freezeRotation = false;
             rb.isKinematic = true;

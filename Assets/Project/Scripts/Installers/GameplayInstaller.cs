@@ -22,10 +22,10 @@ public class GameplayInstaller : MonoInstaller
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private MergePlatformsManager mergePlatformsManager;
 
-    [Header("Weapons & Bullets")]
+    [Header("Weapons & Projectiles")]
     [SerializeField] private WeaponManager weaponManager;
-    [SerializeField] private BulletGenerator bulletGenerator;
-    [SerializeField] private BulletsStack bulletsStack;
+    [SerializeField] private ProjectileGenerator projectileGenerator;
+    [SerializeField] private ProjectileStack projectilesStack;
 
     [Header("Effects Managers")]
     [SerializeField] private EffectFactory effectFactory;
@@ -58,14 +58,14 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<BlockManager>().FromInstance(blockManager).AsSingle();
         Container.Bind<MergePlatformsManager>().FromInstance(mergePlatformsManager).AsSingle();
 
-        //Weapons & Bullets
+        //Weapons & Projectiles
         Container.Bind<WeaponManager>().FromInstance(weaponManager).AsSingle();
         Container.Bind<WeaponFactory>().AsSingle();
-        Container.Bind<BulletGenerator>().FromInstance(bulletGenerator).AsSingle();
-        Container.Bind<BulletsStack>().FromInstance(bulletsStack).AsSingle();
-        Container.Bind<BulletManager>().AsSingle();
+        Container.Bind<ProjectileInitializer>().AsSingle();
+        Container.Bind<ProjectileGenerator>().FromInstance(projectileGenerator).AsSingle();
+        Container.Bind<ProjectileStack>().FromInstance(projectilesStack).AsSingle();
+        Container.Bind<ProjectileManager>().AsSingle();
         Container.Bind<EffectChanceManager>().AsSingle();
-        Container.Bind<WeaponFireController>().AsSingle();
         Container.Bind<WeaponModifierResolver>().AsSingle();
 
         //Effects Managers

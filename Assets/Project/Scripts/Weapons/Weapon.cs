@@ -46,7 +46,7 @@ public class Weapon : MonoBehaviour
 
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
-    [Inject] private BulletManager _bulletManager;
+    [Inject] private ProjectileManager _projectileManager;
 
     private WeaponVisual _weaponVisual;
     private WeaponStatusCanvas _weaponStatusCanvas;
@@ -65,17 +65,17 @@ public class Weapon : MonoBehaviour
     [SerializeField] private List<AimStrategyType> aimStrategyTypes;
     [SerializeField] private ShootStrategyType shootStrategyType;
     [SerializeField] private TargetStrategyType targetStrategyType;
-    [SerializeField] private BulletMoveType bulletMoveType;
-    [SerializeField] private BulletHitType bulletHitType;
+    [SerializeField] private ProjectileMoveType projectileMoveType;
+    [SerializeField] private ProjectileHitType projectileHitType;
 
     [Header("Weapon Modifiers (Read Only at inspector)")]
     [SerializeField] private List<WeaponModifierType> weaponModifierTypes;
 
-    public IBulletMoveStrategy BulletMoveStrategy => _bulletMoveStrategy;
-    public IBulletHitStrategy BulletHitStrategy => _bulletHitStrategy;
+    public IProjectileMoveStrategy ProjectileMoveStrategy => _projectileMoveStrategy;
+    public IProjectileHitStrategy ProjectileHitStrategy => _projectileHitStrategy;
 
-    private IBulletMoveStrategy _bulletMoveStrategy;
-    private IBulletHitStrategy _bulletHitStrategy;
+    private IProjectileMoveStrategy _projectileMoveStrategy;
+    private IProjectileHitStrategy _projectileHitStrategy;
 
     private List<IAimStrategy> _aimStrategies = new();
     private IdleAimStrategy _idleAimStrategy = new IdleAimStrategy();
@@ -100,13 +100,13 @@ public class Weapon : MonoBehaviour
         targetStrategyType = targetType;
     }
 
-    public void SetBulletStrategy(IBulletMoveStrategy move, BulletMoveType moveType,
-        IBulletHitStrategy hit, BulletHitType hitType)
+    public void SetProjectileStrategy(IProjectileMoveStrategy move, ProjectileMoveType moveType,
+        IProjectileHitStrategy hit, ProjectileHitType hitType)
     {
-        _bulletMoveStrategy = move;
-        _bulletHitStrategy = hit;
-        bulletMoveType = moveType;
-        bulletHitType = hitType;
+        _projectileMoveStrategy = move;
+        _projectileHitStrategy = hit;
+        projectileMoveType = moveType;
+        projectileHitType = hitType;
     }
 
     public void SetWeaponModifiers(List<IWeaponModifier> modifiers, List<WeaponModifierType> weaponModifierTypes)
@@ -142,9 +142,9 @@ public class Weapon : MonoBehaviour
             modifier.Initialize(this);
     }
 
-    private BulletInitData BuildBulletInitData()
+    private ProjectileInitData BuildProjectileInitData()
     {
-        BulletInitData data = new BulletInitData
+        ProjectileInitData data = new ProjectileInitData
         {
             Damage = _damage,
             LaunchSpeed = LaunchSpeed,
@@ -155,15 +155,15 @@ public class Weapon : MonoBehaviour
         return data;
     }
 
-    public IEnumerable<BulletInitData> BuildExpandedBulletInitData(Transform firePoint, int maxCount = int.MaxValue)
+    public IEnumerable<ProjectileInitData> BuildExpandedProjectileInitData(Transform firePoint, int maxCount = int.MaxValue)
     {
-        if (_bulletManager.AvailableCount <= 0)
+        if (_projectileManager.AvailableCount <= 0)
             yield break;
 
-        var baseData = BuildBulletInitData();
+        var baseData = BuildProjectileInitData();
         yield return ProcessInitData(baseData, firePoint);
 
-        int available = _bulletManager.AvailableCount;
+        int available = _projectileManager.AvailableCount;
         int spawned = 1;
 
         foreach (var m in _weaponModifiers)
@@ -186,10 +186,10 @@ public class Weapon : MonoBehaviour
             }
         }
 
-        BulletInitData ProcessInitData(BulletInitData data, Transform fp)
+        ProjectileInitData ProcessInitData(ProjectileInitData data, Transform fp)
         {
             foreach (var m in _weaponModifiers)
-                m.OnBeforeBulletInit(this, ref data, fp);
+                m.OnBeforeProjectileInit(this, ref data, fp);
             return data;
         }
     }
@@ -253,22 +253,22 @@ public class Weapon : MonoBehaviour
             m.OnBeforeShoot(this);
     }
 
-    public void NotifyAfterShoot(List<Bullet> bullets)
+    public void NotifyAfterShoot(List<ProjectileBase> projectiles)
     {
         foreach (var m in _weaponModifiers)
-            m.OnAfterShoot(this, bullets);
+            m.OnAfterShoot(this, projectiles);
     }
 
-    public void NotifyBulletInit(Bullet bullet)
+    public void NotifyProjectileInit(ProjectileBase projectile)
     {
         foreach (var m in _weaponModifiers)
-            m.OnBulletInit(this, bullet);
+            m.OnProjectileInit(this, projectile);
     }
 
-    public void NotifyBulletHit(Bullet bullet, Collider hit)
+    public void NotifyProjectileHit(ProjectileBase projectile, Collider hit)
     {
         foreach (var m in _weaponModifiers)
-            m.OnBulletHit(this, bullet, hit);
+            m.OnProjectileHit(this, projectile, hit);
     }
 
 
@@ -317,13 +317,13 @@ public class Weapon : MonoBehaviour
         {
             NotifyBeforeShoot();
 
-            var firedBullets = _shootStrategy.Shoot(this);
+            var firedProjectiles = _shootStrategy.Shoot(this);
 
             var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
             var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
             _weaponVisual?.PlayShotEffect(colorWeights);
 
-            NotifyAfterShoot(firedBullets);
+            NotifyAfterShoot(firedProjectiles);
         }
     }
 

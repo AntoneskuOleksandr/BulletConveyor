@@ -11,7 +11,7 @@ public class FireEffect : OnHitEffectBase
         _dps = so.GetParameter(EffectParameterType.DPS);
     }
 
-    public override void Apply(Bullet bullet, Enemy target)
+    public override void Apply(ProjectileBase projectile, Enemy target)
     {
         var debuff = new BurnDebuff(_dps, _duration);
         target.ModifierManager.AddStatusEffect(debuff);

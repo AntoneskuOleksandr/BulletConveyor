@@ -2,21 +2,21 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class BulletsStack : MonoBehaviour
+public class ProjectileStack : MonoBehaviour
 {
     [SerializeField] private Transform stackPosition;
     [SerializeField] private float stackOffset = 0.2f;
     [SerializeField] private int rowsCount = 4;
     [SerializeField] private ConveyorBelt conveyor;
-    [SerializeField] private TMP_Text bulletsCounter;
+    [SerializeField] private TMP_Text projectilesCounter;
 
-    public List<GameObject> bullets = new List<GameObject>();
+    public List<GameObject> projectiles = new List<GameObject>();
 
-    public bool HaveBullet
+    public bool HaveProjectile
     {
         get
         {
-            return bullets.Count > 0;
+            return projectiles.Count > 0;
         }
     }
 
@@ -25,15 +25,15 @@ public class BulletsStack : MonoBehaviour
 
     private void Awake()
     {
-        bulletsCounter.text = bullets.Count.ToString();
+        projectilesCounter.text = projectiles.Count.ToString();
     }
 
     private void OnTriggerEnter(Collider other)
     {
         conveyor.onBelt.Remove(other.transform);
-        bullets.Add(other.gameObject);
+        projectiles.Add(other.gameObject);
 
-        bulletsCounter.text = bullets.Count.ToString();
+        projectilesCounter.text = projectiles.Count.ToString();
 
         other.transform.position = stackPosition.position + new Vector3(0f, currentRow * stackOffset, currentColumn * stackOffset);
 
@@ -47,14 +47,14 @@ public class BulletsStack : MonoBehaviour
         }
     }
 
-    public GameObject GetBulletGOFromStack()
+    public GameObject GetProjectileGOFromStack()
     {
-        if (bullets.Count > 0)
+        if (projectiles.Count > 0)
         {
-            GameObject bulletGO = bullets[bullets.Count - 1];
+            GameObject projectileGO = projectiles[projectiles.Count - 1];
 
-            bullets.RemoveAt(bullets.Count - 1);
-            bulletsCounter.text = bullets.Count.ToString();
+            projectiles.RemoveAt(projectiles.Count - 1);
+            projectilesCounter.text = projectiles.Count.ToString();
 
             currentColumn--;
             if (currentColumn < 0)
@@ -63,7 +63,7 @@ public class BulletsStack : MonoBehaviour
                 currentRow--;
             }
 
-            return bulletGO;
+            return projectileGO;
         }
 
         return null;

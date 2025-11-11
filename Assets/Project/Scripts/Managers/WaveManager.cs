@@ -19,7 +19,6 @@ public class WaveManager : MonoBehaviour
     private int enemiesAlive = 0;
 
     private bool isFrozen = false;            // новый флаг
-    private bool waitingForUnfreeze = false;  // вспомогательный флаг
 
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private EnemyManager _enemyManager;
@@ -85,9 +84,7 @@ public class WaveManager : MonoBehaviour
             // Перед началом новой волны проверяем заморозку
             if (isFrozen)
             {
-                waitingForUnfreeze = true;
                 yield return new WaitUntil(() => !isFrozen);
-                waitingForUnfreeze = false;
             }
 
             // время между волнами

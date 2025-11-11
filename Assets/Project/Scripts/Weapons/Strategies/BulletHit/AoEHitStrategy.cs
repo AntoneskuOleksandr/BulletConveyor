@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class AoEHitStrategy : IBulletHitStrategy
+public class AoEHitStrategy : IProjectileHitStrategy
 {
-    public void Hit(Weapon weapon, Bullet bullet, Collider other)
+    public void Hit(Weapon weapon, ProjectileBase projectile, Collider other)
     {
-        Collider[] hits = Physics.OverlapSphere(bullet.transform.position, weapon.Data.GetParameter(WeaponParameterType.AoERadius));
+        Collider[] hits = Physics.OverlapSphere(projectile.transform.position, weapon.Data.GetParameter<float>(WeaponParameterType.AoERadius));
         foreach (var hit in hits)
         {
             if (!hit.CompareTag("Enemy")) continue;
@@ -12,8 +12,8 @@ public class AoEHitStrategy : IBulletHitStrategy
             Enemy enemy = hit.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.TakeDamage(bullet.Damage);
-                bullet.ApplyEffects(enemy);
+                enemy.TakeDamage(projectile.Damage);
+                projectile.ApplyEffects(enemy);
             }
         }
     }
