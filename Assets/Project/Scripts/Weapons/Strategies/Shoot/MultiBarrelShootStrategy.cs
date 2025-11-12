@@ -60,9 +60,6 @@ public class MultiBarrelShootStrategy : IShootStrategy
             _currentBarrelIndex = (_currentBarrelIndex + 1) % firePoints.Count;
         }
 
-        if (firedProjectiles.Count > 0)
-            weapon.ResetFireCountdown();
-
         return firedProjectiles;
     }
 }

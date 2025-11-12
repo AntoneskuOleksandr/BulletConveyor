@@ -24,14 +24,4 @@ public class MultiPelletModifier : IWeaponModifier
             yield return clone;
         }
     }
-
-    public void OnBeforeShoot(Weapon weapon) { }
-
-    public void OnBeforeProjectileInit(Weapon weapon, ref ProjectileInitData data, Transform firePoint) { }
-
-    public void OnProjectileInit(Weapon weapon, ProjectileBase projectile) { }
-
-    public void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles) { }
-
-    public void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit) { }
 }

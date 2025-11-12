@@ -1,1 +1,1 @@
-public enum WeaponModifierType { ModifyEveryNShot, SpreadShot, MultiPellet }
+public enum WeaponModifierType { ModifyEveryNShot, SpreadShot, MultiPellet, FireRateRamp }

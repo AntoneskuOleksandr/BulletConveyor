@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EveryNthDamageBoostModifier : IWeaponModifier
@@ -14,8 +13,6 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
         _counter = 0;
     }
 
-    public void OnBeforeShoot(Weapon weapon) { }
-
     public void OnBeforeProjectileInit(Weapon weapon, ref ProjectileInitData data, Transform firePoint)
     {
         _counter++;
@@ -26,14 +23,5 @@ public class EveryNthDamageBoostModifier : IWeaponModifier
         {
             data.Damage *= _multiplier;
         }
-    }
-
-    public void OnProjectileInit(Weapon weapon, ProjectileBase projectile) { }
-    public void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles) { }
-    public void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit) { }
-
-    public IEnumerable<ProjectileInitData> Expand(Weapon weapon, ProjectileInitData baseData, Transform firePoint)
-    {
-        yield break;
     }
 }

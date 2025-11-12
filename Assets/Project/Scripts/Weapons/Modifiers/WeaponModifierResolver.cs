@@ -18,6 +18,9 @@ public class WeaponModifierResolver
                 case WeaponModifierType.MultiPellet:
                     list.Add(new MultiPelletModifier());
                     break;
+                case WeaponModifierType.FireRateRamp:
+                    list.Add(new FireRateRampModifier());
+                    break;
                 default:
                     throw new KeyNotFoundException($"Modifier not implemented: {t}");
             }

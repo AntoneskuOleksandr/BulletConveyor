@@ -19,8 +19,11 @@ public class BeamContinuousMoveStrategy : IProjectileMoveStrategy
 
         GameObject beamGO = new GameObject("Beam_Continuous");
         beamGO.transform.SetParent(firePoint, worldPositionStays: false);
-        beamGO.transform.localPosition = Vector3.zero;
-        beamGO.transform.localRotation = Quaternion.identity;
+
+        if (data.HasOverrideForward)
+            beamGO.transform.rotation = Quaternion.LookRotation(data.OverrideForward.normalized);
+        else
+            beamGO.transform.rotation = firePoint.rotation;
 
         BeamVisual visual = beamGO.AddComponent<BeamVisual>();
         visual.Configure(beamColor, beamWidth, range, lifeTime, firePoint);
@@ -30,19 +33,29 @@ public class BeamContinuousMoveStrategy : IProjectileMoveStrategy
             firePoint, range, pierceCount, tickInterval, lifeTime, visual));
     }
 
+
     public void Update(Weapon weapon, ProjectileBase projectile, float deltaTime) { }
 
     private IEnumerator DamageRoutine(
-        Weapon weapon, ProjectileBase projectile, ProjectileInitData data,
-        Transform firePoint, float range, int pierceCount,
-        float tickInterval, float lifeTime, BeamVisual visual)
+    Weapon weapon, ProjectileBase projectile, ProjectileInitData data,
+    Transform firePoint, float range, int pierceCount,
+    float tickInterval, float lifeTime, BeamVisual visual)
     {
         float elapsed = 0f;
 
         while (elapsed < lifeTime)
         {
             Vector3 origin = firePoint.position;
-            Vector3 direction = firePoint.forward;
+            Vector3 direction;
+
+            if (data.HasOverrideForward)
+            {
+                direction = (visual.transform.forward).normalized;
+            }
+            else
+            {
+                direction = firePoint.forward;
+            }
 
             var hits = Physics.RaycastAll(origin, direction, range);
             Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));

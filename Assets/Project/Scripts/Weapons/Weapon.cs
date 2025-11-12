@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -28,11 +29,17 @@ public class Weapon : MonoBehaviour
     private float _pitchTurnSpeed;
 
     public WeaponSO Data { get; private set; }
-    public float Damage => _damage;
-    public float Health => _health;
-    public float FireRate => _fireRate;
+    public float FireRate
+    {
+        get
+        {
+            float value = _fireRate;
+            foreach (var m in _weaponModifiers.OfType<IStatProvider>())
+                value = m.ModifyFireRate(value);
+            return value;
+        }
+    }
     public float FireCountdown => _fireCountdown;
-    public float MaxAttackRadius => _maxAttackRadius;
     public float MinAttackRadius => _minAttackRadius;
     public float FindTargetRadius => _maxAttackRadius * Data.FindTargetRadiusCoefficient;
     public float LaunchSpeed => CalculateLaunchSpeed();
@@ -319,6 +326,9 @@ public class Weapon : MonoBehaviour
 
             var firedProjectiles = _shootStrategy.Shoot(this);
 
+            if (firedProjectiles.Count > 0)
+                ResetFireCountdown();
+
             var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
             var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
             _weaponVisual?.PlayShotEffect(colorWeights);
@@ -390,11 +400,9 @@ public class Weapon : MonoBehaviour
         return allReady;
     }
 
-
-
-    public void ResetFireCountdown()
+    private void ResetFireCountdown()
     {
-        _fireCountdown = 1f / _fireRate;
+        _fireCountdown = 1f / FireRate;
     }
 
     public void OnTargetDeath()

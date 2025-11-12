@@ -23,9 +23,6 @@ public class BasicShootStrategy : IShootStrategy
         var projectileData = weapon.BuildExpandedProjectileInitData(firePoint);
         var fired = _projectileInitializer.InitializeProjectiles(weapon, firePoint, projectileData);
 
-        if (fired.Count > 0)
-            weapon.ResetFireCountdown();
-
         return fired;
     }
 }

@@ -25,7 +25,10 @@ public enum WeaponParameterType
     Length = 9,
     PierceCount = 10,
     Color = 11,
-    TickInterval = 12
+    TickInterval = 12,
+    FireRateIncreasePerShot = 13,
+    MaxFireRateBonus = 14,
+    FireRateRampResetTime = 15
 }
 
 public enum WeaponParameterValueType

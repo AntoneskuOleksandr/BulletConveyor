@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpreadShotModifier : IWeaponModifier
@@ -10,14 +9,11 @@ public class SpreadShotModifier : IWeaponModifier
         _spreadAngle = weapon.Data.GetParameter<float>(WeaponParameterType.SpreadAngle);
     }
 
-    public void OnBeforeShoot(Weapon weapon) { }
-
     public void OnBeforeProjectileInit(Weapon weapon, ref ProjectileInitData data, Transform firePoint)
     {
         if (firePoint == null)
             return;
 
-        // Рассчитываем базовое направление — от firePoint к цели (если есть)
         Vector3 baseDir;
         if (weapon.Target != null && weapon.Target.HitTransform != null)
         {
@@ -35,14 +31,5 @@ public class SpreadShotModifier : IWeaponModifier
         Vector3 finalDir = (spreadRot * baseDir).normalized;
         data.OverrideForward = finalDir;
         data.HasOverrideForward = true;
-    }
-
-    public void OnProjectileInit(Weapon weapon, ProjectileBase projectile) { }
-    public void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles) { }
-    public void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit) { }
-
-    public IEnumerable<ProjectileInitData> Expand(Weapon weapon, ProjectileInitData baseData, Transform firePoint)
-    {
-        yield break;
     }
 }

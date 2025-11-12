@@ -18,7 +18,7 @@ MonoBehaviour:
   RequiredLevel: 5
   WeaponType: 6
   BaseDamage: 25
-  BaseFireRate: 0.5
+  BaseFireRate: 1
   BaseHealth: 100
   MaxAttackRadius: 20
   MinAttackRadius: 0
@@ -39,7 +39,28 @@ MonoBehaviour:
   TargetStrategy: 0
   ProjectileMoveType: 0
   ProjectileHitType: 0
-  Modifiers: 
+  Modifiers: 03000000
   UpgradeLevels: []
   BaseEffectChances: []
-  Parameters: []
+  Parameters:
+  - Type: 13
+    ValueType: 0
+    FloatValue: 0.33333334
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 14
+    ValueType: 0
+    FloatValue: 5
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 15
+    ValueType: 0
+    FloatValue: 3
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
