@@ -2,25 +2,60 @@ using UnityEngine;
 
 public class BasicAimStrategy : IAimStrategy
 {
-    public bool TryAim(Weapon weapon)
+    public AimResult ComputeAim(Weapon weapon)
     {
-        var target = weapon.Target;
+        var baseRot = weapon.Data.UseYaw
+            ? weapon.AttachmentPoints.Get(WeaponAttachmentType.BaseRotation)
+            : null;
+        var barrels = weapon.Data.UsePitch
+            ? weapon.AttachmentPoints.GetAll(WeaponAttachmentType.BarrelRotation)
+            : null;
+        var target = weapon.Target?.HitTransform;
 
-        // Вектор на цель
-        Vector3 dir = target.HitTransform.position - weapon.PartToRotate.position;
-        dir.y = 0f;
-        if (dir == Vector3.zero) return false;
+        if (target == null)
+            return AimResult.Empty;
+        if (weapon.Data.UseYaw && baseRot == null)
+            return AimResult.Empty;
+        if (weapon.Data.UsePitch && (barrels == null || barrels.Count == 0))
+            return AimResult.Empty;
 
-        // Текущий и целевой поворот
-        Quaternion lookRotation = Quaternion.LookRotation(dir);
-        weapon.PartToRotate.rotation = Quaternion.Lerp(
-            weapon.PartToRotate.rotation,
-            lookRotation,
-            Time.deltaTime * weapon.TurnSpeed
-        );
+        float yawDeg = 0f;
 
-        // --- Проверяем угол ---
-        float angle = Quaternion.Angle(weapon.PartToRotate.rotation, lookRotation);
-        return angle <= weapon.AimThreshold;
+        if (weapon.Data.UseYaw)
+        {
+            Vector3 dir = target.position - baseRot.position;
+            dir.y = 0f;
+            if (dir.sqrMagnitude < 0.0001f)
+                return AimResult.Empty;
+            yawDeg = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        }
+
+        float totalPitch = 0f;
+        int count = 0;
+
+        if (weapon.Data.UsePitch)
+        {
+            foreach (var barrel in barrels)
+            {
+                Vector3 d = target.position - barrel.position;
+                float xz = new Vector3(d.x, 0f, d.z).magnitude;
+                float y = d.y;
+                float pitchRad = Mathf.Atan2(y, xz);
+                totalPitch += -pitchRad * Mathf.Rad2Deg;
+                count++;
+            }
+        }
+
+        float pitchDeg = (count > 0) ? totalPitch / count : 0f;
+
+        return new AimResult
+        {
+            HasAim = true,
+            ProvidesYaw = weapon.Data.UseYaw,
+            ProvidesPitch = weapon.Data.UsePitch,
+            YawDeg = yawDeg,
+            PitchDeg = pitchDeg,
+            AllowedErrorDeg = weapon.AimThreshold
+        };
     }
 }

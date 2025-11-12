@@ -13,7 +13,7 @@ public class FreezeEffect : IOnHitEffect
         _duration = so.Duration;
     }
 
-    public void Apply(Bullet bullet, Enemy target)
+    public void Apply(ProjectileBase projectileBase, Enemy target)
     {
         var debuff = new FreezeDebuff(_slowAmount, _duration);
         target.ModifierManager.AddStatusEffect(debuff);

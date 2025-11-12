@@ -369,7 +369,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 83881378}
   m_OnClick:
     m_PersistentCalls:
@@ -521,11 +521,14 @@ MonoBehaviour:
   spawnInterval: 1
   spawnOffset: 0.33333334
   conveyor: {fileID: 672262507}
-  bulletPrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
+  projectilePrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
     type: 3}
-  bulletAnimationDuration: 1
+  projectileAnimationDuration: 1
   pulseAnimationDuration: 0.2
   animationStrength: 0.2
+  debugMode: 0
+  debugProjectilesCount: 1
+  spawnOnceOnStart: 0
   blocksPool: {fileID: 1859149344}
 --- !u!1 &200065108
 GameObject:
@@ -1357,7 +1360,7 @@ GameObject:
   - component: {fileID: 672262507}
   - component: {fileID: 174477905}
   m_Layer: 0
-  m_Name: BulletGenerator
+  m_Name: ProjectileGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2082,7 +2085,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: +BLOCK
+  m_text: Temporarily unavailable
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1bdbc4fc685b05e4da5caf03ed15ca49, type: 2}
   m_sharedMaterial: {fileID: 3828498413277200818, guid: 1bdbc4fc685b05e4da5caf03ed15ca49,
@@ -2110,7 +2113,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.85
+  m_fontSize: 0.45
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2234,7 +2237,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091264116}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -14, y: 0, z: 42}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2658,7 +2661,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1261121445}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 16.5, y: 0, z: 30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2841,11 +2844,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9baff27ca1e90e349b21f410ec75164f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalWaves: 1
-  waveDuration: 30
-  timeBetweenWaves: 3
-  minEnemyCount: 1
-  maxEnemyCount: 1
+  totalWaves: 3
+  waveDuration: 600
+  timeBetweenWaves: 1
+  minEnemyCount: 5
+  maxEnemyCount: 5
   enemyIncrementPerWave: 0
 --- !u!4 &1354856230
 Transform:
@@ -2876,7 +2879,7 @@ GameObject:
   - component: {fileID: 1356500596}
   - component: {fileID: 1356500595}
   m_Layer: 10
-  m_Name: BulletStack
+  m_Name: ProjectileStack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2891,15 +2894,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1356500594}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5211b8246379b124b91703594831ffaa, type: 3}
+  m_Script: {fileID: 11500000, guid: 015581488a9a9cb42a9f0c19a37c6006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   stackPosition: {fileID: 632593281}
-  stackOffset: 0.225
+  stackOffset: 0.2
   rowsCount: 4
   conveyor: {fileID: 1703783472}
-  bulletsCounter: {fileID: 7262064367849225799}
-  bullets: []
+  projectilesCounter: {fileID: 7262064367849225799}
+  projectiles: []
 --- !u!65 &1356500596
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3469,7 +3472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b021efe1e90bb04c8b76c71a6f8b3f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 20
   conveyorTextureSpeed: 0.3225
   direction: {x: 0, y: 0, z: 1}
   texture: {fileID: 0}
@@ -3588,8 +3591,8 @@ MonoBehaviour:
   blockManager: {fileID: 834766779}
   mergePlatformsManager: {fileID: 834766778}
   weaponManager: {fileID: 1182419445}
-  bulletGenerator: {fileID: 174477905}
-  bulletsStack: {fileID: 1356500595}
+  projectileGenerator: {fileID: 174477905}
+  projectilesStack: {fileID: 1356500595}
   effectFactory: {fileID: 1349853964}
   effectRulesConfigSO: {fileID: 11400000, guid: 5fd853ec1d3f7df419f4700d6fd9f5bc,
     type: 2}
@@ -3868,6 +3871,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 269f1f6f72266fc4cafa32121acacccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startCoins: 100
 --- !u!4 &2019423755
 Transform:
   m_ObjectHideFlags: 0
@@ -4364,7 +4368,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.18788888, y: 0.0153125}
   m_AnchorMax: {x: 0.44522223, y: 0.1834375}
-  m_AnchoredPosition: {x: 1.999939, y: 2.840332}
+  m_AnchoredPosition: {x: 1.9998779, y: 2.840332}
   m_SizeDelta: {x: -182.6, y: -216.59998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &941475402958138823
@@ -5073,7 +5077,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.020222224, y: 0.1834375}
   m_AnchorMax: {x: 0.98255557, y: 0.8178751}
-  m_AnchoredPosition: {x: -1.499939, y: -1.5}
+  m_AnchoredPosition: {x: -1.4997559, y: -1.5}
   m_SizeDelta: {x: 1.5, y: 8.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &941475403731973504
@@ -17664,7 +17668,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &7262064368234449606
 MonoBehaviour:
   m_ObjectHideFlags: 0

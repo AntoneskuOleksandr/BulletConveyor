@@ -16,38 +16,36 @@ MonoBehaviour:
   WeaponGO: {fileID: 537084489268377665, guid: 7a8bf8822dfee0743ad74eea85eb9d51, type: 3}
   RequiredLevel: 1
   WeaponType: 1
-  BulletType: 1
-  baseDamage: 30
-  baseFireRate: 0.33333334
-  baseHealth: 150
-  baseAttackRadius: 100
-  shootStrategy: 0
-  aimStrategy: 0
-  targetStrategy: 0
-  bulletMoveType: 0
-  bulletHitType: 1
-  upgradeLevels:
-  - cost: 1
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 2
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 3
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 4
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  - cost: 5
-    damageBonus: 1
-    fireRateBonus: 0.1
-    healthBonus: 3
-  baseEffectChances: []
+  BaseDamage: 50
+  BaseFireRate: 0.25
+  BaseHealth: 200
+  MaxAttackRadius: 35
+  MinAttackRadius: 15
+  FindTargetRadiusCoefficient: 1.25
+  AimThreshold: 1
+  UseYaw: 1
+  YawTurnSpeed: 2
+  UsePitch: 1
+  PitchTurnSpeed: 3
+  MinPitchAngle: 0
+  MaxPitchAngle: 0
+  DefaultPitchAngle: 45
+  MinProjectilesToShoot: 1
+  LaunchSpeedMode: 1
+  LaunchSpeed: 10
+  AimStrategies: 0000000001000000
+  ShootStrategy: 0
+  TargetStrategy: 0
+  ProjectileMoveType: 1
+  ProjectileHitType: 1
+  Modifiers: 
+  UpgradeLevels: []
+  BaseEffectChances: []
   Parameters:
   - Type: 0
-    Value: 5
+    ValueType: 0
+    FloatValue: 5
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 1, g: 1, b: 1, a: 1}
+    VectorValue: {x: 0, y: 0, z: 0}

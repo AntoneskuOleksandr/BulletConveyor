@@ -11,7 +11,7 @@ public class IceEffect : IOnHitEffect
         _duration = so.Duration;
     }
 
-    public void Apply(Bullet bullet, Enemy target)
+    public void Apply(ProjectileBase projectile, Enemy target)
     {
         var debuff = new IceDebuff(_meltSpeed, _duration);
         target.ModifierManager.AddStatusEffect(debuff);

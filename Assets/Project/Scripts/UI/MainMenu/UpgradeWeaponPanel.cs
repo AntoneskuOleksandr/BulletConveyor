@@ -92,7 +92,7 @@ public class UpgradeWeaponPanel : MonoBehaviour
     {
         int level = GetLevel(progress, panel.upgradeType);
 
-        if (level >= currentWeapon.upgradeLevels.Length)
+        if (level >= currentWeapon.UpgradeLevels.Length)
         {
             panel.button.interactable = false;
             panel.priceText.text = "MAX";
@@ -101,14 +101,14 @@ public class UpgradeWeaponPanel : MonoBehaviour
             return;
         }
 
-        int cost = currentWeapon.upgradeLevels[level].cost;
+        int cost = currentWeapon.UpgradeLevels[level].Cost;
 
         panel.button.interactable = _economyService.GetCurrency(CurrencyType.Gears) >= cost;
         panel.priceText.text = cost.ToString();
 
         if (panel.progressBar != null)
         {
-            float fill = (float)level / currentWeapon.upgradeLevels.Length;
+            float fill = (float)level / currentWeapon.UpgradeLevels.Length;
             panel.progressBar.fillAmount = fill;
         }
     }

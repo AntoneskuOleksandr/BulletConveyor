@@ -5,25 +5,39 @@ using UnityEngine;
 [Serializable]
 public class UpgradeLevel
 {
-    public int cost;
-    public int damageBonus;
-    public float fireRateBonus;
-    public int healthBonus;
+    public int Cost;
+    public int DamageBonus;
+    public float FireRateBonus;
+    public int HealthBonus;
 }
 
 public enum WeaponParameterType
 {
-    AoERadius,
-    LaserLength,
-    LaserWidth,
-    HomingSpeed
+    AoERadius = 0,
+    SpreadAngle = 1,
+    PowerfulShotEvery = 2,
+    ShootSimultaneously = 3, // 1 - simultaneously, 0 - sequentially
+    PowerShotMultiplier = 4,
+    PelletsPerShot = 5,
+    PelletDamageMultiplier = 6,
+    LifeTime = 7,
+    BeamWidth = 8,
+    Length = 9,
+    PierceCount = 10,
+    Color = 11,
+    TickInterval = 12,
+    FireRateIncreasePerShot = 13,
+    MaxFireRateBonus = 14,
+    FireRateRampResetTime = 15
 }
 
-[Serializable]
-public class WeaponParameter
+public enum WeaponParameterValueType
 {
-    public WeaponParameterType Type;
-    public float Value;
+    Float,
+    Int,
+    Bool,
+    Color,
+    Vector3
 }
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Scriptable Objects/Weapon")]
@@ -34,40 +48,64 @@ public class WeaponSO : ScriptableObject
     public GameObject WeaponGO;
     public int RequiredLevel;
     public WeaponType WeaponType;
-    public BulletType BulletType;
-
 
     [Header("Base Stats")]
-    public int baseDamage;
-    public float baseFireRate;
-    public int baseHealth;
-    public float baseAttackRadius;
+    public int BaseDamage;
+    public float BaseFireRate;
+    public int BaseHealth;
+
+    [Header("Attack Settings")]
+    public float MaxAttackRadius;
+    public float MinAttackRadius;
+    public float FindTargetRadiusCoefficient;
+
+    [Header("Aiming Settings")]
+    public float AimThreshold;
+
+    // Yaw
+    public bool UseYaw;
+    public float YawTurnSpeed;
+    // Pitch
+    public bool UsePitch;
+    public float PitchTurnSpeed;
+    public float MinPitchAngle;
+    public float MaxPitchAngle;
+    public float DefaultPitchAngle;
+
+    [Header("Projectile Settings")]
+    [Min(1)] public int MinProjectilesToShoot = 1;
+    public LaunchSpeedMode LaunchSpeedMode = LaunchSpeedMode.Fixed;
+    public float LaunchSpeed = 10f;
 
     [Header("Strategies")]
-    public ShootStrategyType shootStrategy;
-    public AimStrategyType aimStrategy;
-    public TargetStrategyType targetStrategy;
-    public BulletMoveType bulletMoveType;
-    public BulletHitType bulletHitType;
+    public List<AimStrategyType> AimStrategies;
+    public ShootStrategyType ShootStrategy;
+    public TargetStrategyType TargetStrategy;
+    public ProjectileMoveType ProjectileMoveType;
+    public ProjectileHitType ProjectileHitType;
+
+    [Header("Modifiers")]
+    public List<WeaponModifierType> Modifiers;
 
     [Header("Upgrade Levels")]
-    public UpgradeLevel[] upgradeLevels;
+    public UpgradeLevel[] UpgradeLevels;
 
     [Header("Base Effect Chances")]
-    public List<WeaponEffectChance> baseEffectChances;
+    public List<WeaponEffectChance> BaseEffectChances;
 
     [Header("Custom Parameters")]
     public WeaponParameter[] Parameters;
 
-
-    public float GetParameter(WeaponParameterType type, float defaultValue = 0f)
+    public T GetParameter<T>(WeaponParameterType type)
     {
         foreach (var p in Parameters)
         {
             if (p.Type == type)
-                return p.Value;
+                return p.GetValue<T>();
         }
-        return defaultValue;
+
+        Debug.LogWarning($"[{name}] Missing parameter: {type}");
+        return default;
     }
 
 }

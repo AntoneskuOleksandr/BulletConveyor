@@ -28,7 +28,7 @@ public class BlockParent : MonoBehaviour
 
     public bool CanDrag = true;
 
-    public TMP_Text bulletsCountText;
+    public TMP_Text ProjectilesCountText;
 
     public int scaleX = 1;
     public int scaleZ = 1;
@@ -41,7 +41,7 @@ public class BlockParent : MonoBehaviour
 
     private Vector3 desiredPosition;
 
-    public int bulletsToGenerate;
+    public int projectilesToGenerate;
 
     public GameObject nextRangBlock;
     public int rank;
@@ -74,8 +74,8 @@ public class BlockParent : MonoBehaviour
 
         desiredPosition = transform.position;
 
-        if (bulletsCountText != null)
-            bulletsCountText.text = "+" + bulletsToGenerate.ToString();
+        if (ProjectilesCountText != null)
+            ProjectilesCountText.text = "+" + projectilesToGenerate.ToString();
     }
 
     private void Update()
@@ -88,10 +88,10 @@ public class BlockParent : MonoBehaviour
         desiredPosition = position;
     }
 
-    private void AddBulletToGenerate()
+    private void AddProjectileToGenerate()
     {
-        bulletsToGenerate++;
-        bulletsCountText.text = "+" + bulletsToGenerate.ToString();
+        projectilesToGenerate++;
+        ProjectilesCountText.text = "+" + projectilesToGenerate.ToString();
     }
 
     public void StartDragging()

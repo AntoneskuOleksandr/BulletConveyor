@@ -12,41 +12,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
   m_Name: BoosterGun
   m_EditorClassIdentifier: 
-  WeaponId: 2
+  WeaponId: 5
   WeaponGO: {fileID: 8826503268357994785, guid: 6a18870c6db6a00449f8ecd6e91ebe71,
     type: 3}
-  RequiredLevel: 2
-  WeaponType: 0
-  BulletType: 0
-  baseDamage: 0
-  baseFireRate: 0
-  baseHealth: 0
-  baseAttackRadius: 0
-  shootStrategy: 0
-  aimStrategy: 0
-  targetStrategy: 0
-  bulletMoveType: 0
-  bulletHitType: 0
-  upgradeLevels:
-  - cost: 1
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 2
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 3
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 4
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  - cost: 5
-    damageBonus: 1
-    fireRateBonus: 2
-    healthBonus: 3
-  baseEffectChances: []
-  Parameters: []
+  RequiredLevel: 5
+  WeaponType: 6
+  BaseDamage: 25
+  BaseFireRate: 1
+  BaseHealth: 100
+  MaxAttackRadius: 20
+  MinAttackRadius: 0
+  FindTargetRadiusCoefficient: 1.5
+  AimThreshold: 1
+  UseYaw: 1
+  YawTurnSpeed: 3
+  UsePitch: 0
+  PitchTurnSpeed: 0
+  MinPitchAngle: 0
+  MaxPitchAngle: 0
+  DefaultPitchAngle: 0
+  MinProjectilesToShoot: 1
+  LaunchSpeedMode: 0
+  LaunchSpeed: 10
+  AimStrategies: 00000000
+  ShootStrategy: 0
+  TargetStrategy: 0
+  ProjectileMoveType: 0
+  ProjectileHitType: 0
+  Modifiers: 03000000
+  UpgradeLevels: []
+  BaseEffectChances: []
+  Parameters:
+  - Type: 13
+    ValueType: 0
+    FloatValue: 0.33333334
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 14
+    ValueType: 0
+    FloatValue: 5
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
+  - Type: 15
+    ValueType: 0
+    FloatValue: 3
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}

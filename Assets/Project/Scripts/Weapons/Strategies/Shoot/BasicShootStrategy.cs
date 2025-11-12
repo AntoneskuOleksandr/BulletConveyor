@@ -1,21 +1,29 @@
+using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 public class BasicShootStrategy : IShootStrategy
 {
-    [Inject] private BulletManager _bulletManager;
+    [Inject] private ProjectileManager _projectileManager;
+    [Inject] private ProjectileInitializer _projectileInitializer;
 
-    public bool TryShoot(Weapon weapon)
+    public bool IsCanShoot(Weapon weapon)
     {
         if (weapon.FireCountdown > 0f) return false;
         if (weapon.Target == null) return false;
 
-        Bullet bullet = _bulletManager.TryGetBullet(weapon);
-        if (bullet == null) return false;
+        return _projectileManager.AvailableCount >= weapon.Data.MinProjectilesToShoot;
+    }
 
-        bullet.SetStrategies(weapon.BulletMoveStrategy, weapon.BulletHitStrategy);
-        bullet.Init(weapon.Damage, weapon.FirePoint, weapon.Target.HitTransform);
+    public List<ProjectileBase> Shoot(Weapon weapon)
+    {
+        Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
+        if (firePoint == null)
+            return null;
 
-        weapon.ResetFireCountdown();
-        return true;
+        IEnumerable<ProjectileInitData> projectileData = weapon.BuildExpandedProjectileInitData(firePoint);
+        List<ProjectileBase> fired = _projectileInitializer.InitializeProjectiles(weapon, firePoint, projectileData);
+
+        return fired;
     }
 }

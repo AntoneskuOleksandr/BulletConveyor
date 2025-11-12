@@ -6,12 +6,14 @@ public class WeaponFactory
     private readonly DiContainer _container;
     private readonly WeaponsService _weaponsService;
     private readonly StrategyResolver _strategyResolver;
+    private readonly WeaponModifierResolver _modifierResolver;
 
-    public WeaponFactory(DiContainer container, WeaponsService weaponsService, StrategyResolver resolver)
+    public WeaponFactory(DiContainer container, WeaponsService weaponsService, StrategyResolver strategyResolver, WeaponModifierResolver modifierResolver)
     {
         _container = container;
         _weaponsService = weaponsService;
-        _strategyResolver = resolver;
+        _strategyResolver = strategyResolver;
+        _modifierResolver = modifierResolver;
     }
 
     public Weapon AddWeaponComponent(GameObject go, WeaponSO so)
@@ -20,35 +22,40 @@ public class WeaponFactory
         Weapon weapon = _container.InstantiateComponent<Weapon>(go);
 
         // 2. Назначаем стратегии пуль
-        IBulletMoveStrategy move = so.bulletMoveType switch
+        IProjectileMoveStrategy move = so.ProjectileMoveType switch
         {
-            BulletMoveType.Straight => new StraightMoveStrategy(),
-            BulletMoveType.Arc => new ArcMoveStrategy(),
+            ProjectileMoveType.Straight => new StraightMoveStrategy(),
+            ProjectileMoveType.Arc => new ArcMoveStrategy(),
+            ProjectileMoveType.BeamInstant => new BeamInstantMoveStrategy(),
+            ProjectileMoveType.BeamContinuous => new BeamContinuousMoveStrategy(),
             _ => new StraightMoveStrategy()
         };
 
-        IBulletHitStrategy hit = so.bulletHitType switch
+        IProjectileHitStrategy hit = so.ProjectileHitType switch
         {
-            BulletHitType.Direct => new DirectHitStrategy(),
-            BulletHitType.AoE => new AoEHitStrategy(so.GetParameter(WeaponParameterType.AoERadius, 5f)),
+            ProjectileHitType.Direct => new DirectHitStrategy(),
+            ProjectileHitType.AoE => new AoEHitStrategy(),
             _ => new DirectHitStrategy()
         };
 
         // 3. Назначаем стратегии поведения
-        var shoot = _strategyResolver.ResolveShoot(so.shootStrategy);
-        var aim = _strategyResolver.ResolveAim(so.aimStrategy);
-        var target = _strategyResolver.ResolveTarget(so.targetStrategy);
+        var shoot = _strategyResolver.ResolveShoot(so.ShootStrategy);
+        var aim = _strategyResolver.ResolveAims(so.AimStrategies);
+        var target = _strategyResolver.ResolveTarget(so.TargetStrategy);
+        var modifiers = _modifierResolver.ResolveModifiers(so.Modifiers);
 
         weapon.SetWeaponStrategy(
-            shoot, so.shootStrategy,
-            aim, so.aimStrategy,
-            target, so.targetStrategy
+            aim, so.AimStrategies,
+            shoot, so.ShootStrategy,
+            target, so.TargetStrategy
         );
 
-        weapon.SetBulletStrategy(
-            move, so.bulletMoveType,
-            hit, so.bulletHitType
+        weapon.SetProjectileStrategy(
+            move, so.ProjectileMoveType,
+            hit, so.ProjectileHitType
         );
+
+        weapon.SetWeaponModifiers(modifiers, so.Modifiers);
 
         var progress = _weaponsService.GetProgressRO(so.WeaponId);
         weapon.InitializeFromSO(so, progress);

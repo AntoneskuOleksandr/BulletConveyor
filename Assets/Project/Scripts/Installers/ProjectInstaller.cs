@@ -4,6 +4,8 @@ using Zenject;
 public class ProjectInstaller : MonoInstaller
 {
     [SerializeField] private WeaponDatabaseSO weaponDatabase;
+    [SerializeField] private bool useDebugPlayerData;
+    [SerializeField] private PlayerDataEditorSO debugPlayerData;
 
     public override void InstallBindings()
     {
@@ -11,7 +13,15 @@ public class ProjectInstaller : MonoInstaller
 
         DataRepository dataRepository = new DataRepository();
         var dataManager = new DataManager(dataRepository);
-        var playerData = dataManager.LoadOrCreate();
+
+        PlayerData playerData;
+
+        if (useDebugPlayerData)
+        {
+            playerData = debugPlayerData.GetPlayerData();
+        }
+        else
+            playerData = dataManager.LoadOrCreate();
 
         Container.BindInstance(dataRepository).AsSingle();
         Container.BindInstance(dataManager).AsSingle();

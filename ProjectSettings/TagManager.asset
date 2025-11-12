@@ -21,7 +21,7 @@ TagManager:
   - Tile
   - Enemy
   - Barrier
-  - Gun
+  - Weapon
   - 'ConveyorBelt '
   - Platform
   - Environment

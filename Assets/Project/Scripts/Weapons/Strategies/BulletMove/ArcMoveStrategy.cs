@@ -1,17 +1,34 @@
 using UnityEngine;
 
-public class ArcMoveStrategy : IBulletMoveStrategy
+public class ArcMoveStrategy : IProjectileMoveStrategy
 {
-    public void Launch(Bullet bullet, Transform target)
+    public void Launch(Weapon weapon, ProjectileBase projectile, ProjectileInitData data)
     {
-        Vector3 dir = target.position - bullet.transform.position;
-        bullet.Rigidbody.useGravity = true;
+        if (projectile.Rigidbody == null)
+        {
+            Debug.LogError("[ArcMoveStrategy] Missing Rigidbody on projectile!");
+            return;
+        }
 
-        float distance = dir.magnitude;
-        float angle = 45f * Mathf.Deg2Rad;
-        float v = Mathf.Sqrt(distance * Physics.gravity.magnitude / Mathf.Sin(2 * angle));
+        projectile.Rigidbody.isKinematic = false;
+        projectile.Rigidbody.useGravity = true;
+        projectile.Rigidbody.linearVelocity = projectile.transform.forward * data.LaunchSpeed;
+    }
 
-        Vector3 velocity = dir.normalized * v * Mathf.Cos(angle) + Vector3.up * v * Mathf.Sin(angle);
-        bullet.Rigidbody.linearVelocity = velocity;
+    public void Update(Weapon weapon, ProjectileBase projectile, float deltaTime)
+    {
+        if (projectile.Rigidbody == null)
+            return;
+
+        Vector3 velocity = projectile.Rigidbody.linearVelocity;
+        if (velocity.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(velocity);
+            projectile.transform.rotation = Quaternion.Slerp(
+                projectile.transform.rotation,
+                targetRot,
+                deltaTime * 8f
+            );
+        }
     }
 }

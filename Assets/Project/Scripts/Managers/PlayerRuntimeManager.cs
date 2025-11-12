@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerRuntimeManager : MonoBehaviour
 {
+    [SerializeField] private float startCoins = 100f;
     public event Action OnCurrencyChanged;
     private List<CurrencyEntry> _currencies = new();
 
@@ -19,6 +20,11 @@ public class PlayerRuntimeManager : MonoBehaviour
             type = CurrencyType.Gears,
             amount = 0f
         });
+    }
+
+    private void Start()
+    {
+        AddCurrency(CurrencyType.Coins, startCoins);
     }
 
     public float GetCurrency(CurrencyType type)
