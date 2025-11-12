@@ -7,4 +7,5 @@ public enum WeaponType
     Twins,
     RayGun,
     BoosterGun,
+    SniperRifle
 }
