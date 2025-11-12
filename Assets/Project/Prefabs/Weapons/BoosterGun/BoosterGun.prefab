@@ -346,6 +346,7 @@ GameObject:
   - component: {fileID: 495434181087904445}
   - component: {fileID: 5517057259079944104}
   - component: {fileID: 6956229705994743125}
+  - component: {fileID: 1704948701312226781}
   m_Layer: 9
   m_Name: Head
   m_TagString: Untagged
@@ -423,6 +424,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1704948701312226781
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6773575147191218302}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.028135773, y: 0.016527662, z: 0.043148447}
+  m_Center: {x: 0.0000000013969836, y: 0.006172547, z: 0.013452725}
 --- !u!1 &8826503268357994785
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,6 +459,7 @@ GameObject:
   - component: {fileID: 8847397150166422129}
   - component: {fileID: 417485851931764636}
   - component: {fileID: 5256950584060143074}
+  - component: {fileID: 6873092176058934175}
   m_Layer: 9
   m_Name: BoosterGun
   m_TagString: Untagged
@@ -572,3 +595,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &6873092176058934175
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8826503268357994785}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.01875092, y: 0.014837165, z: 0.01875092}
+  m_Center: {x: 0, y: 0.004692733, z: 0}
