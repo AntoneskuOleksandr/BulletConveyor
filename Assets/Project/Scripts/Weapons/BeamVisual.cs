@@ -8,22 +8,39 @@ public class BeamVisual : MonoBehaviour
     private float _width;
     private float _length;
     private float _lifeTime;
+    private float _additionalLength = 0.5f;
 
-    public void Configure(Color color, float width, float length, float lifeTime)
+    public void Configure(Color color, float width, float length, float lifeTime, Transform parent)
     {
         _color = color;
         _width = width;
         _length = length;
         _lifeTime = lifeTime;
 
+        transform.SetParent(parent, worldPositionStays: false);
+
         CreateLineRenderer();
 
-        // выставляем позиции сразу
-        _line.SetPosition(0, Vector3.zero);
-        _line.SetPosition(1, Vector3.forward * _length);
+        float scaledLength = (_length + _additionalLength) / transform.lossyScale.z;
+        SetLength(scaledLength);
 
-        // уничтожаем после lifeTime
         Destroy(gameObject, _lifeTime);
+    }
+
+    public void UpdateLength(float newLength)
+    {
+        if (_line == null)
+            return;
+
+        float scaledLength = (newLength + _additionalLength) / transform.lossyScale.z;
+        SetLength(scaledLength);
+    }
+
+    private void SetLength(float scaledLength)
+    {
+        _line.positionCount = 2;
+        _line.SetPosition(0, Vector3.zero);
+        _line.SetPosition(1, Vector3.forward * scaledLength);
     }
 
     private void CreateLineRenderer()
@@ -36,7 +53,7 @@ public class BeamVisual : MonoBehaviour
         _line.material = _material;
         _line.startWidth = _width;
         _line.endWidth = _width;
-        _line.useWorldSpace = false; // важно! локальные координаты относительно FirePoint
+        _line.useWorldSpace = false;
         _line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         _line.receiveShadows = false;
         _line.alignment = LineAlignment.View;

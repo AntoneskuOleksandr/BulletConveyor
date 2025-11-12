@@ -42,10 +42,12 @@ public class BeamInstantMoveStrategy : IProjectileMoveStrategy
             ? origin + direction * _range
             : (lastEffectiveHit ?? origin + direction * _range);
 
-        var beamGO = new GameObject("BeamVisual");
-        var visual = beamGO.AddComponent<BeamVisual>();
-        //visual.Configure(_beamColor, _beamWidth, _visualLifetime, 2f);
-        //visual.Draw(origin, endPoint);
+        GameObject beamGO = new GameObject("BeamVisual");
+        BeamVisual visual = beamGO.AddComponent<BeamVisual>();
+
+        float distance = Vector3.Distance(origin, endPoint);
+        visual.Configure(_beamColor, _beamWidth, distance, _visualLifetime,
+            weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint));
 
         if (projectile.Collider != null)
             projectile.Collider.enabled = false;

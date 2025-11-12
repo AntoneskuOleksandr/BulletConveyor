@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 public class BeamContinuousMoveStrategy : IProjectileMoveStrategy
 {
@@ -17,24 +17,25 @@ public class BeamContinuousMoveStrategy : IProjectileMoveStrategy
 
         Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
 
-        // создаём визуал дочерним FirePoint
         GameObject beamGO = new GameObject("Beam_Continuous");
         beamGO.transform.SetParent(firePoint, worldPositionStays: false);
         beamGO.transform.localPosition = Vector3.zero;
         beamGO.transform.localRotation = Quaternion.identity;
 
-        var visual = beamGO.AddComponent<BeamVisual>();
-        visual.Configure(beamColor, beamWidth, range, lifeTime);
+        BeamVisual visual = beamGO.AddComponent<BeamVisual>();
+        visual.Configure(beamColor, beamWidth, range, lifeTime, firePoint);
 
-        // запускаем корутину урона
-        weapon.StartCoroutine(DamageRoutine(weapon, projectile, data, firePoint, range, pierceCount, tickInterval, lifeTime));
+        weapon.StartCoroutine(DamageRoutine(
+            weapon, projectile, data,
+            firePoint, range, pierceCount, tickInterval, lifeTime, visual));
     }
 
     public void Update(Weapon weapon, ProjectileBase projectile, float deltaTime) { }
 
-    private IEnumerator DamageRoutine(Weapon weapon, ProjectileBase projectile, ProjectileInitData data,
-                                      Transform firePoint, float range, int pierceCount,
-                                      float tickInterval, float lifeTime)
+    private IEnumerator DamageRoutine(
+        Weapon weapon, ProjectileBase projectile, ProjectileInitData data,
+        Transform firePoint, float range, int pierceCount,
+        float tickInterval, float lifeTime, BeamVisual visual)
     {
         float elapsed = 0f;
 
@@ -44,9 +45,10 @@ public class BeamContinuousMoveStrategy : IProjectileMoveStrategy
             Vector3 direction = firePoint.forward;
 
             var hits = Physics.RaycastAll(origin, direction, range);
-            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+            Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
             int remainingPierce = pierceCount;
+            Vector3? lastHitPoint = null;
 
             foreach (var hit in hits)
             {
@@ -58,14 +60,21 @@ public class BeamContinuousMoveStrategy : IProjectileMoveStrategy
                     continue;
 
                 enemy.TakeDamage(data.Damage);
-                projectile?.ApplyEffects(enemy);
+                projectile.ApplyEffects(enemy);
+
                 remainingPierce--;
+                lastHitPoint = hit.point;
             }
+
+            Vector3 endPoint = (remainingPierce > 0)
+                ? origin + direction * range
+                : (lastHitPoint ?? origin + direction * range);
+
+            float currentLength = Vector3.Distance(origin, endPoint);
+            visual.UpdateLength(currentLength);
 
             yield return new WaitForSeconds(tickInterval);
             elapsed += tickInterval;
         }
-
-        // визуал сам удалится по таймеру
     }
 }

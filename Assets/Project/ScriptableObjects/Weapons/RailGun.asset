@@ -67,7 +67,7 @@ MonoBehaviour:
   - Type: 10
     ValueType: 1
     FloatValue: 0
-    IntValue: 3
+    IntValue: 1
     BoolValue: 0
     ColorValue: {r: 0, g: 0, b: 0, a: 0}
     VectorValue: {x: 0, y: 0, z: 0}
