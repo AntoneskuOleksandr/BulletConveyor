@@ -58,12 +58,10 @@ public class ProjectileBase : MonoBehaviour
         if (!_isActive)
             return;
 
-        Debug.Log("Projectile hit: " + other.name);
-
         _isActive = false;
         _hitStrategy?.Hit(_weapon, this, other);
         _weapon.NotifyProjectileHit(this, other);
-        Destroy(gameObject, 1f);
+        Destroy(gameObject);
     }
 
     public void ApplyEffects(Enemy enemy)
