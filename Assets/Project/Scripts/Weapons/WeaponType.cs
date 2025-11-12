@@ -5,5 +5,5 @@ public enum WeaponType
     Shotgun,
     Peashooter,
     Twins,
-    Railgun
+    RayGun
 }

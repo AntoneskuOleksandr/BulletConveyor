@@ -320,7 +320,7 @@ GameObject:
   - component: {fileID: 4855684656843123654}
   - component: {fileID: 4244948024009418505}
   m_Layer: 9
-  m_Name: RailGun
+  m_Name: RayGun
   m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 392760188964f9b4da67f8fd1db8b586, type: 3}
-  m_Name: RailGun
+  m_Name: RayGun
   m_EditorClassIdentifier: 
   WeaponId: 4
   WeaponGO: {fileID: 4620421170449132950, guid: 8651b846820e0da469d7eac898b86e4a,
