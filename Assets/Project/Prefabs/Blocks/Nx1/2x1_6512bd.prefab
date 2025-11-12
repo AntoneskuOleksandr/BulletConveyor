@@ -48,12 +48,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DraggSpeed: 7
-  bulletsCountText: {fileID: 6654137772101722652}
+  CanDrag: 1
+  ProjectilesCountText: {fileID: 6654137772101722652}
   scaleX: 2
   scaleZ: 1
   blockState: 0
   blockPreviousState: 0
-  bulletsToGenerate: 1
+  projectilesToGenerate: 2
   nextRangBlock: {fileID: 23882373455884952, guid: 853e2c3ea32ffe64f8b600dda0fb4c44,
     type: 3}
   rank: 0

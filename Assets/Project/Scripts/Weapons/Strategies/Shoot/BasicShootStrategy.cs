@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 public class BasicShootStrategy : IShootStrategy
@@ -16,12 +17,12 @@ public class BasicShootStrategy : IShootStrategy
 
     public List<ProjectileBase> Shoot(Weapon weapon)
     {
-        var firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
+        Transform firePoint = weapon.AttachmentPoints.Get(WeaponAttachmentType.FirePoint);
         if (firePoint == null)
             return null;
 
-        var projectileData = weapon.BuildExpandedProjectileInitData(firePoint);
-        var fired = _projectileInitializer.InitializeProjectiles(weapon, firePoint, projectileData);
+        IEnumerable<ProjectileInitData> projectileData = weapon.BuildExpandedProjectileInitData(firePoint);
+        List<ProjectileBase> fired = _projectileInitializer.InitializeProjectiles(weapon, firePoint, projectileData);
 
         return fired;
     }

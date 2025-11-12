@@ -518,7 +518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf64f5a43b5f87c44a0d440ffd70c0f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 3
+  spawnInterval: 1
   spawnOffset: 0.33333334
   conveyor: {fileID: 672262507}
   projectilePrefab: {fileID: 3121401278747700698, guid: dbe795bc4f75eac4f96f1ba94841967b,
@@ -526,7 +526,7 @@ MonoBehaviour:
   projectileAnimationDuration: 1
   pulseAnimationDuration: 0.2
   animationStrength: 0.2
-  debugMode: 1
+  debugMode: 0
   debugProjectilesCount: 1
   spawnOnceOnStart: 0
   blocksPool: {fileID: 1859149344}

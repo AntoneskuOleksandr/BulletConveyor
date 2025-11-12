@@ -193,10 +193,10 @@ public class Weapon : MonoBehaviour
             }
         }
 
-        ProjectileInitData ProcessInitData(ProjectileInitData data, Transform fp)
+        ProjectileInitData ProcessInitData(ProjectileInitData data, Transform firePoint)
         {
             foreach (var m in _weaponModifiers)
-                m.OnBeforeProjectileInit(this, ref data, fp);
+                m.OnBeforeProjectileInit(this, ref data, firePoint);
             return data;
         }
     }
