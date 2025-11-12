@@ -1,1 +1,1 @@
-public enum AimStrategyType { Basic }
+public enum AimStrategyType { Basic, Ballistic }

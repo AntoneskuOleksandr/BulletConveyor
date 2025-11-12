@@ -12,10 +12,10 @@ public class WeaponVisual : MonoBehaviour
     private ParticleSystem _muzzleInstance;
     private ParticleSystem.Particle[] _particles;
 
-    private void Awake()
+    private void Start()
     {
         var attachment = GetComponent<WeaponAttachmentPoints>();
-        muzzlePoint = attachment?.firePoint;
+        muzzlePoint = attachment?.Get(WeaponAttachmentType.FirePoint);
 
         if (muzzleFlashPrefab != null && muzzlePoint != null)
         {
@@ -37,7 +37,7 @@ public class WeaponVisual : MonoBehaviour
         _muzzleInstance.transform.rotation = muzzlePoint.rotation;
 
         _muzzleInstance.Play();
-        
+
         if (colorWeights != null && colorWeights.Count > 0)
             StartCoroutine(DelayedColorize(colorWeights));
     }

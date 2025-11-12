@@ -19,7 +19,6 @@ public class WaveManager : MonoBehaviour
     private int enemiesAlive = 0;
 
     private bool isFrozen = false;            // новый флаг
-    private bool waitingForUnfreeze = false;  // вспомогательный флаг
 
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private EnemyManager _enemyManager;
@@ -38,12 +37,15 @@ public class WaveManager : MonoBehaviour
 
     public void Configure(int total, int baseCount, int increment, int extraRange, GameObject enemyType1, GameObject enemyType2)
     {
-        totalWaves = total;
-        minEnemyCount = baseCount;
-        maxEnemyCount = baseCount + extraRange;
-        enemyIncrementPerWave = increment;
+        /*        totalWaves = total;
+                minEnemyCount = baseCount;
+                maxEnemyCount = baseCount + extraRange;
+                enemyIncrementPerWave = increment;
 
-        _enemySpawner.Initialize(enemyType1, enemyType2);
+                _enemySpawner.Initialize(enemyType1, enemyType2);
+                _progressBar.Initialize();*/
+
+        _enemySpawner.Initialize(enemyType1, enemyType1);
         _progressBar.Initialize();
     }
 
@@ -82,9 +84,7 @@ public class WaveManager : MonoBehaviour
             // Перед началом новой волны проверяем заморозку
             if (isFrozen)
             {
-                waitingForUnfreeze = true;
                 yield return new WaitUntil(() => !isFrozen);
-                waitingForUnfreeze = false;
             }
 
             // время между волнами

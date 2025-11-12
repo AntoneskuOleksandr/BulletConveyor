@@ -75,3 +75,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponDatabase: {fileID: 11400000, guid: 333379f1220eaa947be4a0ba4ba6941e, type: 2}
+  useDebugPlayerData: 1
+  debugPlayerData: {fileID: 11400000, guid: 13dff26c7826ed945bded37c94cadc44, type: 2}

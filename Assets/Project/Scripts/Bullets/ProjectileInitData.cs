@@ -1,0 +1,10 @@
+using UnityEngine;
+
+public struct ProjectileInitData
+{
+    public float Damage;
+    public float LaunchSpeed;
+
+    public bool HasOverrideForward;
+    public Vector3 OverrideForward;
+}

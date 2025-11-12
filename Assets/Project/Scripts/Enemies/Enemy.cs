@@ -60,7 +60,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected void OnEnable()
     {
-        OnDeath.AddListener(() => enemyStatusCanvas.HideHealthBar());
+        OnDeath.AddListener(() => enemyStatusCanvas.HideStatusCanvas());
 
         if (_target != null && _agent != null)
         {
@@ -71,7 +71,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected void OnDisable()
     {
-        OnDeath.RemoveListener(() => enemyStatusCanvas.HideHealthBar());
+        OnDeath.RemoveListener(() => enemyStatusCanvas.HideStatusCanvas());
     }
 
     public void SetSpeed(float speed)

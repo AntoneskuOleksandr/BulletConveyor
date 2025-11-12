@@ -6,9 +6,11 @@ public class StrategyInstaller : MonoInstaller
     {
         // Shoot strategies
         Container.Bind<BasicShootStrategy>().AsSingle();
+        Container.Bind<MultiBarrelShootStrategy>().AsSingle();
 
         // Aim strategies
         Container.Bind<BasicAimStrategy>().AsSingle();
+        Container.Bind<BallisticAimStrategy>().AsSingle();
 
         // Targeting strategies
         Container.Bind<NearestTargetStrategy>().AsSingle();
@@ -21,7 +23,7 @@ public class StrategyInstaller : MonoInstaller
         Container.Bind<DirectHitStrategy>().AsSingle();
         Container.Bind<AoEHitStrategy>().AsSingle();
 
-        //Resolver
+        //Resolvers
         Container.Bind<StrategyResolver>().AsSingle();
     }
 }

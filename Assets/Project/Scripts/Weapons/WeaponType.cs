@@ -1,5 +1,11 @@
 public enum WeaponType
 {
     MachineGun,
-    Artillery
+    Artillery,
+    Shotgun,
+    Peashooter,
+    Twins,
+    RayGun,
+    BoosterGun,
+    SniperRifle
 }
