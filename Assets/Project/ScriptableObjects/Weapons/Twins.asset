@@ -31,17 +31,22 @@ MonoBehaviour:
   MinPitchAngle: -10
   MaxPitchAngle: 45
   DefaultPitchAngle: 0
-  MinBulletsToShoot: 1
+  MinProjectilesToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 25
   AimStrategies: 00000000
   ShootStrategy: 1
   TargetStrategy: 0
-  BulletMoveType: 0
-  BulletHitType: 0
+  ProjectileMoveType: 0
+  ProjectileHitType: 0
   Modifiers: 
   UpgradeLevels: []
   BaseEffectChances: []
   Parameters:
-  - Type: 4
-    Value: 0
+  - Type: 3
+    ValueType: 2
+    FloatValue: 0
+    IntValue: 0
+    BoolValue: 0
+    ColorValue: {r: 0, g: 0, b: 0, a: 0}
+    VectorValue: {x: 0, y: 0, z: 0}
