@@ -21,4 +21,4 @@ MonoBehaviour:
   - type: 1
     amount: 0
   weapons: []
-  selectedWeaponIds: 04000000
+  selectedWeaponIds: 05000000
