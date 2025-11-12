@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4934610618754540293}
   - component: {fileID: 3183066566659757069}
   - component: {fileID: 1923617288119319144}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 7367897878254569533}
   - component: {fileID: 997728982939439531}
   - component: {fileID: 1341428211472346900}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RightBarrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -231,7 +231,7 @@ GameObject:
   - component: {fileID: 308531850275626941}
   - component: {fileID: 7174922339820582650}
   - component: {fileID: 5907062100007448073}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LeftBarrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,7 +337,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1672089308050055519}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376,7 +376,7 @@ GameObject:
   - component: {fileID: 7771717175151530373}
   - component: {fileID: 6337397719587928151}
   - component: {fileID: 1941180278102488655}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -455,7 +455,7 @@ GameObject:
   - component: {fileID: 2915040934164376947}
   - component: {fileID: 4901140600536862901}
   - component: {fileID: 2572274280466071652}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Twins
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -625,7 +625,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6416511583301806313}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FirePoint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -659,7 +659,7 @@ GameObject:
   - component: {fileID: 6270391773742164004}
   - component: {fileID: 6023287751920074285}
   - component: {fileID: 1918945918322834062}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RightBarrel.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -769,7 +769,7 @@ GameObject:
   - component: {fileID: 5726592348942627843}
   - component: {fileID: 6556859787097494836}
   - component: {fileID: 3296877788851808108}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: LeftBarrel.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -877,7 +877,7 @@ GameObject:
   - component: {fileID: 1096989056908314269}
   - component: {fileID: 2455655895599592942}
   - component: {fileID: 504245389678672110}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: HealthBG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -954,7 +954,7 @@ GameObject:
   - component: {fileID: 1504970096153538465}
   - component: {fileID: 4334109685263568884}
   - component: {fileID: 3316391280946822666}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: StatusCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1067,7 +1067,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1999477429487935214}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FirePoint2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
