@@ -67,6 +67,7 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<ProjectileManager>().AsSingle();
         Container.Bind<EffectChanceManager>().AsSingle();
         Container.Bind<WeaponModifierResolver>().AsSingle();
+        Container.BindInterfacesAndSelfTo<FireDispatcher>().AsSingle();
 
         //Effects Managers
         Container.Bind<EffectFactory>().FromInstance(effectFactory).AsSingle();

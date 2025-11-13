@@ -4,4 +4,5 @@ public interface IStatProvider
     float ModifyDamage(float baseValue) => baseValue;
     float ModifyHealth(float baseValue) => baseValue;
     float ModifyAttackRadius(float baseValue) => baseValue;
+    float ModifyRequiredProjectilesCount(float baseValue) => baseValue;
 }

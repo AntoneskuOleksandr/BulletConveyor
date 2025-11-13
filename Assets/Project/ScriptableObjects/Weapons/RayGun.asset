@@ -18,11 +18,10 @@ MonoBehaviour:
   RequiredLevel: 4
   WeaponType: 5
   BaseDamage: 5
-  BaseFireRate: 0.5
+  BaseFireRate: 1
   BaseHealth: 100
   MaxAttackRadius: 20
   MinAttackRadius: 0
-  FindTargetRadiusCoefficient: 1.5
   AimThreshold: 5
   UseYaw: 1
   YawTurnSpeed: 3
@@ -34,6 +33,7 @@ MonoBehaviour:
   MinProjectilesToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 15
+  Priority: 0
   AimStrategies: 00000000
   ShootStrategy: 0
   TargetStrategy: 0

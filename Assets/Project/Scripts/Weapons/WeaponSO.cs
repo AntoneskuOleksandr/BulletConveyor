@@ -57,7 +57,6 @@ public class WeaponSO : ScriptableObject
     [Header("Attack Settings")]
     public float MaxAttackRadius;
     public float MinAttackRadius;
-    public float FindTargetRadiusCoefficient;
 
     [Header("Aiming Settings")]
     public float AimThreshold;
@@ -76,6 +75,7 @@ public class WeaponSO : ScriptableObject
     [Min(1)] public int MinProjectilesToShoot = 1;
     public LaunchSpeedMode LaunchSpeedMode = LaunchSpeedMode.Fixed;
     public float LaunchSpeed = 10f;
+    public float Priority;
 
     [Header("Strategies")]
     public List<AimStrategyType> AimStrategies;

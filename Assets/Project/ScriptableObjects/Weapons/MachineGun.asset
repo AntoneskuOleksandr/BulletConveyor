@@ -22,7 +22,6 @@ MonoBehaviour:
   BaseHealth: 100
   MaxAttackRadius: 20
   MinAttackRadius: 0
-  FindTargetRadiusCoefficient: 1.5
   AimThreshold: 1
   UseYaw: 1
   YawTurnSpeed: 3
@@ -31,14 +30,15 @@ MonoBehaviour:
   MinPitchAngle: 0
   MaxPitchAngle: 0
   DefaultPitchAngle: 0
-  MinBulletsToShoot: 1
+  MinProjectilesToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 10
+  Priority: 0
   AimStrategies: 00000000
   ShootStrategy: 0
   TargetStrategy: 0
-  BulletMoveType: 0
-  BulletHitType: 0
+  ProjectileMoveType: 0
+  ProjectileHitType: 0
   Modifiers: 
   UpgradeLevels: []
   BaseEffectChances: []

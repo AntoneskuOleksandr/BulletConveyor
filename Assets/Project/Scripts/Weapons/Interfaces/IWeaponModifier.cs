@@ -9,8 +9,4 @@ public interface IWeaponModifier
     void OnProjectileInit(Weapon weapon, ProjectileBase projectile) { }
     void OnAfterShoot(Weapon weapon, List<ProjectileBase> projectiles) { }
     void OnProjectileHit(Weapon weapon, ProjectileBase projectile, Collider hit) { }
-    IEnumerable<ProjectileInitData> Expand(Weapon weapon, ProjectileInitData baseData, Transform firePoint)
-    {
-        yield break;
-    }
 }

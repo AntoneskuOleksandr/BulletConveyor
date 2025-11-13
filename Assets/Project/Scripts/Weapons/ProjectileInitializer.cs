@@ -4,38 +4,32 @@ using Zenject;
 
 public class ProjectileInitializer
 {
-    [Inject] private EffectChanceManager _effectChanceManager;
-    [Inject] private EffectFactory _effectFactory;
-    [Inject] private ProjectileManager _projectileManager;
+    [Inject] private EffectChanceManager _effects;
+    [Inject] private EffectFactory _factory;
 
     public List<ProjectileBase> InitializeProjectiles(
         Weapon weapon,
         Transform firePoint,
-        IEnumerable<ProjectileInitData> projectileDataList)
+        List<ProjectileBase> projectiles,
+        List<ProjectileInitData> data)
     {
-        List<ProjectileBase> initialized = new List<ProjectileBase>();
-
-        foreach (var data in projectileDataList)
+        for (int i = 0; i < projectiles.Count; i++)
         {
-            ProjectileBase projectile = _projectileManager.GetProjectile();
-            if (projectile == null)
-                break;
+            var p = projectiles[i];
 
-            projectile.transform.position = firePoint.position;
-            projectile.transform.rotation = firePoint.rotation;
+            p.transform.position = firePoint.position;
+            p.transform.rotation = firePoint.rotation;
 
-            projectile.Init(
+            p.Init(
                 weapon,
-                data,
+                data[i],
                 weapon.ProjectileMoveStrategy,
                 weapon.ProjectileHitStrategy,
-                _effectChanceManager,
-                _effectFactory
+                _effects,
+                _factory
             );
-
-            initialized.Add(projectile);
         }
 
-        return initialized;
+        return projectiles;
     }
 }

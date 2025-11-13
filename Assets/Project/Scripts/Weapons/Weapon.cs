@@ -18,8 +18,8 @@ public class Weapon : MonoBehaviour
     private float _damage;
     private float _health;
     private float _fireRate;
-    private float _maxAttackRadius;
     private float _minAttackRadius;
+    private float _maxAttackRadius;
     private float _aimThreshold;
     private float _idleReturnDelay = 2f;
 
@@ -29,6 +29,7 @@ public class Weapon : MonoBehaviour
     private float _pitchTurnSpeed;
 
     public WeaponSO Data { get; private set; }
+
     public float FireRate
     {
         get
@@ -39,9 +40,12 @@ public class Weapon : MonoBehaviour
             return value;
         }
     }
+
+    public float Priority => Data.Priority;
+    public bool WaitingForFire { get; set; }
     public float FireCountdown => _fireCountdown;
     public float MinAttackRadius => _minAttackRadius;
-    public float FindTargetRadius => _maxAttackRadius * Data.FindTargetRadiusCoefficient;
+    public float MaxAttackRadius => _maxAttackRadius;
     public float LaunchSpeed => CalculateLaunchSpeed();
     public float AimThreshold => _aimThreshold;
     public Enemy Target => _target;
@@ -53,7 +57,6 @@ public class Weapon : MonoBehaviour
 
     [Inject] private EffectChanceManager _effectChanceManager;
     [Inject] private EffectFactory _effectFactory;
-    [Inject] private ProjectileManager _projectileManager;
 
     private WeaponVisual _weaponVisual;
     private WeaponStatusCanvas _weaponStatusCanvas;
@@ -62,6 +65,7 @@ public class Weapon : MonoBehaviour
     private Enemy _target;
 
     private float _fireCountdown;
+    private int _minProjectilesToShoot;
 
     private float _targetRefreshRate = 1f;
     private float _targetRefreshTimer = 0f;
@@ -89,7 +93,6 @@ public class Weapon : MonoBehaviour
 
     private IShootStrategy _shootStrategy;
     private ITargetStrategy _targetStrategy;
-
 
     private List<IWeaponModifier> _weaponModifiers = new();
 
@@ -135,6 +138,7 @@ public class Weapon : MonoBehaviour
         _pitchTurnSpeed = so.PitchTurnSpeed;
         _useYaw = so.UseYaw;
         _usePitch = so.UsePitch;
+        _minProjectilesToShoot = so.MinProjectilesToShoot;
 
         baseWeaponEffectChances.AddRange(so.BaseEffectChances);
 
@@ -147,58 +151,6 @@ public class Weapon : MonoBehaviour
 
         foreach (var modifier in _weaponModifiers)
             modifier.Initialize(this);
-    }
-
-    private ProjectileInitData BuildProjectileInitData()
-    {
-        ProjectileInitData data = new ProjectileInitData
-        {
-            Damage = _damage,
-            LaunchSpeed = LaunchSpeed,
-            HasOverrideForward = false,
-            OverrideForward = Vector3.zero,
-        };
-
-        return data;
-    }
-
-    public IEnumerable<ProjectileInitData> BuildExpandedProjectileInitData(Transform firePoint, int maxCount = int.MaxValue)
-    {
-        if (_projectileManager.AvailableCount <= 0)
-            yield break;
-
-        var baseData = BuildProjectileInitData();
-        yield return ProcessInitData(baseData, firePoint);
-
-        int available = _projectileManager.AvailableCount;
-        int spawned = 1;
-
-        foreach (var m in _weaponModifiers)
-        {
-            if (available <= 0 || spawned >= maxCount)
-                yield break;
-
-            var expanded = m.Expand(this, baseData, firePoint);
-            if (expanded == null)
-                continue;
-
-            foreach (var data in expanded)
-            {
-                if (available <= 0 || spawned >= maxCount)
-                    yield break;
-
-                yield return ProcessInitData(data, firePoint);
-                spawned++;
-                available--;
-            }
-        }
-
-        ProjectileInitData ProcessInitData(ProjectileInitData data, Transform firePoint)
-        {
-            foreach (var m in _weaponModifiers)
-                m.OnBeforeProjectileInit(this, ref data, firePoint);
-            return data;
-        }
     }
 
     protected virtual void Start()
@@ -254,6 +206,48 @@ public class Weapon : MonoBehaviour
             _fireCountdown -= Time.deltaTime;
     }
 
+    private int GetRequiredProjectileCount()
+    {
+        float count = _minProjectilesToShoot;
+
+        foreach (var m in _weaponModifiers.OfType<IStatProvider>())
+            count = m.ModifyRequiredProjectilesCount(count);
+
+        return Mathf.Max(1, Mathf.RoundToInt(count));
+    }
+
+    private ProjectileInitData BuildBaseProjectileData()
+    {
+        float dmg = _damage;
+
+        foreach (var m in _weaponModifiers.OfType<IStatProvider>())
+            dmg = m.ModifyDamage(dmg);
+
+        return new ProjectileInitData
+        {
+            Damage = dmg,
+            LaunchSpeed = CalculateLaunchSpeed(),
+            HasOverrideForward = false
+        };
+    }
+
+    public List<ProjectileInitData> BuildProjectileData(int count, Transform firePoint)
+    {
+        var list = new List<ProjectileInitData>(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            var data = BuildBaseProjectileData();
+
+            foreach (var m in _weaponModifiers)
+                m.OnBeforeProjectileInit(this, ref data, firePoint);
+
+            list.Add(data);
+        }
+
+        return list;
+    }
+
     public void NotifyBeforeShoot()
     {
         foreach (var m in _weaponModifiers)
@@ -278,7 +272,6 @@ public class Weapon : MonoBehaviour
             m.OnProjectileHit(this, projectile, hit);
     }
 
-
     private void UpdateTarget()
     {
         _targetRefreshTimer -= Time.deltaTime;
@@ -298,7 +291,7 @@ public class Weapon : MonoBehaviour
         AimResult pitchResult = AimResult.Empty;
 
         float distance = Vector3.Distance(_target.transform.position, transform.position);
-        if (distance < MinAttackRadius || distance > FindTargetRadius)
+        if (distance < MinAttackRadius || distance > Data.MaxAttackRadius)
             return;
 
         foreach (var aim in _aimStrategies)
@@ -318,25 +311,29 @@ public class Weapon : MonoBehaviour
         if (!aimed)
             return;
 
-        bool canShoot = _shootStrategy.IsCanShoot(this);
+        bool canRequest = _shootStrategy != null &&
+                          _shootStrategy.IsReadyToRequest(this, _minProjectilesToShoot);
 
-        if (canShoot)
+        if (canRequest)
         {
-            NotifyBeforeShoot();
-
-            var firedProjectiles = _shootStrategy.Shoot(this);
-
-            if (firedProjectiles.Count > 0)
-                ResetFireCountdown();
-
-            var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
-            var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
-            _weaponVisual?.PlayShotEffect(colorWeights);
-
-            NotifyAfterShoot(firedProjectiles);
+            _shootStrategy.RequestFire(this, _minProjectilesToShoot, GetRequiredProjectileCount());
         }
     }
 
+    public void OnFireCompleted(List<ProjectileBase> projectiles)
+    {
+        if (projectiles == null || projectiles.Count == 0)
+            return;
+
+        WaitingForFire = false;
+        ResetFireCountdown();
+
+        var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
+        var colorWeights = _effectFactory.ConvertChancesToColors(effectChances);
+        _weaponVisual?.PlayShotEffect(colorWeights);
+
+        NotifyAfterShoot(projectiles);
+    }
 
     private void HandleIdleAiming()
     {
