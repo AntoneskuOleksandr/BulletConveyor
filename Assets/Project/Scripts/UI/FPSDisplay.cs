@@ -8,6 +8,7 @@ public class FPSDisplay : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(this);
         Application.targetFrameRate = -1;
         QualitySettings.vSyncCount = 0;
     }
