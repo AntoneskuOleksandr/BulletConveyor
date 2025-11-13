@@ -34,6 +34,7 @@ MonoBehaviour:
   MinProjectilesToShoot: 1
   LaunchSpeedMode: 0
   LaunchSpeed: 25
+  Priority: 0
   AimStrategies: 00000000
   ShootStrategy: 1
   TargetStrategy: 0

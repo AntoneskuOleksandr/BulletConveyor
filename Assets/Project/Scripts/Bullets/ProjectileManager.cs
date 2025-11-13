@@ -1,32 +1,57 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 public class ProjectileManager
 {
-    [Inject] private ProjectileStack _projectileStack;
+    [Inject] private ProjectileStack _stack;
 
-    public int AvailableCount => _projectileStack.projectiles.Count;
+    public int AvailableCount => _stack.projectiles.Count;
 
-    public ProjectileBase GetProjectile()
+    public bool CanAllocate(int count) => AvailableCount >= count;
+
+    /// <summary>
+    /// ѕытаетс€ выделить от min до max снар€дов.
+    /// ≈сли доступно меньше min Ч возвращает Failed.
+    /// </summary>
+    public ProjectileAllocation Allocate(int min, int max)
     {
-        if (!_projectileStack.HaveProjectile)
+        int available = AvailableCount;
+
+        if (available < min)
+            return ProjectileAllocation.Failed;
+
+        int toTake = Mathf.Min(available, max);
+        var result = new List<ProjectileBase>(toTake);
+
+        for (int i = 0; i < toTake; i++)
         {
-            Debug.LogError($"No projectiles available in the stack");
-            return null;
+            GameObject go = _stack.GetProjectileGOFromStack();
+            if (go == null)
+                return ProjectileAllocation.Failed;
+
+            var projectile = go.GetComponent<ProjectileBase>() ?? go.AddComponent<ProjectileBase>();
+            result.Add(projectile);
         }
 
-        GameObject projectileGO = _projectileStack.GetProjectileGOFromStack();
-        if (projectileGO == null)
-        {
-            Debug.LogError($"Failed to get projectile GameObject from stack");
-            return null;
-        }
-
-        ProjectileBase projectile = projectileGO.GetComponent<ProjectileBase>();
-
-        if (projectile == null)
-            projectile = projectileGO.AddComponent<ProjectileBase>();
-
-        return projectile;
+        return ProjectileAllocation.SuccessWith(result);
     }
+}
+
+public struct ProjectileAllocation
+{
+    public bool Success { get; }
+    public List<ProjectileBase> Projectiles { get; }
+
+    private ProjectileAllocation(bool success, List<ProjectileBase> projectiles)
+    {
+        Success = success;
+        Projectiles = projectiles;
+    }
+
+    public static ProjectileAllocation Failed =>
+        new ProjectileAllocation(false, null);
+
+    public static ProjectileAllocation SuccessWith(List<ProjectileBase> list) =>
+        new ProjectileAllocation(true, list);
 }

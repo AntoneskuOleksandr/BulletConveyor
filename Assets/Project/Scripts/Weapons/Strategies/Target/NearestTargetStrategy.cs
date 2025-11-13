@@ -20,7 +20,7 @@ public class NearestTargetStrategy : ITargetStrategy
 
             float distanceToEnemy = Vector3.Distance(weapon.transform.position, enemy.HitTransform.position);
 
-            if (distanceToEnemy < weapon.MinAttackRadius || distanceToEnemy > weapon.FindTargetRadius)
+            if (distanceToEnemy < weapon.MinAttackRadius || distanceToEnemy > weapon.MaxAttackRadius)
                 continue;
 
             if (distanceToEnemy < shortestDistance)
