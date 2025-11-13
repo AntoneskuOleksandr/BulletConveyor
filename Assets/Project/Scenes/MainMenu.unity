@@ -10032,7 +10032,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moneyText: {fileID: 9019229570463177238}
   startGameButton: {fileID: 1867840113616226951}
-  gameSceneName: RefactoringScene
+  gameSceneName: GameScene
   lockPanel: {fileID: 1753961511}
 --- !u!222 &7508070439745928775
 CanvasRenderer:

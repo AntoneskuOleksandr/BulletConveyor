@@ -37,15 +37,12 @@ public class WaveManager : MonoBehaviour
 
     public void Configure(int total, int baseCount, int increment, int extraRange, GameObject enemyType1, GameObject enemyType2)
     {
-        /*        totalWaves = total;
-                minEnemyCount = baseCount;
-                maxEnemyCount = baseCount + extraRange;
-                enemyIncrementPerWave = increment;
+        totalWaves = total;
+        minEnemyCount = baseCount;
+        maxEnemyCount = baseCount + extraRange;
+        enemyIncrementPerWave = increment;
 
-                _enemySpawner.Initialize(enemyType1, enemyType2);
-                _progressBar.Initialize();*/
-
-        _enemySpawner.Initialize(enemyType1, enemyType1);
+        _enemySpawner.Initialize(enemyType1, enemyType2);
         _progressBar.Initialize();
     }
 

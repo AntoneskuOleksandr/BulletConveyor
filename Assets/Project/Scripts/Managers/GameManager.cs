@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     [Inject] private WeaponsService _weaponsService;
     [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private TutorialProgressService _tutorialProgress;
-    [Inject] private PlayerRuntimeManager _playerRuntimeManager;
 
     private void Start()
     {

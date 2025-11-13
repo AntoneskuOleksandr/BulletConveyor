@@ -9,28 +9,10 @@ EditorBuildSettings:
     path: Assets/Project/Scenes/InitScene.unity
     guid: e4f2829a33acab241a6104b07ddb8dac
   - enabled: 1
-    path: Assets/Project/Scenes/Tutorial.unity
-    guid: de9046aa57e33cf438880c15bf51ce1b
-  - enabled: 1
     path: Assets/Project/Scenes/MainMenu.unity
     guid: 85d18044475a0c4499fcf6604076568f
   - enabled: 1
-    path: Assets/Project/Scenes/Level 1.unity
-    guid: 546f67c1c78ca5b4b9738c5d01d8cb23
-  - enabled: 1
-    path: Assets/Project/Scenes/Level 2.unity
-    guid: 997dab26ad5a4614f8e4a7e7fa316db2
-  - enabled: 1
-    path: Assets/Project/Scenes/Level 3.unity
-    guid: dff990e0fb59edc4482ad251b7cb3e1e
-  - enabled: 1
-    path: Assets/Project/Scenes/Level 4.unity
-    guid: 7a3af9a692e8fb84f8060ffb514dc9f6
-  - enabled: 1
-    path: Assets/Project/Scenes/Level 5.unity
-    guid: 22b86b43150dcc74eb724b513a998269
-  - enabled: 1
-    path: Assets/Project/Scenes/RefactoringScene.unity
+    path: Assets/Project/Scenes/GameScene.unity
     guid: 9bcf8931f7719be42ab58243179e274b
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

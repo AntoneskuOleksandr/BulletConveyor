@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DebugPlayerData
   m_EditorClassIdentifier: 
   playerLevel: 2
-  selectedLevelIndex: 0
+  selectedLevelIndex: 1
   isTutorialCompleted: 1
   currencies:
   - type: 0
