@@ -47,4 +47,10 @@ public class ProjectInstaller : MonoInstaller
 
         Container.Bind<TimerManager>().AsSingle();
     }
+
+    private void Awake()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+    }
 }
