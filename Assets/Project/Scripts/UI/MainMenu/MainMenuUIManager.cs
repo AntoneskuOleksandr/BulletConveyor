@@ -44,15 +44,24 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void UpdateStartButtonState()
     {
+        if (!_levelDisplay.TryGetCurrentLevel(out int levelIndex))
+        {
+            startGameButton.interactable = false;
+            return;
+        }
+
         bool hasSelectedWeapons = !_tutorialProgressService.IsTutorialCompleted || _weaponsService.GetSelectedCount() > 0;
-        bool isLevelAvailable = _playerProgressService.CanAccessLevel(_levelDisplay.GetCurrentLevel());
+        bool isLevelAvailable = _playerProgressService.CanAccessLevel(levelIndex);
 
         startGameButton.interactable = hasSelectedWeapons && isLevelAvailable;
     }
 
     private void StartGame()
     {
-        _playerProgressService.SetSelectedLevel(_levelDisplay.GetCurrentLevel());
+        if (!startGameButton.interactable || !_levelDisplay.TryGetCurrentLevel(out int levelIndex))
+            return;
+
+        _playerProgressService.SetSelectedLevel(levelIndex);
         SceneManager.LoadScene(gameSceneName);
     }
 

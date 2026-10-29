@@ -7,7 +7,6 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Run with -executeMethod BuildValidation.RunAll; uses isolated temporary save data.</summary>
 public static class BuildValidation
 {
     private const BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -95,6 +94,9 @@ public static class BuildValidation
             Set(menu, "_tutorialProgressService", tutorial);
             Set(menu, "_levelDisplay", display);
             Set(display, "_playerProgressService", progress);
+            typeof(MainMenuUIManager).GetMethod("UpdateStartButtonState", PrivateInstance).Invoke(menu, null);
+            Check(!button.interactable, "Play waits until the level display is initialized");
+            Set(display, "currentLevel", AssetDatabase.LoadAssetAtPath<LevelSO>("Assets/Project/ScriptableObjects/Levels/Desert.asset"));
             typeof(MainMenuUIManager).GetMethod("UpdateStartButtonState", PrivateInstance).Invoke(menu, null);
             Check(button.interactable, "Fresh profile can start the tutorial without selecting a weapon");
             data.isTutorialCompleted = true;
