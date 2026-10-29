@@ -80,7 +80,7 @@ public class BlockParent : MonoBehaviour
 
     private void Update()
     {
-        transform.localPosition = Vector3.Lerp(transform.localPosition, desiredPosition, Time.deltaTime * DraggSpeed);
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * DraggSpeed);
     }
 
     public void SetPosition(Vector3 position)
@@ -103,15 +103,15 @@ public class BlockParent : MonoBehaviour
 
         ChangeLayerRecursively(transform, LayerMask.NameToLayer("DraggingBlock"));
 
-        blockData.isOnBoard = false; // блок не на доске
-        blockData.platform = -1; // блок не на платформе
+        blockData.isOnBoard = false; // Р±Р»РѕРє РЅРµ РЅР° РґРѕСЃРєРµ
+        blockData.platform = -1; // Р±Р»РѕРє РЅРµ РЅР° РїР»Р°С‚С„РѕСЂРјРµ
 
         foreach (Tile tile in MyTiles)
         {
-            tile.isAvailable = true; // освобождаем занятые тайлы
+            tile.isAvailable = true; // РѕСЃРІРѕР±РѕР¶РґР°РµРј Р·Р°РЅСЏС‚С‹Рµ С‚Р°Р№Р»С‹
         }
 
-        MyTiles = new List<Tile>(); // очищаем занятые тайлы
+        MyTiles = new List<Tile>(); // РѕС‡РёС‰Р°РµРј Р·Р°РЅСЏС‚С‹Рµ С‚Р°Р№Р»С‹
     }
 
     public void PlaceOnBoard(List<Tile> tiles, Vector3 position)
@@ -121,16 +121,16 @@ public class BlockParent : MonoBehaviour
 
         RestoreLayer();
 
-        blockData.platform = -1; // блок не на платформе
-        blockData.isOnBoard = true; // блок на доске
-        MyTiles = tiles; // обновляем занятые тайлы
+        blockData.platform = -1; // Р±Р»РѕРє РЅРµ РЅР° РїР»Р°С‚С„РѕСЂРјРµ
+        blockData.isOnBoard = true; // Р±Р»РѕРє РЅР° РґРѕСЃРєРµ
+        MyTiles = tiles; // РѕР±РЅРѕРІР»СЏРµРј Р·Р°РЅСЏС‚С‹Рµ С‚Р°Р№Р»С‹
 
         foreach (Tile tile in MyTiles)
         {
-            tile.isAvailable = false; // блокируем занятые тайлы
+            tile.isAvailable = false; // Р±Р»РѕРєРёСЂСѓРµРј Р·Р°РЅСЏС‚С‹Рµ С‚Р°Р№Р»С‹
         }
 
-        SetPosition(position); // устанавливаем позицию блока
+        SetPosition(position); // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР·РёС†РёСЋ Р±Р»РѕРєР°
     }
 
     public void PlaceOnPlatform(Vector3 position, int platformIndex)
@@ -140,9 +140,9 @@ public class BlockParent : MonoBehaviour
 
         RestoreLayer();
 
-        MyTiles = new List<Tile>(); // очищаем занятые тайлы
-        blockData.isOnBoard = false; // блок не на доске
-        blockData.platform = platformIndex; // устанавливаем платформу
+        MyTiles = new List<Tile>(); // РѕС‡РёС‰Р°РµРј Р·Р°РЅСЏС‚С‹Рµ С‚Р°Р№Р»С‹
+        blockData.isOnBoard = false; // Р±Р»РѕРє РЅРµ РЅР° РґРѕСЃРєРµ
+        blockData.platform = platformIndex; // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїР»Р°С‚С„РѕСЂРјСѓ
 
         SetPosition(position);
     }

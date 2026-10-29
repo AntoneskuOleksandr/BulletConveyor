@@ -73,7 +73,7 @@ public class BlockDragController
     {
         StopHighlight();
 
-        // получаем доступные тайлы, автоматически вычисляя top-left матрицы по текущей позиции блока
+        // РїРѕР»СѓС‡Р°РµРј РґРѕСЃС‚СѓРїРЅС‹Рµ С‚Р°Р№Р»С‹, Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РІС‹С‡РёСЃР»СЏСЏ top-left РјР°С‚СЂРёС†С‹ РїРѕ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё Р±Р»РѕРєР°
         List<Tile> availableTiles = CheckAvailableTilesForShape(session.DraggedBlock);
         if (availableTiles != null && availableTiles.Count > 0)
             tileManager.HighLightTiles(availableTiles, true);
@@ -101,7 +101,7 @@ public class BlockDragController
     private bool TryMerge(RaycastHit hit, out BlockParent block1, out BlockParent block2)
     {
         block1 = session.DraggedBlock;
-        block2 = hit.transform.parent?.GetComponent<BlockParent>();
+        block2 = hit.transform != null ? hit.transform.GetComponentInParent<BlockParent>() : null;
 
         if (block2 == null || block1 == block2)
             return false;
@@ -198,11 +198,11 @@ public class BlockDragController
         }
     }
 
-    // === Вспомогательные методы ===
+    // === Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹ ===
 
     /// <summary>
-    /// Возвращает центр матрицы (bounding box) в локальных "ячейках".
-    /// Например для width=3,height=2 -> (1, 0.5)
+    /// Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РµРЅС‚СЂ РјР°С‚СЂРёС†С‹ (bounding box) РІ Р»РѕРєР°Р»СЊРЅС‹С… "СЏС‡РµР№РєР°С…".
+    /// РќР°РїСЂРёРјРµСЂ РґР»СЏ width=3,height=2 -> (1, 0.5)
     /// </summary>
     private Vector2 GetMatrixPivot(BlockParent block)
     {
@@ -214,20 +214,20 @@ public class BlockDragController
     }
 
     /// <summary>
-    /// Находит top-left индекс матрицы на основании текущей мировой позиции блока.
+    /// РќР°С…РѕРґРёС‚ top-left РёРЅРґРµРєСЃ РјР°С‚СЂРёС†С‹ РЅР° РѕСЃРЅРѕРІР°РЅРёРё С‚РµРєСѓС‰РµР№ РјРёСЂРѕРІРѕР№ РїРѕР·РёС†РёРё Р±Р»РѕРєР°.
     /// </summary>
     private Vector2Int GetTopLeftIndexByBlockPosition(BlockParent block)
     {
-        Vector2 tileFloat = tileManager.WorldToTileFloat(block.transform.position); // фракционный индекс
-        Vector2 pivot = GetMatrixPivot(block); // центр bounding box в ячейках
+        Vector2 tileFloat = tileManager.WorldToTileFloat(block.transform.position); // С„СЂР°РєС†РёРѕРЅРЅС‹Р№ РёРЅРґРµРєСЃ
+        Vector2 pivot = GetMatrixPivot(block); // С†РµРЅС‚СЂ bounding box РІ СЏС‡РµР№РєР°С…
         Vector2 topLeftFloat = tileFloat - pivot;
-        // округляем к ближайшей клетке — так блок «прилипает» к сетке естественно
+        // РѕРєСЂСѓРіР»СЏРµРј Рє Р±Р»РёР¶Р°Р№С€РµР№ РєР»РµС‚РєРµ вЂ” С‚Р°Рє Р±Р»РѕРє В«РїСЂРёР»РёРїР°РµС‚В» Рє СЃРµС‚РєРµ РµСЃС‚РµСЃС‚РІРµРЅРЅРѕ
         return new Vector2Int(Mathf.RoundToInt(topLeftFloat.x), Mathf.RoundToInt(topLeftFloat.y));
     }
 
     /// <summary>
-    /// Логическая проверка: можно ли разместить матрицу блока, если её top-left будет в topLeftIndex.
-    /// Возвращает список тайлов (в порядке обхода), или null если нельзя.
+    /// Р›РѕРіРёС‡РµСЃРєР°СЏ РїСЂРѕРІРµСЂРєР°: РјРѕР¶РЅРѕ Р»Рё СЂР°Р·РјРµСЃС‚РёС‚СЊ РјР°С‚СЂРёС†Сѓ Р±Р»РѕРєР°, РµСЃР»Рё РµС‘ top-left Р±СѓРґРµС‚ РІ topLeftIndex.
+    /// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє С‚Р°Р№Р»РѕРІ (РІ РїРѕСЂСЏРґРєРµ РѕР±С…РѕРґР°), РёР»Рё null РµСЃР»Рё РЅРµР»СЊР·СЏ.
     /// </summary>
     private List<Tile> CheckAvailableTilesForShape(BlockParent block, Vector2Int topLeftIndex)
     {
@@ -235,16 +235,16 @@ public class BlockDragController
         int height = block.shape.Count;
         int width = block.shape[0].row.Length;
 
-        for (int r = 0; r < height; r++) // r — номер строки в матрице (0 .. height-1)
+        for (int r = 0; r < height; r++) // r вЂ” РЅРѕРјРµСЂ СЃС‚СЂРѕРєРё РІ РјР°С‚СЂРёС†Рµ (0 .. height-1)
         {
-            for (int c = 0; c < width; c++) // c — колонка
+            for (int c = 0; c < width; c++) // c вЂ” РєРѕР»РѕРЅРєР°
             {
                 if (block.shape[r].row[c] == 1)
                 {
                     Vector2Int tileIndex = new Vector2Int(topLeftIndex.x + c, topLeftIndex.y + r);
 
-                    // если у тебя индексация ряда идёт в обратную сторону (y вверх в массиве),
-                    // вместо (topLeftIndex.y + r) надо использовать (topLeftIndex.y - r)
+                    // РµСЃР»Рё Сѓ С‚РµР±СЏ РёРЅРґРµРєСЃР°С†РёСЏ СЂСЏРґР° РёРґС‘С‚ РІ РѕР±СЂР°С‚РЅСѓСЋ СЃС‚РѕСЂРѕРЅСѓ (y РІРІРµСЂС… РІ РјР°СЃСЃРёРІРµ),
+                    // РІРјРµСЃС‚Рѕ (topLeftIndex.y + r) РЅР°РґРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ (topLeftIndex.y - r)
                     if (!tileManager.IsInsideBoard(tileIndex))
                         return null;
 
@@ -261,7 +261,7 @@ public class BlockDragController
     }
 
     /// <summary>
-    /// Удобный overload: вычисляем top-left из текущей позиции блока и делегируем
+    /// РЈРґРѕР±РЅС‹Р№ overload: РІС‹С‡РёСЃР»СЏРµРј top-left РёР· С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё Р±Р»РѕРєР° Рё РґРµР»РµРіРёСЂСѓРµРј
     /// </summary>
     private List<Tile> CheckAvailableTilesForShape(BlockParent block)
     {

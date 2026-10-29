@@ -35,6 +35,7 @@ public class TutorialManager : MonoBehaviour
         if (_tutorialProgressService.IsTutorialCompleted)
         {
             tutorialPanel.SetActive(false);
+            instructionText.gameObject.SetActive(false);
             this.enabled = false;
 
             return;
@@ -44,6 +45,7 @@ public class TutorialManager : MonoBehaviour
     private void OnDisable()
     {
         BlockDragController.OnDragFinished -= HandleDragFinished;
+        _waveManager.OnWaveCompleted -= OnWaveCompletedOnce;
         UnsubscribeCurrent();
     }
 
@@ -54,6 +56,7 @@ public class TutorialManager : MonoBehaviour
     public void StartTutorial()
     {
         tutorialPanel.SetActive(true);
+        instructionText.gameObject.SetActive(true);
         GenerateSteps();
         _currentStep = 0;
         handPointer.SetActive(true);
@@ -241,8 +244,16 @@ public class TutorialManager : MonoBehaviour
 
     private void EndTutorial()
     {
-        handPointer.SetActive(false);
         _tutorialProgressService.CompleteTutorial();
+        HideTutorial();
+    }
+
+    public void HideTutorial()
+    {
+        handPointer.SetActive(false);
+        instructionText.gameObject.SetActive(false);
+        tutorialPanel.SetActive(false);
+        enabled = false;
     }
 
     #endregion
@@ -275,6 +286,9 @@ public class TutorialManager : MonoBehaviour
 
     private void HandleDragFinished(DragResult result)
     {
+        if (steps == null || _currentStep >= steps.Count)
+            return;
+
         // Шаг Drag — ждём установки на поле
         if (steps[_currentStep].actionType == TutorialActionType.Drag)
         {

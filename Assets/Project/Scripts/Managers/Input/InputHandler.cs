@@ -26,12 +26,18 @@ public class InputHandler : MonoBehaviour
             Raycast(hit => stateMachine.OnMouseDown(hit));
 
         if (Input.GetMouseButtonUp(0))
-            Raycast(hit => stateMachine.OnMouseUp(hit));
+        {
+            // A release outside all colliders must still finish/cancel the drag.
+            int layerMask = ~LayerMask.GetMask("DraggingBlock");
+            Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition),
+                out RaycastHit hit, Mathf.Infinity, layerMask);
+            stateMachine.OnMouseUp(hit);
+        }
     }
 
     private void Raycast(System.Action<RaycastHit> callback)
     {
-        // Игнорируем слой "DraggingBlock"
+        // РРіРЅРѕСЂРёСЂСѓРµРј СЃР»РѕР№ "DraggingBlock"
         int layerMask = ~LayerMask.GetMask("DraggingBlock");
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);

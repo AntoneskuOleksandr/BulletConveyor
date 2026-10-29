@@ -3,7 +3,12 @@ using UnityEngine;
 
 public class DataRepository
 {
-    private readonly string _path = Path.Combine(Application.persistentDataPath, "playerdata.json");
+    private readonly string _path;
+
+    public DataRepository(string path = null)
+    {
+        _path = path ?? Path.Combine(Application.persistentDataPath, "playerdata.json");
+    }
 
     public PlayerData Load()
     {
@@ -17,6 +22,7 @@ public class DataRepository
     public void Save(PlayerData data)
     {
         string json = JsonUtility.ToJson(data, true);
+        Directory.CreateDirectory(Path.GetDirectoryName(_path));
         File.WriteAllText(_path, json);
     }
 }

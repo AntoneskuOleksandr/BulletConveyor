@@ -15,21 +15,13 @@ public class MainMenuUIManager : MonoBehaviour
     [Inject] private WeaponsService _weaponsService;
     [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private LevelDisplay _levelDisplay;
+    [Inject] private TutorialProgressService _tutorialProgressService;
 
     private void OnEnable()
     {
-        _economyService.OnCurrencyChanged += (currencyType) =>
-        {
-            UpdateMoneyDisplay();
-        };
-        _weaponsService.OnSelectionChanged += () =>
-        {
-            UpdateStartButtonState();
-        };
-        _levelDisplay.OnLevelChanged += () =>
-        {
-            UpdateStartButtonState();
-        };
+        _economyService.OnCurrencyChanged += OnCurrencyChanged;
+        _weaponsService.OnSelectionChanged += UpdateStartButtonState;
+        _levelDisplay.OnLevelChanged += UpdateStartButtonState;
 
         startGameButton.onClick.AddListener(StartGame);
 
@@ -37,9 +29,11 @@ public class MainMenuUIManager : MonoBehaviour
         UpdateMoneyDisplay();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        _economyService.OnCurrencyChanged -= (currencyType) => { UpdateMoneyDisplay(); };
+        _economyService.OnCurrencyChanged -= OnCurrencyChanged;
+        _weaponsService.OnSelectionChanged -= UpdateStartButtonState;
+        _levelDisplay.OnLevelChanged -= UpdateStartButtonState;
         startGameButton.onClick.RemoveListener(StartGame);
     }
 
@@ -50,7 +44,7 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void UpdateStartButtonState()
     {
-        bool hasSelectedWeapons = _weaponsService.GetSelectedCount() > 0;
+        bool hasSelectedWeapons = !_tutorialProgressService.IsTutorialCompleted || _weaponsService.GetSelectedCount() > 0;
         bool isLevelAvailable = _playerProgressService.CanAccessLevel(_levelDisplay.GetCurrentLevel());
 
         startGameButton.interactable = hasSelectedWeapons && isLevelAvailable;
@@ -58,8 +52,8 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void StartGame()
     {
-        SceneManager.LoadScene(gameSceneName);
         _playerProgressService.SetSelectedLevel(_levelDisplay.GetCurrentLevel());
+        SceneManager.LoadScene(gameSceneName);
     }
 
     private void UpdateMoneyDisplay()
@@ -67,4 +61,6 @@ public class MainMenuUIManager : MonoBehaviour
         float gears = _economyService.GetCurrency(CurrencyType.Gears);
         moneyText.text = gears.ToString();
     }
+
+    private void OnCurrencyChanged(CurrencyType type) => UpdateMoneyDisplay();
 }

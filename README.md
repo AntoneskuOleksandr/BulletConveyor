@@ -88,7 +88,7 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 
 | Area | Technology |
 | --- | --- |
-| Engine | **Unity 6 — 6000.0.54f1** |
+| Engine | **Unity 6 — 6000.6.7f1** |
 | Language | **C#** |
 | Dependency injection | **Zenject** (included in `Assets/Plugins`) |
 | Animation | **DOTween** (included in `Assets/Plugins`) |
@@ -98,7 +98,7 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 
 ## Run the project locally
 
-1. Install **Unity 6000.0.54f1** through Unity Hub (the version recorded in [`ProjectVersion.txt`](ProjectSettings/ProjectVersion.txt)).
+1. Install **Unity 6000.6.7f1** through Unity Hub (the version recorded in [`ProjectVersion.txt`](ProjectSettings/ProjectVersion.txt)). Include **Android Build Support**, **Android SDK & NDK Tools**, and **OpenJDK** for APK builds.
 2. Clone the repository:
    ```bash
    git clone https://github.com/AntoneskuOleksandr/BulletConveyor.git
@@ -108,7 +108,7 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 5. Open **`Assets/Project/Scenes/MainMenu.unity`** and press **Play**. Use the menu/tutorial to enter gameplay.
 6. For a build, the checked-in [Build Settings](ProjectSettings/EditorBuildSettings.asset) list **`MainMenu.unity`** followed by **`GameScene.unity`**.
 
-**Note:** These instructions are derived from the repository's configuration. This documentation review did **not** include opening the project in Unity or verifying a clean build on every platform. No prebuilt game executable is included in this repository.
+To create an installable Android APK on Windows, run `Build-Android.ps1` from a closed checkout. See [Android build instructions](docs/ANDROID_BUILD.md) for the editor path argument, configuration and verification.
 
 ## Repository layout
 

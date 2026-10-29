@@ -40,7 +40,7 @@ public class LevelDisplay : MonoBehaviour
             ShowLevel(previousIndex);
         });
 
-        ShowLevel(_playerProgressService.GetSelectedLevel());
+        ShowLevel(Mathf.Clamp(_playerProgressService.GetSelectedLevel(), 0, levels.Count - 1));
 
         miniLevels.gameObject.SetActive(true);
     }
@@ -72,6 +72,6 @@ public class LevelDisplay : MonoBehaviour
 
     public int GetCurrentLevel()
     {
-        return currentLevel.LevelIndex;
+        return currentLevel != null ? currentLevel.LevelIndex : _playerProgressService.GetSelectedLevel();
     }
 }

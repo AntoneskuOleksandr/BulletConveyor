@@ -16,11 +16,17 @@ public class ProjectInstaller : MonoInstaller
 
         PlayerData playerData;
 
-        if (useDebugPlayerData)
+#if UNITY_EDITOR
+        if (useDebugPlayerData && debugPlayerData != null)
         {
-            playerData = debugPlayerData.GetPlayerData();
+            // Keep editor fixtures separate from real player progress.
+            dataRepository = new DataRepository(System.IO.Path.Combine(
+                Application.persistentDataPath, "debug-playerdata.json"));
+            dataManager = new DataManager(dataRepository);
+            playerData = dataManager.LoadOrCreate(debugPlayerData.GetPlayerData());
         }
         else
+#endif
             playerData = dataManager.LoadOrCreate();
 
         Container.BindInstance(dataRepository).AsSingle();

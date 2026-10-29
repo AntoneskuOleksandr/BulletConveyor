@@ -6,6 +6,8 @@ public class PauseMenuPanel : MonoBehaviour
 {
     [SerializeField] private GameObject abilitiesGrid;
     [SerializeField] private GameObject abilityIconPrefab;
+    [SerializeField] private GameObject tutorialInstructions;
+    private bool restoreTutorialInstructions;
 
     [Header("Buttons")]
     [SerializeField] private Button resumeButton;
@@ -35,6 +37,11 @@ public class PauseMenuPanel : MonoBehaviour
 
     public void ShowPanel()
     {
+        if (tutorialInstructions != null)
+        {
+            restoreTutorialInstructions = tutorialInstructions.activeSelf;
+            tutorialInstructions.SetActive(false);
+        }
         gameObject.SetActive(true);
 
         Time.timeScale = 0f; // Pause the game
@@ -45,6 +52,8 @@ public class PauseMenuPanel : MonoBehaviour
     private void HidePanel()
     {
         gameObject.SetActive(false);
+        if (tutorialInstructions != null)
+            tutorialInstructions.SetActive(restoreTutorialInstructions);
         Time.timeScale = 1f; // Resume the game
         ClearAbilityGrid();
     }

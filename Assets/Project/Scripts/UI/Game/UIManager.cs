@@ -35,6 +35,12 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
+        if (pauseGameButton != null && pauseMenuPanel != null)
+        {
+            pauseGameButton.gameObject.SetActive(true);
+            pauseGameButton.onClick.AddListener(pauseMenuPanel.ShowPanel);
+        }
+
         if (!_tutorialProgressService.IsTutorialCompleted)
         {
             if (buyBlockButton != null)
@@ -47,7 +53,6 @@ public class UIManager : MonoBehaviour
                 {
                     _playerManager.OnCurrencyChanged += UpdateUI;
                 }
-                pauseGameButton.gameObject.SetActive(false);
             }
         }
         else
@@ -64,25 +69,30 @@ public class UIManager : MonoBehaviour
             {
                 speedUpGameButton.onClick.AddListener(OnSpeedUpButtonClicked);
             }
-            if (pauseGameButton != null && pauseMenuPanel != null)
-            {
-                pauseGameButton.onClick.AddListener(pauseMenuPanel.ShowPanel);
-            }
             if (_playerManager != null)
             {
                 _playerManager.OnCurrencyChanged += UpdateUI;
             }
             if (_waveManager != null && abilityPanel != null)
             {
-                _waveManager.OnTimerBetweenWavesStarted += (waveIndex, timeBetweenWaves) =>
-                {
-                    if (waveIndex % 2 == 0)
-                    {
-                        abilityPanel.ShowPanel();
-                    }
-                };
+                _waveManager.OnTimerBetweenWavesStarted += OnTimerBetweenWavesStarted;
             }
         }
+    }
+
+    private void OnDisable()
+    {
+        buyBlockButton.onClick.RemoveListener(OnBuyButtonClicked);
+        buyBlockByAdButton.onClick.RemoveListener(OnBuyBlockByAdButtonClicked);
+        speedUpGameButton.onClick.RemoveListener(OnSpeedUpButtonClicked);
+        pauseGameButton.onClick.RemoveListener(pauseMenuPanel.ShowPanel);
+        _playerManager.OnCurrencyChanged -= UpdateUI;
+        _waveManager.OnTimerBetweenWavesStarted -= OnTimerBetweenWavesStarted;
+    }
+
+    private void OnTimerBetweenWavesStarted(int waveIndex, float timeBetweenWaves)
+    {
+        if (waveIndex % 2 == 0) abilityPanel.ShowPanel();
     }
 
     private void Start()
@@ -99,7 +109,7 @@ public class UIManager : MonoBehaviour
 
     private void OnBuyButtonClicked()
     {
-        if (_playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice)
+        if (_playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice && _blockManager.CanCreateBlock())
         {
             _playerManager.TrySpend(CurrencyType.Coins, _blockManager.BlockPrice);
             _blockManager.CreateBlock();
@@ -132,6 +142,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowWinPanel()
     {
+        tutorialManager.HideTutorial();
         if (winPanel != null)
         {
             winPanel.ShowPanel();
@@ -144,6 +155,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowLosePanel()
     {
+        tutorialManager.HideTutorial();
         if (losePanel != null)
         {
             losePanel.ShowPanel();

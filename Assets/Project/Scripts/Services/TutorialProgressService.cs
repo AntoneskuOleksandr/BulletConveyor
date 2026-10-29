@@ -4,18 +4,18 @@ public class TutorialProgressService
 {
     public bool IsTutorialCompleted => _playerData.isTutorialCompleted;
 
-    private WeaponsService _weaponsService;
     private PlayerData _playerData;
+    private readonly DataManager _dataManager;
 
-    public TutorialProgressService(PlayerData playerData, WeaponsService weaponsService)
+    public TutorialProgressService(PlayerData playerData, DataManager dataManager)
     {
         _playerData = playerData;
-        _weaponsService = weaponsService;
+        _dataManager = dataManager;
     }
 
     public void CompleteTutorial()
     {
         _playerData.isTutorialCompleted = true;
-        _weaponsService.DeselectWeapon(0);
+        _dataManager.Save();
     }
 }

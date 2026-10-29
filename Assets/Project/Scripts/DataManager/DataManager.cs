@@ -10,9 +10,13 @@ public class DataManager
         _repository = repository;
     }
 
-    public PlayerData LoadOrCreate()
+    public PlayerData LoadOrCreate(PlayerData initialData = null)
     {
-        _playerData = _repository.Load() ?? new PlayerData();
+        _playerData = initialData ?? _repository.Load() ?? new PlayerData();
+
+        _playerData.currencies ??= new();
+        _playerData.weapons ??= new();
+        _playerData.selectedWeaponIds ??= new();
 
         EnsureAllCurrenciesExist(_playerData);
 
