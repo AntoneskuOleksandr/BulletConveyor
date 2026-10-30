@@ -14,6 +14,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button weaponsButton;
 
     public event Action OnPanelChanged;
+    public bool IsHomeVisible => homePanel.activeSelf;
     [Inject] private TutorialProgressService tutorialProgress;
 
     private void Awake()

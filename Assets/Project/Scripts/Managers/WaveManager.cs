@@ -17,6 +17,7 @@ public class WaveManager : MonoBehaviour
     private int waveEnemyCount;
     private bool isFrozen;
     private Coroutine routine;
+    private float countdownDuration;
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private EnemyManager _enemyManager;
     [Inject] private ProgressBar _progressBar;
@@ -29,13 +30,14 @@ public class WaveManager : MonoBehaviour
     public int TotalWaves => totalWaves;
     public bool HasStarted => routine != null;
 
-    public void Configure(int total, int baseCount, int increment, int extraRange, GameObject type1, GameObject type2)
+    public void Configure(int total, int baseCount, int increment, int extraRange, GameObject type1, GameObject type2, bool training = false)
     {
         totalWaves = total;
         minEnemyCount = baseCount;
         maxEnemyCount = baseCount + extraRange;
         enemyIncrementPerWave = increment;
-        _enemySpawner.Initialize(type1, type2);
+        countdownDuration = training ? Mathf.Min(2f, timeBetweenWaves) : timeBetweenWaves;
+        _enemySpawner.Initialize(type1, type2, training);
         _progressBar.Initialize();
     }
 
@@ -56,12 +58,12 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator WaveRoutine()
     {
-        OnWaveRoutineStarted?.Invoke(timeBetweenWaves);
+        OnWaveRoutineStarted?.Invoke(countdownDuration);
         for (currentWave = 1; currentWave <= totalWaves; currentWave++)
         {
             while (isFrozen) yield return null;
-            OnTimerBetweenWavesStarted?.Invoke(currentWave, timeBetweenWaves);
-            float countdown = timeBetweenWaves;
+            OnTimerBetweenWavesStarted?.Invoke(currentWave, countdownDuration);
+            float countdown = countdownDuration;
             while (countdown > 0f)
             {
                 if (!isFrozen) countdown -= Time.deltaTime;

@@ -13,6 +13,7 @@ public class WeaponManager : MonoBehaviour
     private WeaponFactory _weaponFactory;
 
     public event Action OnAllWeaponsDestroyed;
+    public IReadOnlyList<Weapon> ActiveWeapons => _weapons;
 
     [Inject]
     public void Construct(WeaponsService weaponsService, WeaponFactory factory)

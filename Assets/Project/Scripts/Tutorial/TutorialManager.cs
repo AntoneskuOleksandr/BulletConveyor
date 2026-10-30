@@ -260,9 +260,9 @@ public class TutorialManager : MonoBehaviour
                 _boardManager.RegisterBlock(block);
             }
         }
-        EndTutorial();
         _waveManager.Unfreeze();
         _waveManager.StartWaves();
+        EndTutorial();
     }
 
     private void ReleaseBlocks()

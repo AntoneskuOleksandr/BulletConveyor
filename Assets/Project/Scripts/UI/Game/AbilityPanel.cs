@@ -21,6 +21,7 @@ public class AbilityPanel : MonoBehaviour
     [SerializeField] private int abilitiesCount = 3;
 
     [Inject] private EffectChanceManager _effectChanceManager;
+    [Inject] private GameSpeed _gameSpeed;
 
     public List<AbilityData> SelectedAbilities => _selectedAbilities;
 
@@ -28,9 +29,10 @@ public class AbilityPanel : MonoBehaviour
 
     public void ShowPanel()
     {
+        if (gameObject.activeSelf) return;
         gameObject.SetActive(true);
         GenerateAbilities();
-        Time.timeScale = 0f;
+        _gameSpeed.Pause(this);
     }
 
     private void GenerateAbilities()
@@ -90,6 +92,6 @@ public class AbilityPanel : MonoBehaviour
             Destroy(child.gameObject);
         }
         gameObject.SetActive(false);
-        Time.timeScale = 1f;
+        _gameSpeed.Resume(this);
     }
 }

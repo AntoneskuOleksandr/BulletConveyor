@@ -9,6 +9,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using TMPro;
 using Zenject;
 using Object = UnityEngine.Object;
 using static UnityEngine.Object;
@@ -21,6 +23,13 @@ public class PortfolioValidation
     private static EnterPlayModeOptions previousFlags;
     private static readonly BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic;
     private bool failed;
+    private static bool skipOnly;
+
+    public static void RunSkipProbe()
+    {
+        skipOnly = true;
+        Run();
+    }
 
     public static void Run()
     {
@@ -49,7 +58,7 @@ public class PortfolioValidation
     private void Start(ValidationCoroutineRunner runner)
     {
         Application.logMessageReceived += OnLog;
-        runner.StartCoroutine(Guard(Validate()));
+        runner.StartCoroutine(Guard(skipOnly ? ValidateSkipPaths() : Validate()));
     }
 
     private void OnLog(string message, string stack, LogType type)
@@ -116,6 +125,13 @@ public class PortfolioValidation
         Check(FindAnyObjectByType<GameAudio>() != null && Resources.Load<GameAudioConfig>("GameAudio").shot != null,
             "Audio service and shot asset are present");
 
+        var loadout = FindAnyObjectByType<SelectedWeaponsDisplay>();
+        Check(loadout != null && loadout.PlatformCount == 3 && loadout.PreviewCount == 0, "Empty loadout has three visible platforms");
+        weapons.SelectWeapon(0);
+        Check(loadout.PreviewCount == 1, "Selecting a weapon immediately adds its platform preview");
+        weapons.DeselectWeapon(0);
+        Check(loadout.PlatformCount == 3 && loadout.PreviewCount == 0, "Deselecting removes the gun and retains the platforms");
+        weapons.SelectWeapon(0);
         var menu = FindAnyObjectByType<MainMenuController>();
         Get<Button>(menu, "weaponsButton").onClick.Invoke();
         yield return null;
@@ -171,7 +187,7 @@ public class PortfolioValidation
         Check(Time.timeScale == 0f && !Get<RectTransform>(tutorial, "safeArea").gameObject.activeSelf,
             "Pause hides guidance and stops gameplay");
         typeof(PauseMenuPanel).GetMethod("HidePanel", Fields).Invoke(pause, null);
-        Time.timeScale = 4f;
+        FindAnyObjectByType<GameSpeed>().SetMultiplier(3f);
         float deadline = Time.realtimeSinceStartup + 75f;
         var enemies = FindAnyObjectByType<EnemyManager>();
         while (enemies.Enemies.Count == 0 && Time.realtimeSinceStartup < deadline) yield return null;
@@ -197,6 +213,7 @@ public class PortfolioValidation
             yield return null;
             yield return null;
             wave = FindAnyObjectByType<WaveManager>();
+            FindAnyObjectByType<GameSpeed>().SetMultiplier(3f);
             wave.Freeze();
             var spawner = FindAnyObjectByType<EnemySpawner>();
             enemies = FindAnyObjectByType<EnemyManager>();
@@ -204,7 +221,12 @@ public class PortfolioValidation
                 level.name + " has a reachable, clear spawn area");
             Check(spawner.TryFindSpawnPosition(level.levelConfig.enemyType2, out _), level.name + " supports both enemy sizes");
             int spawned = 0;
-            var spawning = spawner.SpawnWave(8, 1, 5, enemy => spawned++);
+            bool correctFirstType = true;
+            var spawning = spawner.SpawnWave(8, 1, level.levelConfig.totalWaves, enemy =>
+            {
+                spawned++;
+                correctFirstType &= enemy.name.StartsWith(level.levelConfig.enemyType1.name + " (");
+            });
             float spawnDeadline = Time.realtimeSinceStartup + 20f;
             while (spawned < 8 && Time.realtimeSinceStartup < spawnDeadline)
             {
@@ -212,6 +234,28 @@ public class PortfolioValidation
                 yield return spawning.Current;
             }
             Check(spawned == 8, level.name + " spawns eight enemies without dropping requests");
+            Check(correctFirstType, level.name + " starts with its first enemy type only");
+            bool lastSpawned = false;
+            bool correctLastType = false;
+            Enemy lastEnemy = null;
+            var lastWave = spawner.SpawnWave(1, level.levelConfig.totalWaves, level.levelConfig.totalWaves, enemy =>
+            {
+                lastSpawned = true;
+                lastEnemy = enemy;
+                correctLastType = enemy.name.StartsWith(level.levelConfig.enemyType2.name + " (");
+            });
+            spawnDeadline = Time.realtimeSinceStartup + 20f;
+            while (!lastSpawned && Time.realtimeSinceStartup < spawnDeadline)
+            {
+                if (!lastWave.MoveNext()) break;
+                yield return lastWave.Current;
+            }
+            Check(lastSpawned && correctLastType, level.name + " ends with its second enemy type");
+            float health = lastEnemy.Health;
+            lastEnemy.TakeDamage(1f);
+            Check(lastEnemy.Health == health - 1f, level.name + " second enemy handles health and status UI");
+            lastEnemy.TakeDamage(lastEnemy.Health);
+            Check(!lastEnemy.IsAlive && !enemies.Enemies.Contains(lastEnemy), level.name + " second enemy dies and unregisters");
             for (int i = 0; i < enemies.Enemies.Count; i++)
                 for (int j = i + 1; j < enemies.Enemies.Count; j++)
                 {
@@ -221,6 +265,41 @@ public class PortfolioValidation
                         level.name + " moving agents keep separation");
                 }
         }
+        var ui = FindAnyObjectByType<UIManager>();
+        var clock = FindAnyObjectByType<GameSpeed>();
+        var speedButton = Get<Button>(ui, "speedUpGameButton");
+        var label = speedButton.GetComponentInChildren<TMP_Text>();
+        clock.SetMultiplier(1f);
+        speedButton.onClick.Invoke();
+        Check(clock.Multiplier == 3f && Time.timeScale == 3f && label.text == "3x", "Speed button changes the clock and label together");
+        var rect = speedButton.GetComponent<RectTransform>();
+        Check(rect.GetComponentInParent<Canvas>().renderMode == RenderMode.ScreenSpaceOverlay,
+            "Speed control uses a screen-space canvas");
+        var raycastResults = new System.Collections.Generic.List<RaycastResult>();
+        for (int x = -1; x <= 1; x++)
+            for (int y = -1; y <= 1; y++)
+            {
+                var point = rect.TransformPoint(new Vector3(x * rect.rect.width * 0.4f, y * rect.rect.height * 0.4f));
+                raycastResults.Clear();
+                EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = point }, raycastResults);
+                Check(raycastResults.Count > 0 && raycastResults[0].gameObject.GetComponentInParent<Button>() == speedButton,
+                    $"Speed control accepts touches at {x}, {y}");
+            }
+        var abilityPanel = Get<AbilityPanel>(ui, "abilityPanel");
+        abilityPanel.ShowPanel();
+        Check(Time.timeScale == 0f && clock.Multiplier == 3f, "Ability choice pauses without discarding 3x");
+        var option = FindObjectsByType<AbilityOptionUI>().First();
+        Get<Button>(option, "selectButton").onClick.Invoke();
+        Check(Time.timeScale == 3f && label.text == "3x", "Selecting a booster restores 3x");
+        var pausePanel = Get<PauseMenuPanel>(ui, "pauseMenuPanel");
+        pausePanel.ShowPanel();
+        abilityPanel.ShowPanel();
+        abilityPanel.HidePanel();
+        Check(Time.timeScale == 0f, "Closing one modal retains another modal's pause");
+        typeof(PauseMenuPanel).GetMethod("HidePanel", Fields).Invoke(pausePanel, null);
+        Check(Time.timeScale == 3f && label.text == "3x", "Resume restores the selected speed");
+        speedButton.onClick.Invoke();
+        Check(Time.timeScale == 1f && label.text == "1x", "Speed returns to 1x with a matching label");
         var targetWeapon = FindAnyObjectByType<Weapon>();
         foreach (var weapon in FindObjectsByType<Weapon>()) weapon.TakeDamage(100000f);
         yield return null;
@@ -231,6 +310,11 @@ public class PortfolioValidation
         yield return null;
         yield return null;
         Check(SceneManager.GetActiveScene().name == "MainMenu", "Defeat rewards return to a usable menu");
+        weapons.SelectWeapon(1);
+        weapons.SelectWeapon(2);
+        yield return null;
+        Check(FindAnyObjectByType<SelectedWeaponsDisplay>().PreviewCount == 3,
+            "All three selected weapons remain visible after returning from a match");
         int previousLevel = progress.GetCurrentLevel();
         tutorialProgress.RequestReplay();
         SceneManager.LoadScene("GameScene");
@@ -247,6 +331,57 @@ public class PortfolioValidation
         yield return null;
         Check(progress.GetCurrentLevel() == previousLevel, "Replay rewards do not unlock unrelated maps");
         Check(!failed, "No runtime exceptions occurred during the suite");
+    }
+
+    private IEnumerator ValidateSkipPaths()
+    {
+        yield return null;
+        var container = ProjectContext.Instance.Container;
+        var progress = container.Resolve<PlayerProgressService>();
+        var weapons = container.Resolve<WeaponsService>();
+        var tutorialProgress = container.Resolve<TutorialProgressService>();
+        progress.SetPlayerLevel(8);
+        int[][] loadouts = { new[] { 0 }, new[] { 1 }, new[] { 3, 4, 5 } };
+        for (int loadout = 0; loadout < loadouts.Length; loadout++)
+            for (int stage = 0; stage < 6; stage++)
+            {
+                foreach (var weapon in weapons.GetSelectedWeapons()) weapons.DeselectWeapon(weapon.WeaponId);
+                foreach (int id in loadouts[loadout]) weapons.SelectWeapon(id);
+                tutorialProgress.RequestReplay();
+                UnityEngine.Random.InitState(400 + loadout * 6 + stage);
+                SceneManager.LoadScene("GameScene");
+                yield return null;
+                yield return null;
+                FindAnyObjectByType<GameSpeed>().SetMultiplier(3f);
+                var tutorial = FindAnyObjectByType<TutorialManager>();
+                var manager = FindAnyObjectByType<BlockManager>();
+                var board = FindAnyObjectByType<BoardManager>();
+                var controller = new BlockDragController(FindAnyObjectByType<TileManager>(), board,
+                    FindAnyObjectByType<MergePlatformsManager>(), Camera.main);
+                var buy = Get<GameObject>(tutorial, "buyButton").GetComponent<Button>();
+                if (stage >= 1) buy.onClick.Invoke();
+                var first = manager.LastCreatedBlock;
+                if (stage >= 2) Place(controller, tutorial, first, manager);
+                if (stage >= 3) buy.onClick.Invoke();
+                if (stage >= 4)
+                {
+                    var second = manager.LastCreatedBlock;
+                    controller.StartDragging(first);
+                    Physics.SyncTransforms();
+                    Check(Physics.Raycast(second.transform.position + Vector3.up * 10f, Vector3.down, out var hit,
+                        20f, LayerMask.GetMask("Block")), "Skip probe can hit its merge target");
+                    controller.ExecuteAction(controller.FinishDragging(hit), manager);
+                }
+                if (stage >= 5) Place(controller, tutorial, manager.LastCreatedBlock, manager);
+                tutorial.SkipTutorial();
+                var spawner = FindAnyObjectByType<EnemySpawner>();
+                float deadline = Time.realtimeSinceStartup + 10f;
+                while (Get<int>(spawner, "totalSpawnedEnemies") == 0 && Time.realtimeSinceStartup < deadline)
+                    yield return null;
+                Check(Get<int>(spawner, "totalSpawnedEnemies") > 0,
+                    $"Skip at stage {stage} spawns an enemy with loadout {loadout}");
+                Check(board.Blocks.Count > 0, "Skip retains an ammo supply");
+            }
     }
 
     private static void Place(BlockDragController controller, TutorialManager tutorial, BlockParent block, BlockManager manager)

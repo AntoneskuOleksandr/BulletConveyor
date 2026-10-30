@@ -15,6 +15,7 @@ public class PauseMenuPanel : MonoBehaviour
     [SerializeField] private Button mainMenuButton;
 
     [Inject] private AbilityPanel _abilityPanel;
+    [Inject] private GameSpeed _gameSpeed;
 
     private void Start()
     {
@@ -37,6 +38,7 @@ public class PauseMenuPanel : MonoBehaviour
 
     public void ShowPanel()
     {
+        if (gameObject.activeSelf) return;
         if (tutorialInstructions != null)
         {
             restoreTutorialInstructions = tutorialInstructions.activeSelf;
@@ -44,7 +46,7 @@ public class PauseMenuPanel : MonoBehaviour
         }
         gameObject.SetActive(true);
 
-        Time.timeScale = 0f;
+        _gameSpeed.Pause(this);
 
         ShowSelectedAbilities();
     }
@@ -54,7 +56,7 @@ public class PauseMenuPanel : MonoBehaviour
         gameObject.SetActive(false);
         if (tutorialInstructions != null)
             tutorialInstructions.SetActive(restoreTutorialInstructions);
-        Time.timeScale = 1f;
+        _gameSpeed.Resume(this);
         ClearAbilityGrid();
     }
 

@@ -88,6 +88,34 @@ public static class BuildValidation
             var recovered = new DataManager(recoverable).LoadOrCreate();
             Check(recovered.PlayerLevel == 2 && Directory.GetFiles(directory, "damaged.json.corrupt-*").Length == 1 &&
                 recoverable.Load().PlayerLevel == 2, "A damaged save preserves the damaged file and restores a readable backup");
+            foreach (int total in new[] { 1, 5, 10, 11 })
+            {
+                float previousChance = 0f;
+                for (int wave = 1; wave <= total; wave++)
+                {
+                    float chance = EnemySpawner.GetSecondTypeChance(wave, total);
+                    Check(chance >= previousChance && (wave > total / 2 || chance == 0f) &&
+                        (wave != total || chance == 1f), $"Enemy progression is monotonic at wave {wave}/{total}");
+                    previousChance = chance;
+                }
+            }
+            for (int wave = 6; wave <= 10; wave++)
+                Check(Mathf.Abs(EnemySpawner.GetSecondTypeChance(wave, 10) - (wave - 5) * 0.2f) < 0.0001f,
+                    $"Ten-wave progression has the exact percentage at wave {wave}");
+            var orderedLevels = levels.OrderBy(level => level.LevelIndex).ToArray();
+            foreach (var prefab in orderedLevels.SelectMany(level => new[] { level.levelConfig.enemyType1, level.levelConfig.enemyType2 }).Distinct())
+            {
+                var enemy = prefab.GetComponent<Enemy>();
+                int missing = prefab.GetComponentsInChildren<Transform>(true)
+                    .Sum(transform => GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(transform.gameObject));
+                Check(enemy != null && enemy.HitTransform != null && missing == 0 &&
+                    new SerializedObject(enemy).FindProperty("enemyStatusCanvas").objectReferenceValue != null,
+                    prefab.name + " has complete current enemy and status components");
+            }
+            for (int i = 1; i < orderedLevels.Length; i++)
+                Check(orderedLevels[i].levelConfig.enemyType1 == orderedLevels[i - 1].levelConfig.enemyType2 &&
+                    orderedLevels[i].levelConfig.enemyType1 != orderedLevels[i].levelConfig.enemyType2,
+                    orderedLevels[i].name + " continues the enemy chain with a new second type");
             Debug.Log($"BUILD_VALIDATION_SUCCEEDED: {passed} checks passed");
         }
         finally
@@ -155,8 +183,20 @@ public static class BuildValidation
                     foreach (var transform in root.GetComponentsInChildren<Transform>(true))
                         missing += GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(transform.gameObject);
                 Check(missing == 0, $"{path} has no missing scripts");
+                Check(RenderSettings.sun != null && RenderSettings.sun.enabled && RenderSettings.sun.intensity >= 1.3f &&
+                    RenderSettings.ambientMode == UnityEngine.Rendering.AmbientMode.Trilight,
+                    path + " has the authored real-time sun and ambient lighting");
+                if (path.EndsWith("MainMenu.unity"))
+                    Check(scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<SelectedWeaponsDisplay>(true)).Count() == 1,
+                        "Main menu contains one selected-loadout display");
                 if (path.EndsWith("GameScene.unity"))
                 {
+                    var game = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<GameManager>(true)).Single();
+                    var configuredLevels = new SerializedObject(game).FindProperty("levels");
+                    Check(configuredLevels.arraySize == 5, "Game manager includes all five selectable maps");
+                    var installer = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<GameplayInstaller>(true)).Single();
+                    Check(new SerializedObject(installer).FindProperty("gameSpeed").objectReferenceValue != null,
+                        "Gameplay has a serialized shared speed controller");
                     var tutorial = scene.GetRootGameObjects()
                         .SelectMany(root => root.GetComponentsInChildren<TutorialManager>(true)).Single();
                     var serialized = new SerializedObject(tutorial);

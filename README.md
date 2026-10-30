@@ -6,9 +6,9 @@ Instead of giving every turret unlimited ammunition, **Bullet Conveyor** connect
 
 This is a **personal, playable development prototype**, with an Android portfolio build. Its main purpose here is to demonstrate gameplay programming, extensible C# systems, and Unity architecture.
 
-## Android portfolio snapshot 0.1.0
+## Android portfolio snapshot 0.1.1
 
-Five configured environments, eight weapons with five upgrade tiers each, persistent upgrades, music and combat feedback, and a six-step interactive tutorial with dynamic gestures, skip and replay. Enemy placement checks navigation, obstacles and other agents; waves complete after the last living enemy.
+Five configured environments with six progressively introduced enemy types, selected-weapon previews, a shared 1x/3x clock, eight weapons with five upgrade tiers each, persistent upgrades, music and combat feedback, and a six-step interactive tutorial with dynamic gestures, skip and replay. Enemy placement checks navigation, obstacles and other agents; waves complete after the last living enemy.
 
 Start from MainMenu. A fresh profile enters guided training when Play is pressed. The Tutorial button replays it, and Sound toggles audio without changing progress. See [milestones and verification](docs/MILESTONES.md) and [Android build instructions](docs/ANDROID_BUILD.md).
 
@@ -140,7 +140,7 @@ ProjectSettings/        Unity project configuration
 
 ## Project status and attribution
 
-**Status:** Playable personal portfolio prototype; Android snapshot 0.1.0. The repository is shared to demonstrate implemented systems and engineering decisions, not presented as a shipped or production-hardened product.
+**Status:** Playable personal portfolio prototype; Android snapshot 0.1.1. The repository is shared to demonstrate implemented systems and engineering decisions, not presented as a shipped or production-hardened product.
 
 **Developer:** [Oleksandr Antonesku](https://github.com/AntoneskuOleksandr)
 

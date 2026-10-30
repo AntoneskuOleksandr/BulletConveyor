@@ -19,8 +19,6 @@ MonoBehaviour:
   baseEnemyCount: 2
   enemyIncrementPerWave: 1
   extraEnemyCountRange: 2
-  enemyType1: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9,
-    type: 3}
-  enemyType2: {fileID: 4850011443788842758, guid: 9537295d0d72cfd4e88a458b6cc448cd,
-    type: 3}
+  enemyType1: {fileID: 3293866700957088596, guid: 70e9bb827850dcc478d6bf4b3051eca9, type: 3}
+  enemyType2: {fileID: 4850011443788842758, guid: 9537295d0d72cfd4e88a458b6cc448cd, type: 3}
   backgroundMusic: {fileID: 8300000, guid: 84b2a1e7b60b37a429700b1887798929, type: 3}

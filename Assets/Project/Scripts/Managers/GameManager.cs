@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [Inject] private WeaponsService _weaponsService;
     [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private TutorialProgressService _tutorialProgress;
+    [Inject] private GameSpeed _gameSpeed;
     private bool resultShown;
     public bool IsTrainingReplay { get; private set; }
 
@@ -24,7 +25,6 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        Time.timeScale = 1f;
         bool training = _tutorialProgress.ShouldPlayTutorial;
         IsTrainingReplay = training && _tutorialProgress.IsTutorialCompleted;
         int selected = training ? levels[0].LevelIndex : _playerProgressService.GetSelectedLevel();
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
         if (resultShown) yield break;
         resultShown = true;
         yield return null;
-        Time.timeScale = 0f;
+        _gameSpeed.Pause(this);
         GameAudio.PlayResult(victory);
         if (victory) _uiManager.ShowWinPanel();
         else _uiManager.ShowLosePanel();

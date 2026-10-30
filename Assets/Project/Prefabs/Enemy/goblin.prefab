@@ -950,7 +950,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4add3167a87eabb488b3e8db2be7f1d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  baseSpeed: 1.25
+  killReward: 125
+  gearsKillReward: 2
+  maxHealth: 120
   hitTransform: {fileID: 2326123594913335115}
   enemyStatusCanvas: {fileID: 6271405971803646549}
   OnDeath:

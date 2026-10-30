@@ -5,6 +5,7 @@ public class GameplayInstaller : MonoInstaller
 {
     [Header("Player")]
     [SerializeField] private PlayerRuntimeManager playerManager;
+    [SerializeField] private GameSpeed gameSpeed;
 
     [Header("Level-Related Scripts")]
     [SerializeField] private LevelLoader levelLoader;
@@ -41,6 +42,7 @@ public class GameplayInstaller : MonoInstaller
     {
 
         Container.Bind<PlayerRuntimeManager>().FromInstance(playerManager).AsSingle();
+        Container.Bind<GameSpeed>().FromInstance(gameSpeed).AsSingle();
 
         Container.Bind<LevelLoader>().FromInstance(levelLoader).AsSingle();
 
