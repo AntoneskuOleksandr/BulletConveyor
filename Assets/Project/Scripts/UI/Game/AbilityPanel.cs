@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using static EffectChanceManager;
@@ -26,7 +26,6 @@ public class AbilityPanel : MonoBehaviour
 
     private readonly List<AbilityData> _selectedAbilities = new();
 
-
     public void ShowPanel()
     {
         gameObject.SetActive(true);
@@ -48,7 +47,6 @@ public class AbilityPanel : MonoBehaviour
             return;
         }
 
-        // Копируем пул и ограничиваем по abilitiesCount
         List<AbilityData> pool = new List<AbilityData>(abilities);
         int count = Mathf.Min(abilitiesCount, pool.Count);
 

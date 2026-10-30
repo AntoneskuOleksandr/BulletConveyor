@@ -16,16 +16,19 @@ public class UpgradeWeaponPanel : MonoBehaviour
 
     private WeaponSO currentWeapon;
     private bool isOpen = false;
+    private readonly Dictionary<UpgradeParametrPanel, UnityEngine.Events.UnityAction> handlers = new();
 
     private void OnEnable()
     {
         foreach (var panel in upgradeParametrPanels)
         {
             var capturedType = panel.upgradeType;
-            panel.button.onClick.AddListener(() => Upgrade(capturedType));
+            UnityEngine.Events.UnityAction handler = () => Upgrade(capturedType);
+            handlers[panel] = handler;
+            panel.button.onClick.AddListener(handler);
         }
 
-        _economyService.OnCurrencyChanged += (currencyType) => { RefreshUI(); };
+        _economyService.OnCurrencyChanged += OnCurrencyChanged;
         _weaponsService.OnWeaponsChanged += RefreshUI;
 
         _weaponsCarousel.OnWeaponChanged += SetWeapon;
@@ -37,13 +40,17 @@ public class UpgradeWeaponPanel : MonoBehaviour
     private void OnDisable()
     {
         foreach (var panel in upgradeParametrPanels)
-            panel.button.onClick.RemoveAllListeners();
+            if (handlers.TryGetValue(panel, out var handler)) panel.button.onClick.RemoveListener(handler);
+        handlers.Clear();
 
-        _economyService.OnCurrencyChanged -= (currencyType) => { RefreshUI(); };
+        _economyService.OnCurrencyChanged -= OnCurrencyChanged;
+        _weaponsCarousel.OnWeaponChanged -= SetWeapon;
         _weaponsService.OnWeaponsChanged -= RefreshUI;
 
         ClosePanel();
     }
+
+    private void OnCurrencyChanged(CurrencyType type) => RefreshUI();
 
     public void OnUpgradeButtonClick()
     {

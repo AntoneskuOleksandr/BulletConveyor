@@ -35,13 +35,14 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
+        tutorialManager.OnStateChanged += UpdateUI;
         if (pauseGameButton != null && pauseMenuPanel != null)
         {
             pauseGameButton.gameObject.SetActive(true);
             pauseGameButton.onClick.AddListener(pauseMenuPanel.ShowPanel);
         }
 
-        if (!_tutorialProgressService.IsTutorialCompleted)
+        if (_tutorialProgressService.ShouldPlayTutorial)
         {
             if (buyBlockButton != null)
             {
@@ -82,6 +83,7 @@ public class UIManager : MonoBehaviour
 
     private void OnDisable()
     {
+        tutorialManager.OnStateChanged -= UpdateUI;
         buyBlockButton.onClick.RemoveListener(OnBuyButtonClicked);
         buyBlockByAdButton.onClick.RemoveListener(OnBuyBlockByAdButtonClicked);
         speedUpGameButton.onClick.RemoveListener(OnSpeedUpButtonClicked);
@@ -104,12 +106,13 @@ public class UIManager : MonoBehaviour
     {
         playerCoins.text = _playerManager.GetCurrency(CurrencyType.Coins).ToString();
         buyBlockText.text = _blockManager.BlockPrice.ToString();
-        buyBlockButton.interactable = _playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice;
+        buyBlockButton.interactable = _playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice &&
+            _blockManager.CanCreateBlock() && tutorialManager.CanBuyBlocks;
     }
 
     private void OnBuyButtonClicked()
     {
-        if (_playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice && _blockManager.CanCreateBlock())
+        if (tutorialManager.CanBuyBlocks && _playerManager.GetCurrency(CurrencyType.Coins) >= _blockManager.BlockPrice && _blockManager.CanCreateBlock())
         {
             _playerManager.TrySpend(CurrencyType.Coins, _blockManager.BlockPrice);
             _blockManager.CreateBlock();

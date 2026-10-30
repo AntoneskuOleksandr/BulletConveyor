@@ -69,6 +69,25 @@ public static class BuildValidation
 
             CheckEmptyDragHit();
             CheckScenes();
+            Check(database.weapons.All(weapon => weapon.UpgradeLevels.Length == 5 &&
+                weapon.UpgradeLevels.All(level => level.Cost > 0 && level.DamageBonus > 0 && level.HealthBonus > 0 && level.FireRateBonus > 0f)),
+                "Every weapon has five complete upgrade tiers");
+            var audio = Resources.Load<GameAudioConfig>("GameAudio");
+            Check(audio != null && audio.menuMusic != null && audio.combatMusic != null && audio.click != null && audio.shot != null,
+                "Music and feedback assets are included in Resources");
+            var levels = AssetDatabase.FindAssets("t:LevelSO", new[] { "Assets/Project/ScriptableObjects/Levels" })
+                .Select(guid => AssetDatabase.LoadAssetAtPath<LevelSO>(AssetDatabase.GUIDToAssetPath(guid)));
+            Check(levels.Count() == 5 && levels.All(level => level.levelConfig != null &&
+                level.levelConfig.environmentPrefab != null && level.levelConfig.enemyType1 != null && level.levelConfig.enemyType2 != null),
+                "All five selectable maps have complete gameplay configuration");
+            string damagedPath = Path.Combine(directory, "damaged.json");
+            var recoverable = new DataRepository(damagedPath);
+            recoverable.Save(new PlayerData { playerLevel = 2 });
+            recoverable.Save(new PlayerData { playerLevel = 3 });
+            File.WriteAllText(damagedPath, "{broken json");
+            var recovered = new DataManager(recoverable).LoadOrCreate();
+            Check(recovered.PlayerLevel == 2 && Directory.GetFiles(directory, "damaged.json.corrupt-*").Length == 1 &&
+                recoverable.Load().PlayerLevel == 2, "A damaged save preserves the damaged file and restores a readable backup");
             Debug.Log($"BUILD_VALIDATION_SUCCEEDED: {passed} checks passed");
         }
         finally

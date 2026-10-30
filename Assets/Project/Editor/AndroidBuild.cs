@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Text;
+using System.Xml.Linq;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -31,7 +32,7 @@ public static class AndroidBuild
         PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.Android, ManagedStrippingLevel.Minimal);
         PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
         PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)36;
-        // One installable APK for 32-bit and 64-bit phones.
+
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 |
             AndroidArchitecture.ARM64;
         PlayerSettings.Android.useCustomKeystore = false;
@@ -48,7 +49,6 @@ public static class AndroidBuild
         output = Path.GetFullPath(output);
         Directory.CreateDirectory(Path.GetDirectoryName(output));
 
-        // Keep native CMake paths below Windows' 260-character tool limit.
         string gradleProject = Path.GetFullPath("Builds/g");
         BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
         {
@@ -61,6 +61,7 @@ public static class AndroidBuild
         if (summary.result != BuildResult.Succeeded)
             throw new BuildFailedException($"Android export failed with {summary.totalErrors} errors. See the Editor log.");
 
+        ConfigureBackup(gradleProject);
         PackageApk(gradleProject);
         File.Copy(Path.Combine(gradleProject, "launcher/build/outputs/apk/release/launcher-release.apk"), output, true);
         long size = new FileInfo(output).Length;
@@ -91,9 +92,7 @@ public static class AndroidBuild
         };
         if (Application.platform == RuntimePlatform.WindowsEditor)
         {
-            // Java's AF_UNIX pipe can fail to connect on Windows. An absent directory
-            // selects its TCP fallback. Unity's Gradle launcher clears JAVA_TOOL_OPTIONS,
-            // so package the exported project with an explicit child environment.
+
             string socketDirectory = Path.Combine(Path.GetTempPath(), "BulletConveyorSockets-" + Guid.NewGuid().ToString("N"));
             start.EnvironmentVariables["JAVA_TOOL_OPTIONS"] =
                 (Environment.GetEnvironmentVariable("JAVA_TOOL_OPTIONS") +
@@ -118,5 +117,33 @@ public static class AndroidBuild
             if (process.ExitCode != 0)
                 throw new BuildFailedException("APK packaging failed. See Logs/android-gradle.log.\n" + log);
         }
+    }
+
+    private static void ConfigureBackup(string project)
+    {
+        XNamespace android = "http://schemas.android.com/apk/res/android";
+        XNamespace tool = "http://schemas.android.com/tools";
+        foreach (string module in new[] { "launcher", "unityLibrary" })
+        {
+            string manifest = Path.Combine(project, module, "src/main/AndroidManifest.xml");
+            var document = XDocument.Load(manifest);
+            var application = document.Root.Element("application");
+            application.SetAttributeValue(android + "allowBackup", "false");
+            application.SetAttributeValue(android + "fullBackupContent", "false");
+            application.SetAttributeValue(android + "dataExtractionRules", "@xml/bullet_data_rules");
+            application.SetAttributeValue(tool + "replace", "android:allowBackup,android:fullBackupContent,android:dataExtractionRules");
+            document.Save(manifest);
+        }
+        var rules = new XElement("data-extraction-rules");
+        foreach (string mode in new[] { "cloud-backup", "device-transfer" })
+        {
+            var group = new XElement(mode);
+            foreach (string domain in new[] { "root", "file", "database", "sharedpref", "external" })
+                group.Add(new XElement("exclude", new XAttribute("domain", domain), new XAttribute("path", ".")));
+            rules.Add(group);
+        }
+        string resource = Path.Combine(project, "unityLibrary/src/main/res/xml/bullet_data_rules.xml");
+        Directory.CreateDirectory(Path.GetDirectoryName(resource));
+        new XDocument(rules).Save(resource);
     }
 }

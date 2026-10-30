@@ -25,14 +25,14 @@ public class PauseMenuPanel : MonoBehaviour
 
     private void OnRestartButtonClicked()
     {
-        Time.timeScale = 1f; // Resume the game before restarting
+        Time.timeScale = 1f;
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 
     private void OnMainMenuButtonClicked()
     {
-        Time.timeScale = 1f; // Resume the game before going to main menu
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu"); // Ensure "MainMenu" matches your main menu scene name
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 
     public void ShowPanel()
@@ -44,7 +44,7 @@ public class PauseMenuPanel : MonoBehaviour
         }
         gameObject.SetActive(true);
 
-        Time.timeScale = 0f; // Pause the game
+        Time.timeScale = 0f;
 
         ShowSelectedAbilities();
     }
@@ -54,7 +54,7 @@ public class PauseMenuPanel : MonoBehaviour
         gameObject.SetActive(false);
         if (tutorialInstructions != null)
             tutorialInstructions.SetActive(restoreTutorialInstructions);
-        Time.timeScale = 1f; // Resume the game
+        Time.timeScale = 1f;
         ClearAbilityGrid();
     }
 

@@ -4,12 +4,11 @@ using UnityEngine;
 public class EffectRulesConfigSO : ScriptableObject
 {
     [Header("Freeze -> Ice")]
-    public float freezeToIceThreshold = 1f; // Strength, при котором Freeze превращается в Ice
-    public float iceDurationFromFreeze = 0.5f; // доля Duration Freeze для продления Ice
+    public float freezeToIceThreshold = 1f;
+    public float iceDurationFromFreeze = 0.5f;
 
     [Header("Fire melts Freeze/Ice")]
     public float fireMeltMultiplierFreeze = 2f;
     public float fireMeltMultiplierIce = 2f;
 
-    // Можно добавить любые новые параметры для других правил
 }

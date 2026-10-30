@@ -30,6 +30,7 @@ public class ProjectileStack : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.layer != LayerMask.NameToLayer("Bullet") || projectiles.Contains(other.gameObject)) return;
         conveyor.onBelt.Remove(other.transform);
         projectiles.Add(other.gameObject);
 

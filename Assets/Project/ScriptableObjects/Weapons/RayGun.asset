@@ -40,7 +40,27 @@ MonoBehaviour:
   ProjectileMoveType: 3
   ProjectileHitType: 0
   Modifiers: 
-  UpgradeLevels: []
+  UpgradeLevels:
+  - Cost: 25
+    DamageBonus: 1
+    FireRateBonus: 0.15
+    HealthBonus: 20
+  - Cost: 50
+    DamageBonus: 1
+    FireRateBonus: 0.15
+    HealthBonus: 20
+  - Cost: 100
+    DamageBonus: 1
+    FireRateBonus: 0.15
+    HealthBonus: 20
+  - Cost: 175
+    DamageBonus: 1
+    FireRateBonus: 0.15
+    HealthBonus: 20
+  - Cost: 250
+    DamageBonus: 1
+    FireRateBonus: 0.15
+    HealthBonus: 20
   BaseEffectChances: []
   Parameters:
   - Type: 7

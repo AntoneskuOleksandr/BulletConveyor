@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class StatusEffectUI : MonoBehaviour
 {
-    [SerializeField] private Image iconImage;  // Filled Image с Radial360
+    [SerializeField] private Image iconImage;
     public IStatusEffect Effect => effect;
 
     private IStatusEffect effect;
@@ -17,7 +17,7 @@ public class StatusEffectUI : MonoBehaviour
 
     private void Update()
     {
-        // Используем оставшееся время
+
         float fill = Mathf.Clamp01(effect.DurationLeft / effect.Duration);
         iconImage.fillAmount = fill;
     }

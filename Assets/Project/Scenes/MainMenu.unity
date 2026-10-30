@@ -6837,6 +6837,7 @@ MonoBehaviour:
   nextLevelButton: {fileID: 1200139852}
   previousLevelButton: {fileID: 5695740565754990249}
   backgroundGenerator: {fileID: 8236574627812582660}
+  levelNameText: {fileID: 4685737680754769775}
 --- !u!1 &3409784411501448725
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BlockManager : MonoBehaviour
@@ -9,6 +10,7 @@ public class BlockManager : MonoBehaviour
 
     public float BlockPrice => currentBlockPrice;
     public BlockParent LastCreatedBlock { get; private set; }
+    public event Action<BlockParent> OnBlockCreated;
 
     private int buyedBlockCount = 0;
     private int maxBlockRank = 0;
@@ -16,7 +18,7 @@ public class BlockManager : MonoBehaviour
 
     private void Awake()
     {
-        // при старте цена равна базовой
+
         currentBlockPrice = baseBlockPrice;
     }
 
@@ -65,6 +67,7 @@ public class BlockManager : MonoBehaviour
         parent.rank = blockToCreateIndex;
 
         LastCreatedBlock = parent;
+        OnBlockCreated?.Invoke(parent);
     }
 
     private void IncreaseBlockPrice()
@@ -74,7 +77,6 @@ public class BlockManager : MonoBehaviour
 
     public void MergeBlocks(BlockParent block1, BlockParent block2)
     {
-        Debug.Log($"Merging blocks: {block1.name} and {block2.name}");
         if (block1 == null || block2 == null)
         {
             if (block1 == null)
@@ -84,16 +86,22 @@ public class BlockManager : MonoBehaviour
             return;
         }
 
+        if (block1 == block2 || block1.rank != block2.rank || block1.nextRangBlock == null || block2.blockData.isOnBoard)
+            return;
+
         BlockParent newBlock = Instantiate(
             block1.nextRangBlock,
             block2.transform.position,
-            Quaternion.identity
+            Quaternion.identity,
+            transform
         ).GetComponent<BlockParent>();
 
         LastCreatedBlock = newBlock;
 
         newBlock.blockData.platform = block2.blockData.platform;
         newBlock.rank = block2.rank + 1;
+        newBlock.PlaceOnPlatform(block2.transform.position, block2.blockData.platform);
+        GameAudio.PlayMerge();
 
         if (block1.blockData.platform != -1)
             platformsManager.SetPlatformFree(block1.blockData.platform);

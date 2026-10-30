@@ -1,35 +1,36 @@
-# Bullet Conveyor: staged fixes
+# Bullet Conveyor: portfolio milestones
 
-Only one milestone is implemented at a time. The next milestone starts after the user verifies and approves the current one.
+The user authorized all remaining milestones together on 2026-10-30, including a full tutorial UX rework. Changes are kept on test/android-build-2026-10-29.
 
-## 1. Main menu initialization
+## 1. Main menu
 
-Status: implemented; awaiting user verification. Android version: 0.0.2-m1 (version code 2).
+Completed. Startup guards, initialized-level readiness, stable preview reuse, level ID lookup, individual event cleanup and dynamic level names. The original 15 lifecycle checks still run separately with domain and scene reload disabled.
 
-Scope: the reported LevelDisplay exception, initialization order, level selection and repeated menu opening.
+## 2. Progress and upgrades
 
-Changes: Play waits for an initialized level; saved level IDs are resolved by ID; event handlers unsubscribe individually; the same level preview is reused when reopening the menu. Scene transition saves the selected level first.
+Completed. Every weapon previously had an empty upgrade array, so the UI displayed MAX at level zero. Eight weapons now have five priced tiers. Upgrades and their cost are saved together; legacy out-of-range values are clamped. Save files use temporary writes, replacement and a backup; corrupt originals are preserved before backup recovery. Editor fixtures remain separate from real saves. APK packaging excludes cloud backup and device-transfer data; updating an existing install preserves its local progress.
 
-Verification: run menu-first and display-first initialization in Play mode with domain/scene reload disabled, reopen the menu three times, check preview count and navigation, preserve other button listeners, and block locked levels. Also run the existing build checks and build APK version 0.0.2-m1.
+## 3. Spawning, movement and game flow
 
-Result: 15 Play-mode lifecycle checks and 13 general build checks passed. The reported exception did not recur in the open development editor or the Android emulator. The emulator also passed level navigation, locked-level blocking and three main/weapons panel cycles. The two menu source fixes were applied to the open development copy for immediate user testing.
-
-User acceptance: open MainMenu, confirm no new LevelDisplay exception, navigate through levels, switch between the main and weapons panels several times, and enter an available level.
-
-## 2. Player progress after reinstall
-
-Inspect debug profile settings, saved weapon upgrades, Android backup/restore and first-install defaults. Preserve existing player data while diagnosing. Verify clean install and reinstall separately.
-
-## 3. Enemy spawning and movement
-
-Check obstacle clearance, NavMesh placement, separation between spawn positions, colliders, rigidbodies and agent movement. Optimize the spawn checks where profiling and measurements justify it.
+Completed. Spawn candidates must be on the correct NavMesh, inside the requested bounds, away from edges, clear of obstacle capsules and living enemies, and connected to a turret. Bounded candidate batches retry over time rather than placing an invalid enemy or dropping a request. NavMeshAgent owns movement; Rigidbody is kinematic and animation root motion is off. Waves finish only after spawning and combat finish. Dead turrets stop updating/firing and queued requests are cancelled safely. Five map previews now have complete game configurations; maps without baked navigation build it once at load.
 
 ## 4. Audio
 
-Inspect available clips, listeners, sources, volume settings and playback triggers. Verify menu and combat sounds on Android.
+Completed. A persistent service plays existing music, UI clicks and weapon shots plus generated placement, merge, wave and result feedback. It manages the active listener, limits overlapping shot feedback, streams music and preserves the Sound setting between scenes and launches.
 
-## 5. Focused cleanup and performance
+## 5. Targeted cleanup
 
-Measure the remaining expensive paths and make small local refactors. Remove comments from project-owned scripts under Assets/Project and build tools. Third-party plugin sources are outside that cleanup scope. Finish with Android verification.
+Completed. Removed LINQ enumerators from repeated weapon modifier calculations, cached the grid's tile list, used squared target distances, bounded generated ammunition to 150 objects and gave fired ammunition a lifetime. Fixed stale UI listeners, repeated currency initialization, upgrade-panel reopening and animation cleanup when a scene is unloaded. UI animations run during pause. Removed an ObjectPool wrapper that never received returned objects. Removed comments from all project-owned C# and build code; vendor plugins were left alone. These are local refactors, without changing the strategy/DI architecture. No device FPS improvement is claimed without a physical-phone profile.
 
-All code added or changed during these milestones must have no comments. Progress, spawning, audio and broader cleanup are outside milestone 1.
+## 6. Tutorial UX
+
+Completed. Six action-based steps teach buying, valid placement, buying a match, merging, replacing the stronger block and automatic defense. Waves wait for preparation. The pointer projects actual UI/world targets into a screen-space canvas every frame, demonstrates a source-to-destination gesture and hides during touch/pause. A safe-area instruction card gives short copy and progress. Failed drops do not advance; purchases advance only when a block is created. Skip supplies a valid starting ammo block; Tutorial in the menu replays training without resetting permanent progress or unlocking maps for a replay.
+
+## Verification
+
+- 17 content, menu, persistence and build checks.
+- 194 checks in the real scenes in Play Mode: purchases, placement, merge, pause, real turret victory through two training waves, reward persistence, five-map spawning, defeat, menu return, replay and skip.
+- 15 dedicated menu lifecycle checks with reload disabled.
+- Android APK, installation, interaction, save/reinstall and audio-runtime verification are recorded in the release report.
+
+Phone playtesting and final balance feedback remain with the user. Automated map checks validate navigation/spawning; they do not claim every weapon/ability combination or a complete playthrough of every normal map.

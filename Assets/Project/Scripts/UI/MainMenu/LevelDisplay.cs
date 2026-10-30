@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,14 +21,21 @@ public class LevelDisplay : MonoBehaviour
     [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private MainMenuUIManager _mainMenuUIManager;
 
+    [SerializeField] private TMP_Text levelNameText;
     private LevelSO currentLevel;
     private GameObject currentMiniLevel;
     private int currentLevelIndex;
 
     public event Action OnLevelChanged;
 
+    private bool subscribed;
+
+    private void Start() { if (!subscribed) OnEnable(); }
+
     private void OnEnable()
     {
+        if (_playerProgressService == null || _mainMenuUIManager == null || subscribed) return;
+        subscribed = true;
         nextLevelButton.onClick.AddListener(ShowNextLevel);
         previousLevelButton.onClick.AddListener(ShowPreviousLevel);
 
@@ -49,6 +57,8 @@ public class LevelDisplay : MonoBehaviour
 
     private void OnDisable()
     {
+        if (!subscribed) return;
+        subscribed = false;
         nextLevelButton.onClick.RemoveListener(ShowNextLevel);
         previousLevelButton.onClick.RemoveListener(ShowPreviousLevel);
 
@@ -67,6 +77,7 @@ public class LevelDisplay : MonoBehaviour
         }
 
         currentLevel = level;
+        if (levelNameText != null) levelNameText.text = level.LevelName.ToUpperInvariant();
         currentLevelIndex = index;
         backgroundGenerator.SetColor(level.GradientColorTop, level.GradientColorBottom);
 

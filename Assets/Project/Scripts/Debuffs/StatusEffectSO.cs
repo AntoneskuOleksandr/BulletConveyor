@@ -38,10 +38,9 @@ public class StatusEffectSO : ScriptableObject
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        // ”дал€ем параметры, которых больше нет в AllowedParameters
+
         Parameters.RemoveAll(p => !Array.Exists(AllowedParameters, t => t == p.Type));
 
-        // ƒобавл€ем типы по пор€дку при наличии свободных AllowedParameters
         var existingTypes = Parameters.Select(p => p.Type).ToList();
 
         for (int i = 0; i < AllowedParameters.Length; i++)
@@ -50,16 +49,15 @@ public class StatusEffectSO : ScriptableObject
 
             if (!existingTypes.Contains(allowed))
             {
-                // ≈сли список Parameters меньше, чем количество Allowed, добавл€ем новый элемент
+
                 if (Parameters.Count < AllowedParameters.Length)
                 {
                     Parameters.Add(new EffectParameter { Type = allowed, Value = 0f });
-                    existingTypes.Add(allowed); // чтобы дальше не дублировать
+                    existingTypes.Add(allowed);
                 }
             }
         }
 
-        // ≈сли вдруг Parameters больше AllowedParameters, обрезаем
         Parameters.RemoveAll(p => !AllowedParameters.Contains(p.Type));
     }
 #endif

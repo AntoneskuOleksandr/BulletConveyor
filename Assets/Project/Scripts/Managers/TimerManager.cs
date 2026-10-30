@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,9 +7,9 @@ public class TimerManager
 {
     private class TimerData
     {
-        public string Key;              // unique key
-        public DateTime? LastTrigger;   // last time it was triggered
-        public double CooldownHours;    // cooldown in hours
+        public string Key;
+        public DateTime? LastTrigger;
+        public double CooldownHours;
     }
 
     private Dictionary<string, TimerData> timers = new Dictionary<string, TimerData>();
@@ -61,7 +61,6 @@ public class TimerManager
 
         return TimeSpan.FromSeconds(Math.Floor(remaining.TotalSeconds));
     }
-
 
     public void ResetTimer(string key)
     {

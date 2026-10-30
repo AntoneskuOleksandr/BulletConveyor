@@ -19,7 +19,7 @@ public class ProjectInstaller : MonoInstaller
 #if UNITY_EDITOR
         if (useDebugPlayerData && debugPlayerData != null)
         {
-            // Keep editor fixtures separate from real player progress.
+
             dataRepository = new DataRepository(System.IO.Path.Combine(
                 Application.persistentDataPath, "debug-playerdata.json"));
             dataManager = new DataManager(dataRepository);
@@ -47,9 +47,6 @@ public class ProjectInstaller : MonoInstaller
         Container.Bind<TutorialProgressService>()
             .AsSingle()
             .WithArguments(playerData);
-
-        Container.BindInterfacesAndSelfTo<SaveManager>().AsSingle();
-
 
         Container.Bind<TimerManager>().AsSingle();
     }

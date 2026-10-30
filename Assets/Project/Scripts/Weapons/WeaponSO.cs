@@ -16,7 +16,7 @@ public enum WeaponParameterType
     AoERadius = 0,
     SpreadAngle = 1,
     PowerfulShotEvery = 2,
-    ShootSimultaneously = 3, // 1 - simultaneously, 0 - sequentially
+    ShootSimultaneously = 3,
     PowerShotMultiplier = 4,
     PelletsPerShot = 5,
     PelletDamageMultiplier = 6,
@@ -61,10 +61,9 @@ public class WeaponSO : ScriptableObject
     [Header("Aiming Settings")]
     public float AimThreshold;
 
-    // Yaw
     public bool UseYaw;
     public float YawTurnSpeed;
-    // Pitch
+
     public bool UsePitch;
     public float PitchTurnSpeed;
     public float MinPitchAngle;

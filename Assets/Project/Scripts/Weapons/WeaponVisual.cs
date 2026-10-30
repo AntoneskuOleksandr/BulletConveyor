@@ -24,10 +24,6 @@ public class WeaponVisual : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Проигрывает вспышку с распределением цветов по шансам.
-    /// Если словарь пуст — используется дефолтный цвет.
-    /// </summary>
     public void PlayShotEffect(Dictionary<Color, float> colorWeights)
     {
         if (_muzzleInstance == null)
@@ -42,16 +38,12 @@ public class WeaponVisual : MonoBehaviour
             StartCoroutine(DelayedColorize(colorWeights));
     }
 
-
     private System.Collections.IEnumerator DelayedColorize(Dictionary<Color, float> colorWeights)
     {
-        yield return null; // ждём 1 кадр
+        yield return null;
         ColorizeParticles(colorWeights);
     }
 
-    /// <summary>
-    /// Красим частицы в пропорциях, зависящих от весов цветов.
-    /// </summary>
     private void ColorizeParticles(Dictionary<Color, float> colorWeights)
     {
         int maxParticles = _muzzleInstance.main.maxParticles;

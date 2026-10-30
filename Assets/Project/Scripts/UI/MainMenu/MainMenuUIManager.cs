@@ -17,8 +17,14 @@ public class MainMenuUIManager : MonoBehaviour
     [Inject] private LevelDisplay _levelDisplay;
     [Inject] private TutorialProgressService _tutorialProgressService;
 
+    private bool subscribed;
+
+    private void Start() { if (!subscribed) OnEnable(); }
+
     private void OnEnable()
     {
+        if (_economyService == null || _weaponsService == null || _levelDisplay == null || subscribed) return;
+        subscribed = true;
         _economyService.OnCurrencyChanged += OnCurrencyChanged;
         _weaponsService.OnSelectionChanged += UpdateStartButtonState;
         _levelDisplay.OnLevelChanged += UpdateStartButtonState;
@@ -31,6 +37,8 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void OnDisable()
     {
+        if (!subscribed) return;
+        subscribed = false;
         _economyService.OnCurrencyChanged -= OnCurrencyChanged;
         _weaponsService.OnSelectionChanged -= UpdateStartButtonState;
         _levelDisplay.OnLevelChanged -= UpdateStartButtonState;

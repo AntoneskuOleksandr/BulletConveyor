@@ -39,26 +39,22 @@ public class GameplayInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        //Player
+
         Container.Bind<PlayerRuntimeManager>().FromInstance(playerManager).AsSingle();
 
-        //Level-Related Scripts
         Container.Bind<LevelLoader>().FromInstance(levelLoader).AsSingle();
 
-        //UI
         Container.Bind<UIManager>().FromInstance(uiManager).AsSingle();
         Container.Bind<AbilityPanel>().FromInstance(abilityPanel).AsSingle();
         Container.Bind<PauseMenuPanel>().FromInstance(pauseMenuPanel).AsSingle();
         Container.Bind<ProgressBar>().FromInstance(progressBar).AsSingle();
 
-        //Board-Related Managers
         Container.Bind<BoardManager>().FromInstance(boardManager).AsSingle();
         Container.Bind<TileManager>().FromInstance(tileManager).AsSingle();
         Container.Bind<TileGenerator>().FromInstance(tileGenerator).AsSingle();
         Container.Bind<BlockManager>().FromInstance(blockManager).AsSingle();
         Container.Bind<MergePlatformsManager>().FromInstance(mergePlatformsManager).AsSingle();
 
-        //Weapons & Projectiles
         Container.Bind<WeaponManager>().FromInstance(weaponManager).AsSingle();
         Container.Bind<WeaponFactory>().AsSingle();
         Container.Bind<ProjectileInitializer>().AsSingle();
@@ -69,17 +65,14 @@ public class GameplayInstaller : MonoInstaller
         Container.Bind<WeaponModifierResolver>().AsSingle();
         Container.BindInterfacesAndSelfTo<FireDispatcher>().AsSingle();
 
-        //Effects Managers
         Container.Bind<EffectFactory>().FromInstance(effectFactory).AsSingle();
         Container.Bind<EffectRulesConfigSO>().FromInstance(effectRulesConfigSO).AsSingle();
         Container.Bind<LightningManager>().FromInstance(lightningManager).AsSingle();
 
-        //Enemy-Related Scripts
         Container.Bind<EnemyManager>().FromInstance(enemyManager).AsSingle();
         Container.Bind<EnemySpawner>().FromInstance(enemySpawner).AsSingle();
         Container.Bind<WaveManager>().FromInstance(waveManager).AsSingle();
 
-        //Main Camera
         Container.Bind<Camera>().FromInstance(Camera.main).AsSingle();
     }
 }

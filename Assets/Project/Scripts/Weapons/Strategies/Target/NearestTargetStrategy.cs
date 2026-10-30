@@ -15,12 +15,13 @@ public class NearestTargetStrategy : ITargetStrategy
 
         foreach (Enemy enemy in _enemyManager.Enemies)
         {
-            if (enemy == null)
+            if (enemy == null || !enemy.IsAlive)
                 continue;
 
-            float distanceToEnemy = Vector3.Distance(weapon.transform.position, enemy.HitTransform.position);
+            float distanceToEnemy = (weapon.transform.position - enemy.HitTransform.position).sqrMagnitude;
 
-            if (distanceToEnemy < weapon.MinAttackRadius || distanceToEnemy > weapon.MaxAttackRadius)
+            if (distanceToEnemy < weapon.MinAttackRadius * weapon.MinAttackRadius ||
+                distanceToEnemy > weapon.MaxAttackRadius * weapon.MaxAttackRadius)
                 continue;
 
             if (distanceToEnemy < shortestDistance)

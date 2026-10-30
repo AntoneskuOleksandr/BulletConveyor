@@ -103,15 +103,15 @@ public class BlockParent : MonoBehaviour
 
         ChangeLayerRecursively(transform, LayerMask.NameToLayer("DraggingBlock"));
 
-        blockData.isOnBoard = false; // блок не на доске
-        blockData.platform = -1; // блок не на платформе
+        blockData.isOnBoard = false;
+        blockData.platform = -1;
 
         foreach (Tile tile in MyTiles)
         {
-            tile.isAvailable = true; // освобождаем занятые тайлы
+            tile.isAvailable = true;
         }
 
-        MyTiles = new List<Tile>(); // очищаем занятые тайлы
+        MyTiles = new List<Tile>();
     }
 
     public void PlaceOnBoard(List<Tile> tiles, Vector3 position)
@@ -121,16 +121,16 @@ public class BlockParent : MonoBehaviour
 
         RestoreLayer();
 
-        blockData.platform = -1; // блок не на платформе
-        blockData.isOnBoard = true; // блок на доске
-        MyTiles = tiles; // обновляем занятые тайлы
+        blockData.platform = -1;
+        blockData.isOnBoard = true;
+        MyTiles = tiles;
 
         foreach (Tile tile in MyTiles)
         {
-            tile.isAvailable = false; // блокируем занятые тайлы
+            tile.isAvailable = false;
         }
 
-        SetPosition(position); // устанавливаем позицию блока
+        SetPosition(position);
     }
 
     public void PlaceOnPlatform(Vector3 position, int platformIndex)
@@ -140,9 +140,9 @@ public class BlockParent : MonoBehaviour
 
         RestoreLayer();
 
-        MyTiles = new List<Tile>(); // очищаем занятые тайлы
-        blockData.isOnBoard = false; // блок не на доске
-        blockData.platform = platformIndex; // устанавливаем платформу
+        MyTiles = new List<Tile>();
+        blockData.isOnBoard = false;
+        blockData.platform = platformIndex;
 
         SetPosition(position);
     }

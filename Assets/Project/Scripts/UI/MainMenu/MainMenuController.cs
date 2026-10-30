@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button weaponsButton;
 
     public event Action OnPanelChanged;
+    [Inject] private TutorialProgressService tutorialProgress;
 
     private void Awake()
     {
@@ -29,7 +31,14 @@ public class MainMenuController : MonoBehaviour
 
     private void Start()
     {
-        //ShowPanel(homePanel);
+        var overlay = RuntimeUI.Overlay("Practice controls", null, 40);
+        var rect = RuntimeUI.Rect("Tutorial", overlay, new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(210f, 64f), new Vector2(135f, -122f));
+        RuntimeUI.Button("Tutorial", rect, "Tutorial", TMPro.TMP_Settings.defaultFontAsset, () =>
+        {
+            tutorialProgress.RequestReplay();
+            UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+        });
     }
 
     private void ShowPanel(GameObject panelToShow)

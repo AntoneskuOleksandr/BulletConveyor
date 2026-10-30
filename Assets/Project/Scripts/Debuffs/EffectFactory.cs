@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-/// <summary>
-/// Фабрика для создания эффектов (IOnHitEffect)
-/// </summary>
 public class EffectFactory : MonoBehaviour
 {
     [Header("ScriptableObjects Effects")]
@@ -44,9 +41,6 @@ public class EffectFactory : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// Преобразует шансы эффектов в словарь цветов с весами.
-    /// </summary>
     public Dictionary<Color, float> ConvertChancesToColors(Dictionary<OnHitEffectType, float> chances)
     {
         var result = new Dictionary<Color, float>();
@@ -66,10 +60,6 @@ public class EffectFactory : MonoBehaviour
         return result;
     }
 
-
-    /// <summary>
-    /// Получение иконки для UI
-    /// </summary>
     public Sprite GetIconByEffectType(OnHitEffectType type)
     {
         return type switch

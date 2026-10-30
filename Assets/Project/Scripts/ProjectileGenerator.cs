@@ -1,7 +1,6 @@
 using DG.Tweening;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Pool;
 using Zenject;
 
 public class ProjectileGenerator : MonoBehaviour
@@ -27,7 +26,6 @@ public class ProjectileGenerator : MonoBehaviour
     private int index = 0;
 
     private GameObject projectilesFolder;
-    private ObjectPool<GameObject> projectilePool;
 
     [Inject]
     public void Construct(BoardManager boardManager)
@@ -38,22 +36,6 @@ public class ProjectileGenerator : MonoBehaviour
     public void Initialize()
     {
         projectilesFolder = new GameObject("Projectiles");
-
-        projectilePool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(projectilePrefab),
-            actionOnGet: projectile =>
-            {
-                projectile.SetActive(true);
-            },
-            actionOnRelease: projectile =>
-            {
-                projectile.SetActive(false);
-            },
-            actionOnDestroy: projectile => Destroy(projectile),
-            collectionCheck: false,
-            defaultCapacity: 10,
-            maxSize: 100
-        );
 
         if (spawnOnceOnStart)
         {
@@ -71,9 +53,10 @@ public class ProjectileGenerator : MonoBehaviour
         {
             yield return new WaitForSeconds(spawnInterval);
 
+            if (projectilesFolder.transform.childCount >= 150) continue;
             index = 0;
 
-            blocksPool.transform.DOMoveY(-animationStrength, pulseAnimationDuration).SetLoops(2, LoopType.Yoyo);
+            blocksPool.transform.DOMoveY(-animationStrength, pulseAnimationDuration).SetLoops(2, LoopType.Yoyo).SetLink(blocksPool);
 
             if (debugMode)
             {
@@ -86,6 +69,7 @@ public class ProjectileGenerator : MonoBehaviour
             {
                 for (int i = 0; i < block.projectilesToGenerate; i++)
                 {
+                    if (projectilesFolder.transform.childCount >= 150) break;
                     GenerateProjectile(block);
                 }
             }
@@ -98,7 +82,7 @@ public class ProjectileGenerator : MonoBehaviour
         if (block != null)
             spawnPosition = block.transform.position;
 
-        GameObject projectile = projectilePool.Get();
+        GameObject projectile = Instantiate(projectilePrefab, projectilesFolder.transform);
         projectile.transform.position = spawnPosition;
         projectile.transform.Rotate(0f, -90f, 0f);
         projectile.transform.parent = projectilesFolder.transform;
@@ -106,7 +90,7 @@ public class ProjectileGenerator : MonoBehaviour
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
-        projectile.transform.DOMove(conveyor.position + new Vector3(0, 0f, index * spawnOffset), projectileAnimationDuration).OnComplete(() =>
+        projectile.transform.DOMove(conveyor.position + new Vector3(0, 0f, index * spawnOffset), projectileAnimationDuration).SetLink(projectile).OnComplete(() =>
         {
             rb.freezeRotation = false;
             rb.isKinematic = true;

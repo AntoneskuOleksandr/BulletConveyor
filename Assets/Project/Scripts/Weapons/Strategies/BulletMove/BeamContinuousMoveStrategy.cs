@@ -33,7 +33,6 @@ public class BeamContinuousMoveStrategy : IProjectileMoveStrategy
             firePoint, range, pierceCount, tickInterval, lifeTime, visual));
     }
 
-
     public void Update(Weapon weapon, ProjectileBase projectile, float deltaTime) { }
 
     private IEnumerator DamageRoutine(

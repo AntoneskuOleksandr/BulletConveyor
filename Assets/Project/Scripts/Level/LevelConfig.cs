@@ -10,16 +10,16 @@ public class LevelConfig : ScriptableObject
     public GameObject environmentPrefab;
 
     [Header("Waves Settings")]
-    [Tooltip("Количество волн на уровне")]
+    [Tooltip("РљРѕР»РёС‡РµСЃС‚РІРѕ РІРѕР»РЅ РЅР° СѓСЂРѕРІРЅРµ")]
     public int totalWaves = 10;
 
-    [Tooltip("Количество врагов в первой волне")]
+    [Tooltip("РљРѕР»РёС‡РµСЃС‚РІРѕ РІСЂР°РіРѕРІ РІ РїРµСЂРІРѕР№ РІРѕР»РЅРµ")]
     public int baseEnemyCount = 3;
 
-    [Tooltip("Насколько увеличивается количество врагов на каждую следующую волну")]
+    [Tooltip("РќР°СЃРєРѕР»СЊРєРѕ СѓРІРµР»РёС‡РёРІР°РµС‚СЃСЏ РєРѕР»РёС‡РµСЃС‚РІРѕ РІСЂР°РіРѕРІ РЅР° РєР°Р¶РґСѓСЋ СЃР»РµРґСѓСЋС‰СѓСЋ РІРѕР»РЅСѓ")]
     public int enemyIncrementPerWave = 1;
 
-    [Tooltip("Дополнительное смещение к максимальному количеству врагов (диапазон)")]
+    [Tooltip("Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ СЃРјРµС‰РµРЅРёРµ Рє РјР°РєСЃРёРјР°Р»СЊРЅРѕРјСѓ РєРѕР»РёС‡РµСЃС‚РІСѓ РІСЂР°РіРѕРІ (РґРёР°РїР°Р·РѕРЅ)")]
     public int extraEnemyCountRange = 2;
 
     [Header("Spawn Settings")]

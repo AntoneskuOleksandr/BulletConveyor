@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +13,7 @@ public class WheelOfFortuneUI : MonoBehaviour
     [SerializeField] private AnimationCurve spinCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] private float minSpinCounts = 3f;
     [SerializeField] private float maxSpinCounts = 6f;
-    [SerializeField] private float spinCooldownHours = 1f / 2f; // 30 min
+    [SerializeField] private float spinCooldownHours = 1f / 2f;
 
     [Header("UI References")]
     [SerializeField] private Button wheelButton;

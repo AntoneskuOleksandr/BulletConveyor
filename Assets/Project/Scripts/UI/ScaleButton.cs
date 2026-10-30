@@ -27,13 +27,13 @@ public class ScaleButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         if (button != null && button.interactable && isPointerOverButton)
-            transform.DOScale(originalScale * scaleFactor, animationDuration);
+            transform.DOScale(originalScale * scaleFactor, animationDuration).SetUpdate(true);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         if (button != null)
-            transform.DOScale(originalScale, animationDuration);
+            transform.DOScale(originalScale, animationDuration).SetUpdate(true);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -45,6 +45,6 @@ public class ScaleButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         isPointerOverButton = false;
         if (button != null)
-            transform.DOScale(originalScale, animationDuration);
+            transform.DOScale(originalScale, animationDuration).SetUpdate(true);
     }
 }

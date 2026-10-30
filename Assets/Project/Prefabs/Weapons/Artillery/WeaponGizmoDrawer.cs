@@ -8,7 +8,6 @@ public class WeaponGizmoDrawer : MonoBehaviour
     public Color color = Color.yellow;
     public WeaponAttachmentType weaponAttachmentType;
 
-
     private void OnDrawGizmos()
     {
         if (weapon == null)

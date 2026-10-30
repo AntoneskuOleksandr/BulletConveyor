@@ -10,10 +10,6 @@ public class ProjectileManager
 
     public bool CanAllocate(int count) => AvailableCount >= count;
 
-    /// <summary>
-    /// ѕытаетс€ выделить от min до max снар€дов.
-    /// ≈сли доступно меньше min Ч возвращает Failed.
-    /// </summary>
     public ProjectileAllocation Allocate(int min, int max)
     {
         int available = AvailableCount;

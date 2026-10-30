@@ -4,7 +4,13 @@
 
 Instead of giving every turret unlimited ammunition, **Bullet Conveyor** connects combat to production: arrange and merge blocks to produce bullets, move them along a conveyor, and supply weapons while surviving enemy waves.
 
-This is a **personal, playable development prototype**, currently paused rather than a commercially released game. Its main purpose here is to demonstrate gameplay programming, extensible C# systems, and Unity architecture.
+This is a **personal, playable development prototype**, with an Android portfolio build. Its main purpose here is to demonstrate gameplay programming, extensible C# systems, and Unity architecture.
+
+## Android portfolio snapshot 0.1.0
+
+Five configured environments, eight weapons with five upgrade tiers each, persistent upgrades, music and combat feedback, and a six-step interactive tutorial with dynamic gestures, skip and replay. Enemy placement checks navigation, obstacles and other agents; waves complete after the last living enemy.
+
+Start from MainMenu. A fresh profile enters guided training when Play is pressed. The Tutorial button replays it, and Sound toggles audio without changing progress. See [milestones and verification](docs/MILESTONES.md) and [Android build instructions](docs/ANDROID_BUILD.md).
 
 ## Gameplay video
 
@@ -71,7 +77,7 @@ Explore: [block interactions](Assets/Project/Scripts/BlockRelated/) · [drag sta
 ### Combat effects and enemy waves
 
 - **Status effects:** fire, ice, freeze, and lightning, with configurable effect data and chance-based application.
-- **Wave management:** level-configured enemy types/counts, timed waves, enemy spawning, and progress events.
+- **Wave management:** level-configured enemy types/counts, combat-complete waves, validated enemy spawning, and progress events.
 - **Enemy behaviour:** NavMesh-based movement, target selection, health, damage, and death handling.
 - **Game flow:** a tutorial, weapon loadout selection, upgrades, ability choices, and win/lose UI.
 
@@ -82,7 +88,7 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 - [Zenject installers](Assets/Project/Scripts/Installers/) bind shared services and gameplay components.
 - [Weapon and progression services](Assets/Project/Scripts/Services/) separate purchasing, selection, upgrades, and persistent player progress from combat behaviours.
 - [`DataRepository`](Assets/Project/Scripts/DataManager/DataRepository.cs) uses JSON files under `Application.persistentDataPath` for player-data storage.
-- The project also uses DOTween for animations and Unity's `ObjectPool<T>` API in projectile generation. Pool return/reuse behaviour has not been independently verified.
+- DOTween animates UI and ammunition transport. Live generated ammunition is capped, and fired projectiles have a finite lifetime.
 
 ## Technology
 
@@ -134,7 +140,7 @@ ProjectSettings/        Unity project configuration
 
 ## Project status and attribution
 
-**Status:** Personal portfolio prototype; development paused. The repository is shared to demonstrate implemented systems and engineering decisions, not presented as a shipped or production-hardened product.
+**Status:** Playable personal portfolio prototype; Android snapshot 0.1.0. The repository is shared to demonstrate implemented systems and engineering decisions, not presented as a shipped or production-hardened product.
 
 **Developer:** [Oleksandr Antonesku](https://github.com/AntoneskuOleksandr)
 
