@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,35 +21,46 @@ public class LevelDisplay : MonoBehaviour
     [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private MainMenuUIManager _mainMenuUIManager;
 
+    [SerializeField] private TMP_Text levelNameText;
     private LevelSO currentLevel;
     private GameObject currentMiniLevel;
+    private int currentLevelIndex;
 
     public event Action OnLevelChanged;
 
+    private bool subscribed;
+
+    private void Start() { if (!subscribed) OnEnable(); }
+
     private void OnEnable()
     {
-        nextLevelButton.onClick.AddListener(() =>
-        {
-            int currentIndex = levels.IndexOf(currentLevel);
-            int nextIndex = (currentIndex + 1) % levels.Count;
-            ShowLevel(nextIndex);
-        });
-        previousLevelButton.onClick.AddListener(() =>
-        {
-            int currentIndex = levels.IndexOf(currentLevel);
-            int previousIndex = (currentIndex - 1 + levels.Count) % levels.Count;
-            ShowLevel(previousIndex);
-        });
+        if (_playerProgressService == null || _mainMenuUIManager == null || subscribed) return;
+        subscribed = true;
+        nextLevelButton.onClick.AddListener(ShowNextLevel);
+        previousLevelButton.onClick.AddListener(ShowPreviousLevel);
 
-        ShowLevel(_playerProgressService.GetSelectedLevel());
+        if (levels.Count == 0)
+        {
+            currentLevel = null;
+            nextLevelButton.interactable = false;
+            previousLevelButton.interactable = false;
+            OnLevelChanged?.Invoke();
+            return;
+        }
+
+        int selectedLevel = _playerProgressService.GetSelectedLevel();
+        int selectedIndex = levels.FindIndex(level => level.LevelIndex == selectedLevel);
+        ShowLevel(Mathf.Max(0, selectedIndex));
 
         miniLevels.gameObject.SetActive(true);
     }
 
     private void OnDisable()
     {
-        nextLevelButton.onClick.RemoveAllListeners();
-        previousLevelButton.onClick.RemoveAllListeners();
+        if (!subscribed) return;
+        subscribed = false;
+        nextLevelButton.onClick.RemoveListener(ShowNextLevel);
+        previousLevelButton.onClick.RemoveListener(ShowPreviousLevel);
 
         if (miniLevels != null)
             miniLevels.gameObject.SetActive(false);
@@ -56,22 +68,44 @@ public class LevelDisplay : MonoBehaviour
 
     private void ShowLevel(int index)
     {
-        if (currentLevel != null)
+        LevelSO level = levels[index];
+        if (currentLevel != level || currentMiniLevel == null)
         {
-            Destroy(currentMiniLevel);
+            if (currentMiniLevel != null)
+                Destroy(currentMiniLevel);
+            currentMiniLevel = Instantiate(level.MiniLevelGO, miniLevels);
         }
 
-        currentMiniLevel = Instantiate(levels[index].MiniLevelGO, miniLevels);
-        backgroundGenerator.SetColor(levels[index].GradientColorTop, levels[index].GradientColorBottom);
-        currentLevel = levels[index];
+        currentLevel = level;
+        if (levelNameText != null) levelNameText.text = level.LevelName.ToUpperInvariant();
+        currentLevelIndex = index;
+        backgroundGenerator.SetColor(level.GradientColorTop, level.GradientColorBottom);
 
         _mainMenuUIManager.SetLockPanelState(levels[index].LevelIndex > _playerProgressService.GetCurrentLevel());
 
         OnLevelChanged?.Invoke();
     }
 
+    private void ShowNextLevel()
+    {
+        if (levels.Count > 0)
+            ShowLevel((currentLevelIndex + 1) % levels.Count);
+    }
+
+    private void ShowPreviousLevel()
+    {
+        if (levels.Count > 0)
+            ShowLevel((currentLevelIndex - 1 + levels.Count) % levels.Count);
+    }
+
+    public bool TryGetCurrentLevel(out int levelIndex)
+    {
+        levelIndex = currentLevel != null ? currentLevel.LevelIndex : default;
+        return currentLevel != null;
+    }
+
     public int GetCurrentLevel()
     {
-        return currentLevel.LevelIndex;
+        return currentLevel != null ? currentLevel.LevelIndex : _playerProgressService.GetSelectedLevel();
     }
 }

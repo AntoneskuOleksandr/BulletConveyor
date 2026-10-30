@@ -7,6 +7,8 @@ public class WinPanel : ResultPanelBase
 
     protected override void OnAfterReward()
     {
+        var game = UnityEngine.Object.FindAnyObjectByType<GameManager>();
+        if (game != null && game.IsTrainingReplay) return;
         _playerProgressService.IncreasePlayerLevel();
 
         if (!_tutorialProgressService.IsTutorialCompleted)

@@ -1,8 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Дебаф: огонь (Burn)
-/// </summary>
 public class BurnDebuff : BaseStatusEffect, ITickableEffect
 {
     public override OnHitEffectType EffectType => OnHitEffectType.Fire;

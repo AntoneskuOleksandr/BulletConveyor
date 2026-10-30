@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -14,18 +14,14 @@ public class EnemyStatusCanvas : MonoBehaviour
 
     [Inject] private EffectFactory _effectFactory;
 
-    // Для Refreshable: тип → один UI
     private Dictionary<OnHitEffectType, StatusEffectUI> _refreshableEffects = new();
 
-    // Для Stackable: тип → список UI
     private Dictionary<OnHitEffectType, List<StatusEffectUI>> _stackableEffects = new();
 
     private void Start()
     {
         HideStatusCanvas();
     }
-
-    #region Health Bar
     public void SetHealthBarFillAmount(float fillAmount)
     {
         if (!this.gameObject.activeSelf)
@@ -40,9 +36,6 @@ public class EnemyStatusCanvas : MonoBehaviour
     }
 
     public void HideStatusCanvas() => this.gameObject.SetActive(false);
-    #endregion
-
-    #region Status Effects
     public void AddStatusEffect(IStatusEffect effect)
     {
         Sprite icon = _effectFactory.GetIconByEffectType(effect.EffectType);
@@ -57,7 +50,7 @@ public class EnemyStatusCanvas : MonoBehaviour
 
             CreateUI(effect, icon, _refreshableEffects);
         }
-        else // Stackable
+        else
         {
             if (!_stackableEffects.TryGetValue(effect.EffectType, out var list))
             {
@@ -79,7 +72,7 @@ public class EnemyStatusCanvas : MonoBehaviour
                 _refreshableEffects.Remove(effect.EffectType);
             }
         }
-        else // Stackable
+        else
         {
             if (_stackableEffects.TryGetValue(effect.EffectType, out var list))
             {
@@ -117,5 +110,4 @@ public class EnemyStatusCanvas : MonoBehaviour
 
         list.Add(ui);
     }
-    #endregion
 }

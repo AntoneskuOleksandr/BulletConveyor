@@ -3,18 +3,11 @@ using UnityEngine;
 
 public class EffectChanceManager
 {
-    /// <summary>
-    /// Глобальные шансы (применяются для всех оружий)
-    /// </summary>
+
     private readonly List<ProjectileEffectChance> _globalChances = new List<ProjectileEffectChance>();
 
-    /// <summary>
-    /// Шансы для конкретных оружий
-    /// </summary>
     private readonly Dictionary<Weapon, List<ProjectileEffectChance>> _weaponChances
         = new Dictionary<Weapon, List<ProjectileEffectChance>>();
-
-    // ----------------- ПУБЛИЧНЫЕ МЕТОДЫ -----------------
 
     public void RegisterGlobalChance(OnHitEffectType type, float value, ChanceSource source = ChanceSource.Base)
     {
@@ -91,9 +84,6 @@ public class EffectChanceManager
             _weaponChances.Remove(weapon);
     }
 
-    /// <summary>
-    /// Получить список всех модификаторов для конкретного эффекта (глобальных и оружейных).
-    /// </summary>
     public List<(ChanceSource source, float value)> GetChancesForEffect(OnHitEffectType type, Weapon weapon = null)
     {
         var result = new List<(ChanceSource, float)>();
@@ -118,9 +108,6 @@ public class EffectChanceManager
         return result;
     }
 
-    /// <summary>
-    /// Получить итоговый шанс (глобально + оружейные).
-    /// </summary>
     public float GetTotalChanceForEffect(OnHitEffectType type, Weapon weapon = null)
     {
         float total = 0f;
@@ -145,8 +132,6 @@ public class EffectChanceManager
         return Mathf.Clamp01(total);
     }
 
-    // ----------------- ВСПОМОГАТЕЛЬНЫЕ -----------------
-
     private void RegisterChanceInternal(List<ProjectileEffectChance> list, OnHitEffectType type, float value, ChanceSource source)
     {
         var existing = list.Find(c => c.EffectType == type);
@@ -157,8 +142,6 @@ public class EffectChanceManager
         }
         existing.AddModifier(source, value);
     }
-
-    // ----------------- ВНУТРЕННИЕ ТИПЫ -----------------
 
     public enum ChanceSource
     {

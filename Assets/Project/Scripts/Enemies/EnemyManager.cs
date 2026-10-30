@@ -18,12 +18,16 @@ public class EnemyManager : MonoBehaviour
 
     public void RegisterEnemies(List<Enemy> enemies)
     {
-        Enemies.AddRange(enemies);
-
         foreach (Enemy enemy in enemies)
         {
-            enemy.OnDeath.AddListener(() => UnregisterEnemy(enemy));
+            RegisterEnemy(enemy);
         }
+    }
+
+    public void RegisterEnemy(Enemy enemy)
+    {
+        Enemies.Add(enemy);
+        enemy.OnDeath.AddListener(() => UnregisterEnemy(enemy));
     }
 
     private void UnregisterEnemy(Enemy enemy)

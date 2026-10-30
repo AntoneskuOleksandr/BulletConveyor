@@ -4,8 +4,8 @@ public class FreezeEffect : IOnHitEffect
 {
     public OnHitEffectType EffectType => OnHitEffectType.Freeze;
 
-    private readonly float _slowAmount; // от 0 до 1
-    private readonly float _duration;   // таймер для стаков
+    private readonly float _slowAmount;
+    private readonly float _duration;
 
     public FreezeEffect(StatusEffectSO so)
     {

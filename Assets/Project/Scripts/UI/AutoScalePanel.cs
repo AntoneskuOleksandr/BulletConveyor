@@ -16,11 +16,13 @@ public class AutoScalePanel : MonoBehaviour
     }
     private void OnEnable()
     {
+        rectTransform.DOKill();
         rectTransform.localScale = Vector3.zero;
-        rectTransform.DOScale(originalScale, animationDuration);
+        rectTransform.DOScale(originalScale, animationDuration).SetUpdate(true).SetLink(gameObject);
     }
     private void OnDisable()
     {
-        rectTransform.DOScale(0, animationDuration);
+        rectTransform.DOKill();
+        rectTransform.localScale = originalScale;
     }
 }

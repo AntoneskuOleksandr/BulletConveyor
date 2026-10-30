@@ -15,7 +15,6 @@ public class IceDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
         Elapsed = 0f;
     }
 
-    /// <summary>Tick вызывается каждый кадр</summary>
     public void Tick(float deltaTime, Enemy enemy)
     {
         if (IsFinished) return;
@@ -23,7 +22,6 @@ public class IceDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
         Elapsed += deltaTime * _meltSpeed;
     }
 
-    /// <summary>Обновление при повторном наложении</summary>
     protected override void OnRefresh(IStatusEffect newEffect)
     {
         if (newEffect is IceDebuff ice)
@@ -33,12 +31,11 @@ public class IceDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
         }
     }
 
-    /// <summary>Модификаторы для влияния на врага</summary>
     public Dictionary<ModifierType, float> GetModifiers()
     {
         return new Dictionary<ModifierType, float>
         {
-            { ModifierType.Slow, 1f } // полностью замораживает
+            { ModifierType.Slow, 1f }
         };
     }
 

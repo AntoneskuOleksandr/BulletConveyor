@@ -19,3 +19,4 @@ MonoBehaviour:
   SceneToLoad: Level 4
   GradientColorTop: {r: 0.60784316, g: 1, b: 0.36862746, a: 1}
   GradientColorBottom: {r: 0.9882353, g: 1, b: 0.49803922, a: 1}
+  levelConfig: {fileID: 11400000, guid: 993a06462ed64a84924b921ec2eedfac, type: 2}

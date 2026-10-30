@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,7 +50,7 @@ public class LightningEffect : IOnHitEffect
 
             if (isFirstTick)
             {
-                // На первом тике всегда добавляем initialTarget в визуал
+
                 chain.Add(initialTarget);
 
                 if (initialTarget.IsAlive)
@@ -60,7 +60,6 @@ public class LightningEffect : IOnHitEffect
                 }
             }
 
-            // Определяем стартовую точку для поиска следующего
             Enemy current = (isFirstTick && initialTarget.IsAlive)
                 ? initialTarget
                 : FindClosestEnemyToPoint(isFirstTick ? initialPos : initialTarget.HitTransform.position, chain);
@@ -92,9 +91,6 @@ public class LightningEffect : IOnHitEffect
         }
     }
 
-    /// <summary>
-    /// Ищет ближайшего живого врага к точке, исключая список exclude.
-    /// </summary>
     private Enemy FindClosestEnemyToPoint(Vector3 point, List<Enemy> exclude = null)
     {
         Collider[] hits = Physics.OverlapSphere(point, _radius);

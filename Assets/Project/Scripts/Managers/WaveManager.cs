@@ -1,130 +1,97 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using Zenject;
 
 public class WaveManager : MonoBehaviour
 {
-    [Header("Wave Settings")]
     [SerializeField] private int totalWaves;
     [SerializeField] private float waveDuration = 30f;
     [SerializeField] private float timeBetweenWaves = 5f;
-
-    [Header("Enemy Count Per Wave")]
     [SerializeField] private int minEnemyCount;
     [SerializeField] private int maxEnemyCount;
     [SerializeField] private int enemyIncrementPerWave;
-
-    private int currentWave = 0;
-    private int enemiesAlive = 0;
-
-    private bool isFrozen = false;            // новый флаг
-
+    private int currentWave;
+    private int enemiesAlive;
+    private int spawnedThisWave;
+    private int waveEnemyCount;
+    private bool isFrozen;
+    private Coroutine routine;
+    private float countdownDuration;
     [Inject] private EnemySpawner _enemySpawner;
     [Inject] private EnemyManager _enemyManager;
     [Inject] private ProgressBar _progressBar;
-
     public event Action<float> OnWaveRoutineStarted;
     public event Action<int, float> OnWaveStarted;
     public event Action<int> OnWaveCompleted;
     public event Action<int, float> OnTimerBetweenWavesStarted;
     public event Action<int, int> OnEnemiesChanged;
     public event Action<float, int> OnWaveProgress;
-
     public int TotalWaves => totalWaves;
+    public bool HasStarted => routine != null;
 
-    #region Public API
-
-    public void Configure(int total, int baseCount, int increment, int extraRange, GameObject enemyType1, GameObject enemyType2)
+    public void Configure(int total, int baseCount, int increment, int extraRange, GameObject type1, GameObject type2, bool training = false)
     {
         totalWaves = total;
         minEnemyCount = baseCount;
         maxEnemyCount = baseCount + extraRange;
         enemyIncrementPerWave = increment;
-
-        _enemySpawner.Initialize(enemyType1, enemyType2);
+        countdownDuration = training ? Mathf.Min(2f, timeBetweenWaves) : timeBetweenWaves;
+        _enemySpawner.Initialize(type1, type2, training);
         _progressBar.Initialize();
     }
 
     public void StartWaves()
     {
+        if (routine != null) return;
         _enemyManager.OnEnemyDied += HandleEnemyDeath;
-        StartCoroutine(WaveRoutine());
+        routine = StartCoroutine(WaveRoutine());
     }
 
-    /// <summary>
-    /// Замораживает генерацию волн (между волнами).
-    /// </summary>
-    public void Freeze()
+    public void Freeze() => isFrozen = true;
+    public void Unfreeze() => isFrozen = false;
+
+    private void OnDestroy()
     {
-        isFrozen = true;
+        if (_enemyManager != null) _enemyManager.OnEnemyDied -= HandleEnemyDeath;
     }
-
-    /// <summary>
-    /// Размораживает генерацию волн (если стояла на паузе).
-    /// </summary>
-    public void Unfreeze()
-    {
-        isFrozen = false;
-    }
-
-    #endregion
-
-    #region Core Logic
 
     private IEnumerator WaveRoutine()
     {
-        OnWaveRoutineStarted?.Invoke(timeBetweenWaves);
-
+        OnWaveRoutineStarted?.Invoke(countdownDuration);
         for (currentWave = 1; currentWave <= totalWaves; currentWave++)
         {
-            // Перед началом новой волны проверяем заморозку
-            if (isFrozen)
+            while (isFrozen) yield return null;
+            OnTimerBetweenWavesStarted?.Invoke(currentWave, countdownDuration);
+            float countdown = countdownDuration;
+            while (countdown > 0f)
             {
-                yield return new WaitUntil(() => !isFrozen);
-            }
-
-            // время между волнами
-            OnTimerBetweenWavesStarted?.Invoke(currentWave, timeBetweenWaves);
-            yield return new WaitForSeconds(timeBetweenWaves);
-
-            StartWave(currentWave);
-
-            float elapsed = 0f;
-            while (elapsed < waveDuration && enemiesAlive > 0)
-            {
-                elapsed += Time.deltaTime;
-                OnWaveProgress?.Invoke(Mathf.Clamp01(elapsed / waveDuration), currentWave);
+                if (!isFrozen) countdown -= Time.deltaTime;
                 yield return null;
             }
-
+            int increment = enemyIncrementPerWave * (currentWave - 1);
+            waveEnemyCount = UnityEngine.Random.Range(minEnemyCount + increment, maxEnemyCount + increment + 1);
+            spawnedThisWave = 0;
+            OnWaveStarted?.Invoke(currentWave, waveDuration);
+            GameAudio.PlayWave();
+            yield return _enemySpawner.SpawnWave(waveEnemyCount, currentWave, totalWaves, HandleSpawn);
+            while (enemiesAlive > 0) yield return null;
             OnWaveProgress?.Invoke(1f, currentWave);
-            EndWave(currentWave);
+            OnWaveCompleted?.Invoke(currentWave);
         }
     }
 
-    private void StartWave(int waveIndex)
+    private void HandleSpawn(Enemy enemy)
     {
-        int minCount = minEnemyCount + enemyIncrementPerWave * (waveIndex - 1);
-        int maxCount = maxEnemyCount + enemyIncrementPerWave * (waveIndex - 1);
-        int enemyCount = UnityEngine.Random.Range(minCount, maxCount + 1);
-
-        enemiesAlive += _enemySpawner.SpawnWave(enemyCount, waveIndex, totalWaves);
-
-        OnWaveStarted?.Invoke(waveIndex, waveDuration);
-        OnEnemiesChanged?.Invoke(enemiesAlive, enemiesAlive);
-    }
-
-    private void EndWave(int waveIndex)
-    {
-        OnWaveCompleted?.Invoke(waveIndex);
+        spawnedThisWave++;
+        enemiesAlive++;
+        OnEnemiesChanged?.Invoke(enemiesAlive, waveEnemyCount);
     }
 
     private void HandleEnemyDeath(Enemy enemy)
     {
         enemiesAlive = Mathf.Max(0, enemiesAlive - 1);
-        OnEnemiesChanged?.Invoke(enemiesAlive, enemiesAlive);
+        OnEnemiesChanged?.Invoke(enemiesAlive, waveEnemyCount);
+        OnWaveProgress?.Invoke((float)(spawnedThisWave - enemiesAlive) / Mathf.Max(1, waveEnemyCount), currentWave);
     }
-
-    #endregion
 }

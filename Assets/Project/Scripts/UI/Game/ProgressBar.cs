@@ -26,11 +26,11 @@ public class ProgressBar : MonoBehaviour
     private bool _scrollStarted = false;
 
     private float _initialFill;
-    private float _targetFill;   // целевой fillAmount
-    private float _targetScroll; // целевой scroll
+    private float _targetFill;
+    private float _targetScroll;
 
-    [SerializeField] private float fillSmoothSpeed = 5f;   // чем больше — тем быстрее анимация
-    [SerializeField] private float scrollSmoothSpeed = 5f; // отдельная скорость для скролла
+    [SerializeField] private float fillSmoothSpeed = 5f;
+    [SerializeField] private float scrollSmoothSpeed = 5f;
 
     public void Initialize()
     {
@@ -40,7 +40,7 @@ public class ProgressBar : MonoBehaviour
 
         _waveManager.OnWaveProgress += (waveProgress, waveIndex) =>
         {
-            // целевое значение fillAmount (учитывает левую пустую область)
+
             _targetFill = _initialFill + (waveIndex - 1 + waveProgress) / (_waveManager.TotalWaves + 2f);
 
             if (_scrollStarted)
@@ -61,10 +61,9 @@ public class ProgressBar : MonoBehaviour
 
     private void Update()
     {
-        // Плавно приближаем fillAmount к targetFill
+
         filledPart.fillAmount = Mathf.Lerp(filledPart.fillAmount, _targetFill, Time.deltaTime * fillSmoothSpeed);
 
-        // Плавно приближаем scroll к targetScroll (если скролл активен)
         if (_scrollStarted)
             scrollRect.horizontalNormalizedPosition = Mathf.Lerp(scrollRect.horizontalNormalizedPosition, _targetScroll, Time.deltaTime * scrollSmoothSpeed);
     }

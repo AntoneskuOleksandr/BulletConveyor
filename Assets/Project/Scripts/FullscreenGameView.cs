@@ -5,19 +5,11 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// Little utility for opening a "Game" view in fullscreen. Will be opened on whatever Unity thinks is the "main"
-/// monitor at the moment. The hotkey will toggle the window; however, if for some reason this breaks, fullscreen
-/// windows can be closed via Alt+F4 as long as the editor is not in play mode.
-/// </summary>
-/// <remarks>
-/// Confirmed to work in Unity 2019 and 2020. May work in earlier and later versions. No promises.
-/// </remarks>
 public static class FullscreenGameView
 {
     static readonly Type GameViewType = Type.GetType("UnityEditor.GameView,UnityEditor");
     static readonly PropertyInfo ShowToolbarProperty = GameViewType.GetProperty("showToolbar", BindingFlags.Instance | BindingFlags.NonPublic);
-    static readonly object False = false; // Only box once. This is a matter of principle.
+    static readonly object False = false;
 
     static EditorWindow instance;
 

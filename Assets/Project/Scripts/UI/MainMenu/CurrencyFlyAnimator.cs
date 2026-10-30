@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using DG.Tweening;
 using System;
@@ -27,10 +27,6 @@ public class CurrencyFlyAnimator : MonoBehaviour
             : null;
     }
 
-    /// <summary>
-    /// Запускает анимацию монет и вызывает addCurrencyCallback на каждую монету.
-    /// onComplete вызывается, когда анимация полностью завершена.
-    /// </summary>
     public void AnimateCurrencyGain(
         float amount,
         RectTransform fromUI,
@@ -98,10 +94,10 @@ public class CurrencyFlyAnimator : MonoBehaviour
                 .OnComplete(() =>
                 {
                     Destroy(icon.gameObject);
-                    addCurrencyCallback?.Invoke(reward); // начисляем по монете
+                    addCurrencyCallback?.Invoke(reward);
                     completed++;
                     if (completed == visualCoins)
-                        onComplete?.Invoke(); // все монетки долетели
+                        onComplete?.Invoke();
                 });
 
             yield return new WaitForSeconds(totalAnimationTime / visualCoins);

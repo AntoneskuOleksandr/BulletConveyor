@@ -15,21 +15,19 @@ public class MainMenuUIManager : MonoBehaviour
     [Inject] private WeaponsService _weaponsService;
     [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private LevelDisplay _levelDisplay;
+    [Inject] private TutorialProgressService _tutorialProgressService;
+
+    private bool subscribed;
+
+    private void Start() { if (!subscribed) OnEnable(); }
 
     private void OnEnable()
     {
-        _economyService.OnCurrencyChanged += (currencyType) =>
-        {
-            UpdateMoneyDisplay();
-        };
-        _weaponsService.OnSelectionChanged += () =>
-        {
-            UpdateStartButtonState();
-        };
-        _levelDisplay.OnLevelChanged += () =>
-        {
-            UpdateStartButtonState();
-        };
+        if (_economyService == null || _weaponsService == null || _levelDisplay == null || subscribed) return;
+        subscribed = true;
+        _economyService.OnCurrencyChanged += OnCurrencyChanged;
+        _weaponsService.OnSelectionChanged += UpdateStartButtonState;
+        _levelDisplay.OnLevelChanged += UpdateStartButtonState;
 
         startGameButton.onClick.AddListener(StartGame);
 
@@ -37,9 +35,13 @@ public class MainMenuUIManager : MonoBehaviour
         UpdateMoneyDisplay();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        _economyService.OnCurrencyChanged -= (currencyType) => { UpdateMoneyDisplay(); };
+        if (!subscribed) return;
+        subscribed = false;
+        _economyService.OnCurrencyChanged -= OnCurrencyChanged;
+        _weaponsService.OnSelectionChanged -= UpdateStartButtonState;
+        _levelDisplay.OnLevelChanged -= UpdateStartButtonState;
         startGameButton.onClick.RemoveListener(StartGame);
     }
 
@@ -50,16 +52,25 @@ public class MainMenuUIManager : MonoBehaviour
 
     private void UpdateStartButtonState()
     {
-        bool hasSelectedWeapons = _weaponsService.GetSelectedCount() > 0;
-        bool isLevelAvailable = _playerProgressService.CanAccessLevel(_levelDisplay.GetCurrentLevel());
+        if (!_levelDisplay.TryGetCurrentLevel(out int levelIndex))
+        {
+            startGameButton.interactable = false;
+            return;
+        }
+
+        bool hasSelectedWeapons = !_tutorialProgressService.IsTutorialCompleted || _weaponsService.GetSelectedCount() > 0;
+        bool isLevelAvailable = _playerProgressService.CanAccessLevel(levelIndex);
 
         startGameButton.interactable = hasSelectedWeapons && isLevelAvailable;
     }
 
     private void StartGame()
     {
+        if (!startGameButton.interactable || !_levelDisplay.TryGetCurrentLevel(out int levelIndex))
+            return;
+
+        _playerProgressService.SetSelectedLevel(levelIndex);
         SceneManager.LoadScene(gameSceneName);
-        _playerProgressService.SetSelectedLevel(_levelDisplay.GetCurrentLevel());
     }
 
     private void UpdateMoneyDisplay()
@@ -67,4 +78,6 @@ public class MainMenuUIManager : MonoBehaviour
         float gears = _economyService.GetCurrency(CurrencyType.Gears);
         moneyText.text = gears.ToString();
     }
+
+    private void OnCurrencyChanged(CurrencyType type) => UpdateMoneyDisplay();
 }

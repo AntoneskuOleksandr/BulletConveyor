@@ -1,17 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// ƒебаф: замедление врага (Freeze)
-/// </summary>
 public class FreezeDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
 {
     public override OnHitEffectType EffectType => OnHitEffectType.Freeze;
     public override EffectStackType StackType => EffectStackType.Refreshable;
 
-    private float _slow;         // текущий процент замедлени€ (0..1)
-    private float _stackedSlow;  // прирост замедлени€ при повторном попадании
-    private float _meltSpeed;    // ускорение та€ни€ от огн€
+    private float _slow;
+    private float _stackedSlow;
+    private float _meltSpeed;
 
     private const float BASE_MELT_SPEED = 0.3f;
 
@@ -43,7 +40,6 @@ public class FreezeDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
             _slow = Mathf.Max(0f, _slow);
         }
 
-        // ѕримен€ем замедление напр€мую
         enemy.SetSpeed(enemy.BaseSpeed * (1f - _slow));
     }
 

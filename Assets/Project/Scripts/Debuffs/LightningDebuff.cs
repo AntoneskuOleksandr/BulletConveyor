@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 
-/// <summary>
-/// Дебафф молнии: наносит урон один раз за тик и замедляет врага на duration.
-/// </summary>
 public class LightningDebuff : BaseStatusEffect, ITickableEffect, IModifierEffect
 {
     public override OnHitEffectType EffectType => OnHitEffectType.Lightning;
@@ -34,7 +31,6 @@ public class LightningDebuff : BaseStatusEffect, ITickableEffect, IModifierEffec
         };
     }
 
-    /// <summary>Обновление при повторном наложении</summary>
     protected override void OnRefresh(IStatusEffect newEffect)
     {
         if (newEffect is LightningDebuff lightning)

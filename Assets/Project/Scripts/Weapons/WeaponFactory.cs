@@ -18,10 +18,9 @@ public class WeaponFactory
 
     public Weapon AddWeaponComponent(GameObject go, WeaponSO so)
     {
-        // 1. Создаём компонент оружия
+
         Weapon weapon = _container.InstantiateComponent<Weapon>(go);
 
-        // 2. Назначаем стратегии пуль
         IProjectileMoveStrategy move = so.ProjectileMoveType switch
         {
             ProjectileMoveType.Straight => new StraightMoveStrategy(),
@@ -38,7 +37,6 @@ public class WeaponFactory
             _ => new DirectHitStrategy()
         };
 
-        // 3. Назначаем стратегии поведения
         var shoot = _strategyResolver.ResolveShoot(so.ShootStrategy);
         var aim = _strategyResolver.ResolveAims(so.AimStrategies);
         var target = _strategyResolver.ResolveTarget(so.TargetStrategy);

@@ -14,12 +14,15 @@ public class TileManager : MonoBehaviour
     private Tile[,] tiles;
     private Vector3 tileOrigin;
     private float tileSize;
+    private readonly List<Tile> allTiles = new();
 
-    public float CellSize => tileSize; // <— добавлено
+    public float CellSize => tileSize;
 
     public void Initialize()
     {
         tiles = tileGenerator.GetAllTiles();
+        allTiles.Clear();
+        foreach (var tile in tiles) allTiles.Add(tile);
 
         if (tiles[0, 0] != null)
         {
@@ -29,10 +32,6 @@ public class TileManager : MonoBehaviour
 
         onTilesGenerated.Invoke();
     }
-
-    // -------------------------------
-    // Основные утилиты
-    // -------------------------------
 
     public Tile GetTileAt(Vector2Int index)
     {
@@ -56,7 +55,7 @@ public class TileManager : MonoBehaviour
         return new Vector2Int(x, y);
     }
 
-    public Vector2 WorldToTileFloat(Vector3 worldPos) // <— добавлено
+    public Vector2 WorldToTileFloat(Vector3 worldPos)
     {
         Vector3 offset = worldPos - tileOrigin;
         float x = offset.x / tileSize;
@@ -73,10 +72,7 @@ public class TileManager : MonoBehaviour
 
     public List<Tile> GetAllTilesList()
     {
-        List<Tile> list = new List<Tile>();
-        foreach (Tile t in tiles)
-            list.Add(t);
-        return list;
+        return allTiles;
     }
 
     public void HighLightTiles(List<Tile> tilesToHighlight, bool highlight = true)
@@ -91,13 +87,6 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    // -------------------------------
-    // Подсчёт pivot и доступных тайлов
-    // -------------------------------
-
-    /// <summary>
-    /// Находит pivot фигуры как центр bounding box (учитывая нули)
-    /// </summary>
     private Vector2 GetBoundingBoxPivot(BlockParent blockParent)
     {
         int minX = int.MaxValue, maxX = int.MinValue;
@@ -120,16 +109,12 @@ public class TileManager : MonoBehaviour
         return new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f);
     }
 
-    /// <summary>
-    /// Проверяет и возвращает список доступных тайлов для фигуры, опираясь на bounding box pivot
-    /// </summary>
     public List<Tile> GetAvailableTiles(BlockParent blockParent, Vector2Int targetTile)
     {
         List<Tile> availableTiles = new List<Tile>();
 
         Vector2 pivotOffset = GetBoundingBoxPivot(blockParent);
 
-        // targetTile — это куда должен встать pivot фигуры
         for (int y = 0; y < blockParent.shape.Count; y++)
         {
             for (int x = 0; x < blockParent.shape[y].row.Length; x++)
@@ -142,11 +127,11 @@ public class TileManager : MonoBehaviour
                     );
 
                     if (!IsInsideBoard(boardIndex))
-                        return null; // фигура выходит за границы
+                        return null;
 
                     Tile tile = GetTileAt(boardIndex);
                     if (!tile.isAvailable)
-                        return null; // занятый тайл
+                        return null;
 
                     availableTiles.Add(tile);
                 }

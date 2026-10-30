@@ -23,13 +23,19 @@ public class ConveyorBelt : MonoBehaviour
 
         for (int i = 0; i <= onBelt.Count - 1; i++)
         {
+            if (onBelt[i] == null)
+            {
+                onBelt.RemoveAt(i--);
+                continue;
+            }
             onBelt[i].position += speed * direction.normalized * Time.deltaTime;
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        onBelt.Add(other.transform);
+        if (other.gameObject.layer == LayerMask.NameToLayer("Bullet") && !onBelt.Contains(other.transform))
+            onBelt.Add(other.transform);
     }
 
     private void OnTriggerExit(Collider other)

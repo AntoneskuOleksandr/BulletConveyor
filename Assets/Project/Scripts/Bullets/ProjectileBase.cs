@@ -37,6 +37,8 @@ public class ProjectileBase : MonoBehaviour
         _effectChanceManager = chanceManager;
         _effectFactory = effectFactory;
         _isActive = true;
+        gameObject.isStatic = false;
+        Destroy(gameObject, 12f);
 
         if (data.HasOverrideForward)
             transform.rotation = Quaternion.LookRotation(data.OverrideForward);
@@ -55,7 +57,8 @@ public class ProjectileBase : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!_isActive)
+        if (!_isActive || other.gameObject.layer == LayerMask.NameToLayer("Weapon") ||
+            other.gameObject.layer == LayerMask.NameToLayer("Bullet") || other.isTrigger)
             return;
 
         _isActive = false;

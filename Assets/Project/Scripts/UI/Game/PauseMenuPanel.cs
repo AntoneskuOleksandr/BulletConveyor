@@ -6,6 +6,8 @@ public class PauseMenuPanel : MonoBehaviour
 {
     [SerializeField] private GameObject abilitiesGrid;
     [SerializeField] private GameObject abilityIconPrefab;
+    [SerializeField] private GameObject tutorialInstructions;
+    private bool restoreTutorialInstructions;
 
     [Header("Buttons")]
     [SerializeField] private Button resumeButton;
@@ -13,6 +15,7 @@ public class PauseMenuPanel : MonoBehaviour
     [SerializeField] private Button mainMenuButton;
 
     [Inject] private AbilityPanel _abilityPanel;
+    [Inject] private GameSpeed _gameSpeed;
 
     private void Start()
     {
@@ -23,21 +26,27 @@ public class PauseMenuPanel : MonoBehaviour
 
     private void OnRestartButtonClicked()
     {
-        Time.timeScale = 1f; // Resume the game before restarting
+        Time.timeScale = 1f;
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 
     private void OnMainMenuButtonClicked()
     {
-        Time.timeScale = 1f; // Resume the game before going to main menu
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu"); // Ensure "MainMenu" matches your main menu scene name
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 
     public void ShowPanel()
     {
+        if (gameObject.activeSelf) return;
+        if (tutorialInstructions != null)
+        {
+            restoreTutorialInstructions = tutorialInstructions.activeSelf;
+            tutorialInstructions.SetActive(false);
+        }
         gameObject.SetActive(true);
 
-        Time.timeScale = 0f; // Pause the game
+        _gameSpeed.Pause(this);
 
         ShowSelectedAbilities();
     }
@@ -45,7 +54,9 @@ public class PauseMenuPanel : MonoBehaviour
     private void HidePanel()
     {
         gameObject.SetActive(false);
-        Time.timeScale = 1f; // Resume the game
+        if (tutorialInstructions != null)
+            tutorialInstructions.SetActive(restoreTutorialInstructions);
+        _gameSpeed.Resume(this);
         ClearAbilityGrid();
     }
 

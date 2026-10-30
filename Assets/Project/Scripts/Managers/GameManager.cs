@@ -7,100 +7,67 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private LevelSO[] levels;
     [SerializeField] private TutorialManager tutorialManager;
-
     [Inject] private TileManager _tileManager;
     [Inject] private TileGenerator _tileGenerator;
     [Inject] private ProjectileGenerator _bulletGenerator;
     [Inject] private WaveManager _waveManager;
     [Inject] private WeaponManager _weaponManager;
     [Inject] private UIManager _uiManager;
-
     [Inject] private LevelLoader _levelLoader;
     [Inject] private WeaponsService _weaponsService;
     [Inject] private PlayerProgressService _playerProgressService;
     [Inject] private TutorialProgressService _tutorialProgress;
+    [Inject] private GameSpeed _gameSpeed;
+    private bool resultShown;
+    public bool IsTrainingReplay { get; private set; }
 
-    private void Start()
-    {
-        if (!_tutorialProgress.IsTutorialCompleted)
-        {
-            tutorialManager.StartTutorial();
-            int currentLevel = _playerProgressService.GetSelectedLevel();
-
-            _levelLoader.LoadLevel(levels[0].levelConfig);
-
-            _tileGenerator.GenerateGrid(6, 6);
-            _tileManager.Initialize();
-
-            _weaponsService.SelectWeapon(0);
-
-            _weaponManager.InitializeWeapons();
-            _bulletGenerator.Initialize();
-
-            StartCoroutine(_bulletGenerator.StartProjectileGeneration());
-
-            _weaponManager.OnAllWeaponsDestroyed += () => StartCoroutine(Lose());
-            _waveManager.OnWaveCompleted += wave =>
-            {
-                if (wave >= _waveManager.TotalWaves)
-                    StartCoroutine(Win());
-            };
-        }
-        else
-        {
-            StartGame();
-        }
-    }
-
+    private void Start() => StartGame();
 
     public void StartGame()
     {
-        int currentLevel = _playerProgressService.GetSelectedLevel();
-
-        // Находим LevelSO по LevelIndex
-        LevelSO levelSO = levels.FirstOrDefault(l => l.LevelIndex == currentLevel);
-        if (levelSO == null)
-        {
-            Debug.LogError($"[GameManager] Level with index {currentLevel} not found!");
-            return;
-        }
-
-        LevelConfig config = levelSO.levelConfig;
-        if (config == null)
-        {
-            Debug.LogError($"[GameManager] LevelConfig for Level {currentLevel} is null!");
-            return;
-        }
-
-        _levelLoader.LoadLevel(config);
-
+        bool training = _tutorialProgress.ShouldPlayTutorial;
+        IsTrainingReplay = training && _tutorialProgress.IsTutorialCompleted;
+        int selected = training ? levels[0].LevelIndex : _playerProgressService.GetSelectedLevel();
+        var level = levels.FirstOrDefault(l => l.LevelIndex == selected && l.levelConfig != null);
+        if (level == null) level = levels.First(l => l.levelConfig != null);
+        if (training || _weaponsService.GetSelectedCount() == 0) _weaponsService.SelectWeapon(0);
+        _levelLoader.LoadLevel(level.levelConfig);
         _tileGenerator.GenerateGrid(6, 6);
         _tileManager.Initialize();
         _weaponManager.InitializeWeapons();
         _bulletGenerator.Initialize();
-        _waveManager.StartWaves();
-
+        _weaponManager.OnAllWeaponsDestroyed += HandleDefeat;
+        _waveManager.OnWaveCompleted += HandleWaveCompleted;
         StartCoroutine(_bulletGenerator.StartProjectileGeneration());
-
-        _weaponManager.OnAllWeaponsDestroyed += () => StartCoroutine(Lose());
-        _waveManager.OnWaveCompleted += wave =>
+        if (training) tutorialManager.StartTutorial();
+        else
         {
-            if (wave >= _waveManager.TotalWaves)
-                StartCoroutine(Win());
-        };
+            tutorialManager.HideTutorial();
+            _waveManager.StartWaves();
+        }
     }
 
-    private IEnumerator Win()
+    private void OnDestroy()
     {
-        yield return null;
-        Time.timeScale = 0f;
-        _uiManager.ShowWinPanel();
+        _weaponManager.OnAllWeaponsDestroyed -= HandleDefeat;
+        _waveManager.OnWaveCompleted -= HandleWaveCompleted;
     }
 
-    private IEnumerator Lose()
+    private void HandleWaveCompleted(int wave)
     {
+        if (wave >= _waveManager.TotalWaves) StartCoroutine(Finish(true));
+    }
+
+    private void HandleDefeat() => StartCoroutine(Finish(false));
+
+    private IEnumerator Finish(bool victory)
+    {
+        if (resultShown) yield break;
+        resultShown = true;
         yield return null;
-        Time.timeScale = 0f;
-        _uiManager.ShowLosePanel();
+        _gameSpeed.Pause(this);
+        GameAudio.PlayResult(victory);
+        if (victory) _uiManager.ShowWinPanel();
+        else _uiManager.ShowLosePanel();
     }
 }

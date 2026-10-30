@@ -1,48 +1,47 @@
 using UnityEngine;
+using Unity.AI.Navigation;
+using UnityEngine.AI;
 using Zenject;
 
 public class LevelLoader : MonoBehaviour
 {
     [SerializeField] private Transform environmentRoot;
-
-    private GameObject _currentEnvironment;
-
+    private GameObject currentEnvironment;
     [Inject] private WaveManager _waveManager;
     [Inject] private TutorialProgressService _tutorialProgressService;
 
     public void LoadLevel(LevelConfig config)
     {
-
-        if (config == null)
+        if (currentEnvironment != null)
         {
-            Debug.LogError("[LevelLoader] Config is null!");
-            return;
+            foreach (var surface in currentEnvironment.GetComponentsInChildren<NavMeshSurface>()) surface.RemoveData();
+            Destroy(currentEnvironment);
         }
-
-        // Удаляем старое окружение
-        if (_currentEnvironment != null)
-            Destroy(_currentEnvironment);
-
-
-        // Подгружаем новое окружение
-        if (config.environmentPrefab != null)
-            _currentEnvironment = Instantiate(config.environmentPrefab, environmentRoot);
-
+        currentEnvironment = Instantiate(config.environmentPrefab, environmentRoot);
+        RebuildNavigation();
+        GameAudio.PlayMusic(config.backgroundMusic);
+        if (_tutorialProgressService.ShouldPlayTutorial)
+            _waveManager.Configure(2, 1, 0, 0, config.enemyType1, config.enemyType1, true);
         else
-            Debug.LogError("Environment prefab is null in LevelConfig.");
+            _waveManager.Configure(config.totalWaves, config.baseEnemyCount, config.enemyIncrementPerWave,
+                config.extraEnemyCountRange, config.enemyType1, config.enemyType2);
+    }
 
-        if (!_tutorialProgressService.IsTutorialCompleted)
-            _waveManager.Configure(2, 1, 0, 0, config.enemyType1, config.enemyType1);
-        else
+    public void RebuildNavigation()
+    {
+        if (currentEnvironment == null) return;
+        foreach (var previous in currentEnvironment.GetComponentsInChildren<NavMeshSurface>(true))
         {
-            _waveManager.Configure(
-                config.totalWaves,
-                config.baseEnemyCount,
-                config.enemyIncrementPerWave,
-                config.extraEnemyCountRange,
-                config.enemyType1,
-                config.enemyType2
-            );
+            previous.RemoveData();
+            previous.enabled = false;
         }
+        var surface = currentEnvironment.GetComponent<NavMeshSurface>();
+        if (surface == null) surface = currentEnvironment.AddComponent<NavMeshSurface>();
+        surface.enabled = true;
+        surface.collectObjects = CollectObjects.All;
+        surface.layerMask = LayerMask.GetMask("Default", "Environment", "Barrier");
+        surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
+        Physics.SyncTransforms();
+        surface.BuildNavMesh();
     }
 }

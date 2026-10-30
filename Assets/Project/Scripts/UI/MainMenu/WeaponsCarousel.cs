@@ -40,12 +40,16 @@ public class WeaponsCarousel : MonoBehaviour
         KillTweens();
         if (currentWeapon != null) Destroy(currentWeapon);
         currentIndex = -1;
+        isAnimating = false;
 
         if (weaponSpawnPoint == null) return;
         foreach (Transform child in weaponSpawnPoint)
         {
             if (child != null)
+            {
+                child.DOKill();
                 Destroy(child.gameObject);
+            }
         }
 
         weaponSpawnPoint.gameObject.SetActive(false);
@@ -99,12 +103,12 @@ public class WeaponsCarousel : MonoBehaviour
 
         weapon.transform
             .DOLocalMove(dir * moveDistance, animDuration)
-            .SetEase(moveEase)
+            .SetEase(moveEase).SetLink(weapon)
             .OnComplete(() => Destroy(weapon));
 
         weapon.transform
             .DOLocalRotate(new Vector3(0, startRotationY + (toRight ? -90 : 90), 0), animDuration)
-            .SetEase(rotateEase);
+            .SetEase(rotateEase).SetLink(weapon);
     }
 
     private void AnimateIn(GameObject weapon, bool toRight, bool fromZero = false)
@@ -116,18 +120,18 @@ public class WeaponsCarousel : MonoBehaviour
 
         weapon.transform
             .DOLocalMove(Vector3.zero, animDuration)
-            .SetEase(moveEase);
+            .SetEase(moveEase).SetLink(weapon);
 
         weapon.transform.localRotation = Quaternion.Euler(0, startRotationY + (toRight ? 90 : -90), 0);
         weapon.transform
             .DOLocalRotate(new Vector3(0, startRotationY, 0), animDuration)
-            .SetEase(rotateEase)
+            .SetEase(rotateEase).SetLink(weapon)
             .OnComplete(() => isAnimating = false);
     }
 
     private void KillTweens()
     {
-        if (currentWeapon != null) DOTween.Kill(currentWeapon, complete: false);
+        if (currentWeapon != null) DOTween.Kill(currentWeapon.transform, complete: false);
         if (weaponSpawnPoint != null) DOTween.Kill(weaponSpawnPoint, complete: false);
         DOTween.Kill(this, complete: false);
     }

@@ -25,6 +25,23 @@ public class WeaponsService
         _db = db;
         _economyService = economy;
         _playerProgressService = playerProgressService;
+        for (int i = _playerData.weapons.Count - 1; i >= 0; i--)
+        {
+            var entry = _playerData.weapons[i];
+            var weapon = _db.weapons.Find(w => w.WeaponId == entry.id);
+            if (weapon == null)
+            {
+                _playerData.weapons.RemoveAt(i);
+                continue;
+            }
+            int max = weapon.UpgradeLevels?.Length ?? 0;
+            entry.dmgLvl = Mathf.Clamp(entry.dmgLvl, 0, max);
+            entry.fireRateLvl = Mathf.Clamp(entry.fireRateLvl, 0, max);
+            entry.healthLvl = Mathf.Clamp(entry.healthLvl, 0, max);
+            _playerData.weapons[i] = entry;
+        }
+        _playerData.selectedWeaponIds.RemoveAll(id => !IsAvailable(id));
+        _dataManager.Save();
     }
 
     public WeaponProgressRO GetProgressRO(int id)
@@ -37,6 +54,8 @@ public class WeaponsService
 
     public bool TryUpgrade(WeaponSO weapon, UpgradeType type)
     {
+        if (weapon == null || !IsAvailable(weapon.WeaponId) || !Enum.IsDefined(typeof(UpgradeType), type))
+            return false;
         int idx = _playerData.weapons.FindIndex(w => w.id == weapon.WeaponId);
         if (idx < 0)
         {
@@ -54,7 +73,8 @@ public class WeaponsService
         };
 
         if (level >= weapon.UpgradeLevels.Length) return false;
-        if (!_economyService.TrySpend(CurrencyType.Gears, weapon.UpgradeLevels[level].Cost)) return false;
+        int cost = weapon.UpgradeLevels[level].Cost;
+        if (_economyService.GetCurrency(CurrencyType.Gears) < cost) return false;
 
         switch (type)
         {
@@ -64,7 +84,7 @@ public class WeaponsService
         }
 
         _playerData.weapons[idx] = entry;
-        _dataManager.Save();
+        _economyService.TrySpend(CurrencyType.Gears, cost);
         OnWeaponsChanged?.Invoke();
         return true;
     }

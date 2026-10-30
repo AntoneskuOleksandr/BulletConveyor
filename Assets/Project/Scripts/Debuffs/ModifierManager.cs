@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -7,19 +7,14 @@ public class ModifierManager : MonoBehaviour
     private Enemy _enemy;
     private EnemyStatusCanvas _enemyStatusCanvas;
 
-    // Активные эффекты: Fire, Ice и т.д.
     private readonly Dictionary<OnHitEffectType, List<IStatusEffect>> _effects = new();
 
-    // Только тикеры (для оптимизации)
     private readonly List<ITickableEffect> _tickables = new();
 
-    // Только модификаторы (для быстрого пересчета статы)
     private readonly List<IModifierEffect> _modifiers = new();
 
-    // Кэш итоговых модификаторов
     private readonly Dictionary<ModifierType, float> _modifierTotals = new();
 
-    // Dirty-флаг: нужно ли пересчитать модификаторы
     private bool _modifiersDirty = true;
 
     private List<IEffectRule> _rules = new();
@@ -31,19 +26,15 @@ public class ModifierManager : MonoBehaviour
         _enemy = enemy;
         _enemyStatusCanvas = enemyStatusCanvas;
 
-        // Регистрируем правила взаимодействий эффектов
         _rules.Add(new FreezeToIceRule());
         _rules.Add(new FireMeltsFreezeRule());
         _rules.Add(new FireMeltsIceRule());
         _rules.Add(new FreezeRefreshesIceRule());
     }
 
-    /// <summary>
-    /// Добавляем эффект
-    /// </summary>
     public void AddStatusEffect(IStatusEffect effect)
     {
-        // Instant-эффекты выполняются сразу и не сохраняются
+
         if (effect is IInstantEffect instant)
         {
             instant.Apply(_enemy);
@@ -81,9 +72,6 @@ public class ModifierManager : MonoBehaviour
         HandleEffectCombinations();
     }
 
-    /// <summary>
-    /// Удаляем эффект
-    /// </summary>
     public void RemoveStatusEffect(IStatusEffect effect)
     {
         if (_effects.TryGetValue(effect.EffectType, out var list))
@@ -111,7 +99,6 @@ public class ModifierManager : MonoBehaviour
         float deltaTime = Time.deltaTime;
         List<IStatusEffect> toRemove = null;
 
-        // Тикаем только нужные эффекты
         foreach (var tickable in _tickables)
         {
             tickable.Tick(deltaTime, _enemy);
@@ -122,21 +109,18 @@ public class ModifierManager : MonoBehaviour
             }
         }
 
-        // Удаляем законченные эффекты
         if (toRemove != null)
         {
             foreach (var eff in toRemove)
                 RemoveStatusEffect(eff);
         }
 
-        // Применяем модификаторы, если были изменения
         if (_modifiersDirty)
         {
             RecalculateModifiers();
             _modifiersDirty = false;
         }
 
-        // Применяем итоговую скорость
         float speed = _enemy.BaseSpeed;
         if (_modifierTotals.TryGetValue(ModifierType.Slow, out float slow))
         {
@@ -187,9 +171,6 @@ public class ModifierManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Обрабатываем комбинации эффектов
-    /// </summary>
     private void HandleEffectCombinations()
     {
         foreach (var rule in _rules)

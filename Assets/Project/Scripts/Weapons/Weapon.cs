@@ -29,14 +29,15 @@ public class Weapon : MonoBehaviour
     private float _pitchTurnSpeed;
 
     public WeaponSO Data { get; private set; }
+    public bool IsAlive => _health > 0f;
 
     public float FireRate
     {
         get
         {
             float value = _fireRate;
-            foreach (var m in _weaponModifiers.OfType<IStatProvider>())
-                value = m.ModifyFireRate(value);
+            foreach (var modifier in _weaponModifiers)
+                if (modifier is IStatProvider m) value = m.ModifyFireRate(value);
             return value;
         }
     }
@@ -210,8 +211,8 @@ public class Weapon : MonoBehaviour
     {
         float count = _minProjectilesToShoot;
 
-        foreach (var m in _weaponModifiers.OfType<IStatProvider>())
-            count = m.ModifyRequiredProjectilesCount(count);
+        foreach (var modifier in _weaponModifiers)
+            if (modifier is IStatProvider m) count = m.ModifyRequiredProjectilesCount(count);
 
         return Mathf.Max(1, Mathf.RoundToInt(count));
     }
@@ -220,8 +221,8 @@ public class Weapon : MonoBehaviour
     {
         float dmg = _damage;
 
-        foreach (var m in _weaponModifiers.OfType<IStatProvider>())
-            dmg = m.ModifyDamage(dmg);
+        foreach (var modifier in _weaponModifiers)
+            if (modifier is IStatProvider m) dmg = m.ModifyDamage(dmg);
 
         return new ProjectileInitData
         {
@@ -326,6 +327,7 @@ public class Weapon : MonoBehaviour
             return;
 
         WaitingForFire = false;
+        GameAudio.PlayShot();
         ResetFireCountdown();
 
         var effectChances = _effectChanceManager.GetAllChancesForWeapon(this);
@@ -424,7 +426,7 @@ public class Weapon : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        if (amount <= 0f) return;
+        if (amount <= 0f || !IsAlive) return;
 
         _health -= amount;
         _weaponStatusCanvas?.UpdateHealthBar(_health, Data.BaseHealth);
@@ -435,6 +437,8 @@ public class Weapon : MonoBehaviour
 
     private void OnDestroyed()
     {
+        enabled = false;
+        WaitingForFire = false;
         _target = null;
         _shootStrategy = null;
         _aimStrategies = null;
@@ -452,6 +456,6 @@ public class Weapon : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, _maxAttackRadius);
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, Data.MinAttackRadius);
+        if (Data != null) Gizmos.DrawWireSphere(transform.position, Data.MinAttackRadius);
     }
 }

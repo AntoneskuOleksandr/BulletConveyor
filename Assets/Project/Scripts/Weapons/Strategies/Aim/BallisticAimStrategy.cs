@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class BallisticAimStrategy : IAimStrategy
 {
@@ -20,8 +20,6 @@ public class BallisticAimStrategy : IAimStrategy
         float x = new Vector3(d.x, 0f, d.z).magnitude;
         float y = d.y;
 
-        // v² = (g * x²) / (2 * cos²θ * (x * tanθ - y))
-        // θ:
         float D = Mathf.Pow(v, 4) - g * (g * x * x + 2 * y * v * v);
         if (D < 0f)
             return AimResult.Empty;

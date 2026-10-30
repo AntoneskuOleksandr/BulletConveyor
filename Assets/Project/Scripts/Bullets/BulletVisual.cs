@@ -9,32 +9,22 @@ public class BulletVisual : MonoBehaviour
     {
         _trail = GetComponent<TrailRenderer>();
 
-
         _trail.emitting = false;
         _trail.Clear();
     }
 
-    /// <summary>
-    /// Очищает трейл при спавне
-    /// </summary>
     public void OnSpawn()
     {
         _trail.Clear();
         _trail.emitting = true;
     }
 
-    /// <summary>
-    /// Сбрасывает трейл и частицы при деактивации.
-    /// </summary>
     public void OnDespawn()
     {
         _trail.emitting = false;
         _trail.Clear();
     }
 
-    /// <summary>
-    /// Устанавливает основной цвет трейла.
-    /// </summary>
     public void SetBaseColor(Color color)
     {
         var gradient = new Gradient();

@@ -4,7 +4,13 @@
 
 Instead of giving every turret unlimited ammunition, **Bullet Conveyor** connects combat to production: arrange and merge blocks to produce bullets, move them along a conveyor, and supply weapons while surviving enemy waves.
 
-This is a **personal, playable development prototype**, currently paused rather than a commercially released game. Its main purpose here is to demonstrate gameplay programming, extensible C# systems, and Unity architecture.
+This is a **personal, playable development prototype**, with an Android portfolio build. Its main purpose here is to demonstrate gameplay programming, extensible C# systems, and Unity architecture.
+
+## Android portfolio snapshot 0.1.1
+
+Five configured environments with six progressively introduced enemy types, selected-weapon previews, a shared 1x/3x clock, eight weapons with five upgrade tiers each, persistent upgrades, music and combat feedback, and a six-step interactive tutorial with dynamic gestures, skip and replay. Enemy placement checks navigation, obstacles and other agents; waves complete after the last living enemy.
+
+Start from MainMenu. A fresh profile enters guided training when Play is pressed. The Tutorial button replays it, and Sound toggles audio without changing progress. See [milestones and verification](docs/MILESTONES.md) and [Android build instructions](docs/ANDROID_BUILD.md).
 
 ## Gameplay video
 
@@ -71,7 +77,7 @@ Explore: [block interactions](Assets/Project/Scripts/BlockRelated/) · [drag sta
 ### Combat effects and enemy waves
 
 - **Status effects:** fire, ice, freeze, and lightning, with configurable effect data and chance-based application.
-- **Wave management:** level-configured enemy types/counts, timed waves, enemy spawning, and progress events.
+- **Wave management:** level-configured enemy types/counts, combat-complete waves, validated enemy spawning, and progress events.
 - **Enemy behaviour:** NavMesh-based movement, target selection, health, damage, and death handling.
 - **Game flow:** a tutorial, weapon loadout selection, upgrades, ability choices, and win/lose UI.
 
@@ -82,13 +88,13 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 - [Zenject installers](Assets/Project/Scripts/Installers/) bind shared services and gameplay components.
 - [Weapon and progression services](Assets/Project/Scripts/Services/) separate purchasing, selection, upgrades, and persistent player progress from combat behaviours.
 - [`DataRepository`](Assets/Project/Scripts/DataManager/DataRepository.cs) uses JSON files under `Application.persistentDataPath` for player-data storage.
-- The project also uses DOTween for animations and Unity's `ObjectPool<T>` API in projectile generation. Pool return/reuse behaviour has not been independently verified.
+- DOTween animates UI and ammunition transport. Live generated ammunition is capped, and fired projectiles have a finite lifetime.
 
 ## Technology
 
 | Area | Technology |
 | --- | --- |
-| Engine | **Unity 6 — 6000.0.54f1** |
+| Engine | **Unity 6 — 6000.6.7f1** |
 | Language | **C#** |
 | Dependency injection | **Zenject** (included in `Assets/Plugins`) |
 | Animation | **DOTween** (included in `Assets/Plugins`) |
@@ -98,7 +104,7 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 
 ## Run the project locally
 
-1. Install **Unity 6000.0.54f1** through Unity Hub (the version recorded in [`ProjectVersion.txt`](ProjectSettings/ProjectVersion.txt)).
+1. Install **Unity 6000.6.7f1** through Unity Hub (the version recorded in [`ProjectVersion.txt`](ProjectSettings/ProjectVersion.txt)). Include **Android Build Support**, **Android SDK & NDK Tools**, and **OpenJDK** for APK builds.
 2. Clone the repository:
    ```bash
    git clone https://github.com/AntoneskuOleksandr/BulletConveyor.git
@@ -108,7 +114,7 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 5. Open **`Assets/Project/Scenes/MainMenu.unity`** and press **Play**. Use the menu/tutorial to enter gameplay.
 6. For a build, the checked-in [Build Settings](ProjectSettings/EditorBuildSettings.asset) list **`MainMenu.unity`** followed by **`GameScene.unity`**.
 
-**Note:** These instructions are derived from the repository's configuration. This documentation review did **not** include opening the project in Unity or verifying a clean build on every platform. No prebuilt game executable is included in this repository.
+To create an installable Android APK on Windows, run `Build-Android.ps1` from a closed checkout. See [Android build instructions](docs/ANDROID_BUILD.md) for the editor path argument, configuration and verification.
 
 ## Repository layout
 
@@ -134,7 +140,7 @@ ProjectSettings/        Unity project configuration
 
 ## Project status and attribution
 
-**Status:** Personal portfolio prototype; development paused. The repository is shared to demonstrate implemented systems and engineering decisions, not presented as a shipped or production-hardened product.
+**Status:** Playable personal portfolio prototype; Android snapshot 0.1.1. The repository is shared to demonstrate implemented systems and engineering decisions, not presented as a shipped or production-hardened product.
 
 **Developer:** [Oleksandr Antonesku](https://github.com/AntoneskuOleksandr)
 

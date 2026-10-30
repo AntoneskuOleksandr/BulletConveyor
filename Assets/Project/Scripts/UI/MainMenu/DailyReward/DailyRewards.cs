@@ -18,8 +18,8 @@ public class DailyRewards : MonoBehaviour
 
     [Header("Rewards Settings")]
     [SerializeField] private List<Reward> rewards;
-    [SerializeField] private float claimCooldown = 24f; // кулдаун (часы)
-    [SerializeField] private float claimDeadline = 48f; // дедлайн (часы)
+    [SerializeField] private float claimCooldown = 24f;
+    [SerializeField] private float claimDeadline = 48f;
 
     private const string TIMER_KEY = "DailyReward";
     private int maxStreakCount = 8;

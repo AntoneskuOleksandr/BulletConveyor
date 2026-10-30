@@ -8,23 +8,18 @@ public class PlayerRuntimeManager : MonoBehaviour
     public event Action OnCurrencyChanged;
     private List<CurrencyEntry> _currencies = new();
 
-    private void OnEnable()
+    private void Awake()
     {
         _currencies.Add(new CurrencyEntry
         {
             type = CurrencyType.Coins,
-            amount = 0f
+            amount = startCoins
         });
         _currencies.Add(new CurrencyEntry
         {
             type = CurrencyType.Gears,
             amount = 0f
         });
-    }
-
-    private void Start()
-    {
-        AddCurrency(CurrencyType.Coins, startCoins);
     }
 
     public float GetCurrency(CurrencyType type)

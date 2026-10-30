@@ -32,6 +32,12 @@ public class FireDispatcher : ITickable
         for (int i = 0; i < _buffer.Count; i++)
         {
             var r = _buffer[i];
+            if (r.Weapon == null || !r.Weapon.IsAlive) continue;
+            if (r.Weapon.Target == null || !r.Weapon.Target.IsAlive)
+            {
+                r.Weapon.WaitingForFire = false;
+                continue;
+            }
             var allocation = _projectileManager.Allocate(r.Min, r.Max);
 
             if (!allocation.Success || allocation.Projectiles == null || allocation.Projectiles.Count == 0)
