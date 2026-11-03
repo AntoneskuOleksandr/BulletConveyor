@@ -6,6 +6,12 @@ Instead of giving every turret unlimited ammunition, **Bullet Conveyor** connect
 
 This is a **personal, playable development prototype**, with an Android portfolio build. Its main purpose here is to demonstrate gameplay programming, extensible C# systems, and Unity architecture.
 
+## Download and play
+
+**[Download the Android APK](https://github.com/AntoneskuOleksandr/BulletConveyor/releases/download/v0.1.1/BulletConveyor-0.1.1.apk)** · [Release notes](https://github.com/AntoneskuOleksandr/BulletConveyor/releases/latest)
+
+Requires Android 8.0 or newer. Install the APK, open the game, and press **Play** to start the tutorial. Unity is only needed to work on the project.
+
 ## Android portfolio snapshot 0.1.1
 
 Five configured environments with six progressively introduced enemy types, selected-weapon previews, a shared 1x/3x clock, eight weapons with five upgrade tiers each, persistent upgrades, music and combat feedback, and a six-step interactive tutorial with dynamic gestures, skip and replay. Enemy placement checks navigation, obstacles and other agents; waves complete after the last living enemy.
@@ -114,7 +120,7 @@ Explore: [effects](Assets/Project/Scripts/Debuffs/) · [waves](Assets/Project/Sc
 5. Open **`Assets/Project/Scenes/MainMenu.unity`** and press **Play**. Use the menu/tutorial to enter gameplay.
 6. For a build, the checked-in [Build Settings](ProjectSettings/EditorBuildSettings.asset) list **`MainMenu.unity`** followed by **`GameScene.unity`**.
 
-To create an installable Android APK on Windows, run `Build-Android.ps1` from a closed checkout. See [Android build instructions](docs/ANDROID_BUILD.md) for the editor path argument, configuration and verification.
+To build an Android APK, choose **Build > Bullet Conveyor > Android APK** in Unity. See [Android build instructions](docs/ANDROID_BUILD.md).
 
 ## Repository layout
 
